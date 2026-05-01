@@ -57,7 +57,11 @@ void ServerEngine::processNetwork(){
                 sf::Vector2f position;
                 
                 if(packet >> playerId >> position && sender.has_value()){
-                    m_clients.insert_or_assign(playerId, ClientInfo{sender.value(), port, position, sf::Clock()});
+                    auto it = m_clients.find(playerId);
+                    if(it != m_clients.end()){
+                        it->second.position = position;
+                        it->second.lastActivity.restart();
+                    }
                 }
             }
             else if(type == PacketType::EnemyHit){
@@ -67,6 +71,18 @@ void ServerEngine::processNetwork(){
                         std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
                     }
                 }
+            }
+            else if(type == PacketType::JoinRequest){
+                if(!sender.has_value()) continue;
+
+                std::uint32_t newId = m_nextPlayerId++;
+                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, sf::Vector2f(640.0f, 360.0f), sf::Clock()});
+                
+                sf::Packet reply;
+                reply << PacketType::JoinAccept << newId;
+                (void)m_socket.send(reply, sender.value(), port);
+
+                std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
             }
         }
     }

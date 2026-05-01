@@ -12,12 +12,6 @@ ClientEngine::ClientEngine(): m_isRunning(true){
 
     m_socket.setBlocking(false);
 
-    std:srand(std::time(nullptr));
-    std::uint32_t id = std::rand() % 1000;
-
-    m_player = std::make_unique<Player>(id, sf::Vector2f(640.0f, 360.0f));
-    m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
-
     m_serverAddress = sf::IpAddress::resolve("127.0.0.1");
 
     m_map = std::make_shared<MapGenerator>(40, 22);
@@ -50,8 +44,10 @@ void ClientEngine::processEvent(){
         }
 
         if(const auto& mouseBtn = event->getIf<sf::Event::MouseButtonPressed>()){
-            sf::Vector2f targetPos(static_cast<float>(mouseBtn->position.x), static_cast<float>(mouseBtn->position.y));
-            m_projectileManager->spawnProjectile(m_player->getPosition(), targetPos, 800.0f);
+            if(m_player){
+                sf::Vector2f targetPos(static_cast<float>(mouseBtn->position.x), static_cast<float>(mouseBtn->position.y));
+                m_projectileManager->spawnProjectile(m_player->getPosition(), targetPos, 800.0f);
+            }
         }
     }
 }
@@ -64,6 +60,8 @@ void ClientEngine::processNetwork(){
     while(m_socket.receive(packet, sender, port) == sf::Socket::Status::Done){
         PacketType type;
         if(packet >> type){
+            m_lastServerMessageTimer.restart();
+
             if(type == PacketType::Pong){
                 std::string message;
                 packet >> message;
@@ -71,6 +69,16 @@ void ClientEngine::processNetwork(){
             }
             else if(type == PacketType::WorldState){
                 handleWorldState(packet);
+            }
+            else if(type == PacketType::JoinAccept){
+                std::uint32_t playerId;
+                if(packet >> playerId){
+                    if(!m_player){
+                        m_player = std::make_unique<Player>(playerId, sf::Vector2f(640.0f, 360.0f));
+                        m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
+                        std::cout << "[CLIENT] Player joined the server. Player ID: " << playerId << "\n";
+                    }
+                }
             }
         }
     }
@@ -142,6 +150,16 @@ void ClientEngine::update(sf::Time deltaTime){
     ImGui::SFML::Update(m_window, deltaTime);
 
     if(m_player){
+        if(m_lastServerMessageTimer.getElapsedTime().asSeconds() > 3.0f){
+            std::cout << "[CLIENT] Lost connection to the server (Timeout)!\n";
+
+            m_player.reset();
+            m_otherPlayers.clear();
+            m_enemies.clear();
+
+            return;
+        }
+
         m_player->setFocused(m_window.hasFocus());
         m_player->update(deltaTime);
 
@@ -196,6 +214,21 @@ void ClientEngine::renderUI(){
     ImGui::Begin("Swarm Inasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
+    if(!m_player){
+        ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 0, 0, 255)), "DISCONECTED");
+
+        if(ImGui::Button("Join the game", ImVec2(200, 50))){
+            if(m_serverAddress){
+                sf::Packet joinPacket;
+                joinPacket << PacketType::JoinRequest;
+                (void)m_socket.send(joinPacket, m_serverAddress.value(), 54000);
+                std::cout << "[CLIENT] Request to join has been sent...\n";
+            }
+        }
+    }else{
+        ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(IM_COL32(0, 255, 0, 255)), "CONNECTED! ID: %u", m_player->getId());
+    }
+
     if(ImGui::Button("Send PING to server!")){
         sf::Packet packet;
 
@@ -214,8 +247,6 @@ void ClientEngine::renderUI(){
     if(ImGui::Button("Close game")){
         m_isRunning = false;
     }
-
-
 
     if(ImGui::Button("Draw random seed")){
         m_map->generate(rand() % 10000);

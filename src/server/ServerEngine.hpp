@@ -29,6 +29,7 @@ private:
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;
+    std::uint32_t m_nextPlayerId = 1;
 
     struct EnemyInfo {
         sf::Vector2f position;

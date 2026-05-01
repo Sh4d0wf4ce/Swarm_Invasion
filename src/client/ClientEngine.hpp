@@ -41,6 +41,7 @@ private:
     std::map<std::uint32_t, std::unique_ptr<Player>> m_enemies;
     
     std::optional<sf::IpAddress> m_serverAddress;
+    sf::Clock m_lastServerMessageTimer;
 
     std::shared_ptr<MapGenerator> m_map;
     std::unique_ptr<MapRenderer> m_mapRenderer;
