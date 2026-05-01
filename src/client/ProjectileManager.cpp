@@ -32,7 +32,7 @@ void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::
 
 std::vector<std::uint32_t> ProjectileManager::update(
     sf::Time deltaTime, 
-    const std::map<std::uint32_t, std::unique_ptr<Player>>& enemies,
+    const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
     const std::shared_ptr<MapGenerator>& map)
 {
     float dt = deltaTime.asSeconds();

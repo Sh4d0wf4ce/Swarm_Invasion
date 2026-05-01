@@ -76,7 +76,7 @@ void ServerEngine::processNetwork(){
                 if(!sender.has_value()) continue;
 
                 std::uint32_t newId = m_nextPlayerId++;
-                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, sf::Vector2f(640.0f, 360.0f), sf::Clock()});
+                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, sf::Vector2f(1600.0f, 1600.0f), sf::Clock()});
                 
                 sf::Packet reply;
                 reply << PacketType::JoinAccept << newId;

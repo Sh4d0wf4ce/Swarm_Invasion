@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include "Enemy.hpp"
 #include "MapGenerator.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -24,7 +25,7 @@ public:
 
     std::vector<std::uint32_t> update(
         sf::Time deltaTime, 
-        const std::map<std::uint32_t, std::unique_ptr<Player>>& enemies,
+        const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
         const std::shared_ptr<MapGenerator>& map
     );
     void render(sf::RenderTarget& target);

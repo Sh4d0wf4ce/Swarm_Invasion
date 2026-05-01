@@ -64,6 +64,7 @@ add_executable(SwarmClient
     src/client/main.cpp
     src/client/ClientEngine.cpp
     src/client/Player.cpp
+    src/client/Enemy.cpp
     src/Client/MapRenderer.cpp
     src/Client/ProjectileManager.cpp
 )

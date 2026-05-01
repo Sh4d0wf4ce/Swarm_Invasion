@@ -25,10 +25,6 @@ void Player::render(sf::RenderTarget& target){
     target.draw(m_shape);
 }
 
-void Player::setColor(const sf::Color& color){
-    m_shape.setFillColor(color);
-}
-
 void Player::setFocused(bool focuesd){
     m_isFocused = focuesd;
 }

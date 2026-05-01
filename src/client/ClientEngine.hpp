@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include "Enemy.hpp"
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
 #include "MapRenderer.hpp"
@@ -31,6 +32,7 @@ private:
 
     sf::UdpSocket m_socket;
     sf::RenderWindow m_window;
+    sf::View m_camera;
     sf::Clock m_clock;
     bool m_isRunning;
 
@@ -38,7 +40,7 @@ private:
     sf::Vector2f m_lastSentPosition;
 
     std::map<std::uint32_t, std::unique_ptr<Player>> m_otherPlayers;
-    std::map<std::uint32_t, std::unique_ptr<Player>> m_enemies;
+    std::map<std::uint32_t, std::unique_ptr<Enemy>> m_enemies;
     
     std::optional<sf::IpAddress> m_serverAddress;
     sf::Clock m_lastServerMessageTimer;

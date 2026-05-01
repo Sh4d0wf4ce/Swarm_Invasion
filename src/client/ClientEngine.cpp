@@ -10,11 +10,12 @@ ClientEngine::ClientEngine(): m_isRunning(true){
         std::cerr<<"Error: Failed to initialize ImGui\n";
     }
 
-    m_socket.setBlocking(false);
+    m_camera.setSize({1280.0f, 720.0f});
 
+    m_socket.setBlocking(false);
     m_serverAddress = sf::IpAddress::resolve("127.0.0.1");
 
-    m_map = std::make_shared<MapGenerator>(40, 22);
+    m_map = std::make_shared<MapGenerator>(100, 100);
     m_map->generate(1337);
     m_mapRenderer = std::make_unique<MapRenderer>(m_map, 32.0f);
 
@@ -45,8 +46,10 @@ void ClientEngine::processEvent(){
 
         if(const auto& mouseBtn = event->getIf<sf::Event::MouseButtonPressed>()){
             if(m_player){
-                sf::Vector2f targetPos(static_cast<float>(mouseBtn->position.x), static_cast<float>(mouseBtn->position.y));
-                m_projectileManager->spawnProjectile(m_player->getPosition(), targetPos, 800.0f);
+                sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
+                sf::Vector2f worldPos = m_window.mapPixelToCoords(pixelPos, m_camera); 
+
+                m_projectileManager->spawnProjectile(m_player->getPosition(), worldPos, 800.0f);
             }
         }
     }
@@ -74,8 +77,9 @@ void ClientEngine::processNetwork(){
                 std::uint32_t playerId;
                 if(packet >> playerId){
                     if(!m_player){
-                        m_player = std::make_unique<Player>(playerId, sf::Vector2f(640.0f, 360.0f));
+                        m_player = std::make_unique<Player>(playerId, sf::Vector2f(1600.0f, 1600.0f));
                         m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
+
                         std::cout << "[CLIENT] Player joined the server. Player ID: " << playerId << "\n";
                     }
                 }
@@ -101,7 +105,6 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
 
         if(m_otherPlayers.find(id) == m_otherPlayers.end()){
             m_otherPlayers[id] = std::make_unique<Player>(id, pos);
-            m_otherPlayers[id]->setColor(sf::Color::Blue);
         }
 
         m_otherPlayers[id]->setPosition(pos);
@@ -130,9 +133,7 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
         activeEnemyIds.push_back(id);
 
         if(m_enemies.find(id) == m_enemies.end()){
-        m_enemies[id] = std::make_unique<Player>(id, pos);
-        m_enemies[id]->setColor(sf::Color::Green);
-        m_enemies[id]->setFocused(false);
+            m_enemies[id] = std::make_unique<Enemy>(id, pos);
         }
         m_enemies[id]->setPosition(pos);
     }
@@ -163,6 +164,31 @@ void ClientEngine::update(sf::Time deltaTime){
         m_player->setFocused(m_window.hasFocus());
         m_player->update(deltaTime);
 
+
+        sf::Vector2f targetCenter = m_player->getPosition();
+
+        if(m_map){
+            float mapWidth = m_map->getWidth() * 32.0f;
+            float mapHeight = m_map->getHeight() * 32.0f;
+            float halfCamX = m_camera.getSize().x / 2.0f;
+            float halfCamY = m_camera.getSize().y / 2.0f;
+
+            if(mapWidth > m_camera.getSize().x){
+                targetCenter.x = std::clamp(targetCenter.x, halfCamX, mapWidth - halfCamX);
+            }else{
+                targetCenter.x = mapWidth / 2.0f;
+            }
+
+            if(mapHeight > m_camera.getSize().y){
+                targetCenter.y = std::clamp(targetCenter.y, halfCamY, mapHeight - halfCamY);
+            }else{
+                targetCenter.y = mapHeight / 2.0f;
+            }
+        }
+        sf::Vector2f currentCenter = m_camera.getCenter();
+        currentCenter += (targetCenter - currentCenter) * 5.0f * deltaTime.asSeconds();
+        m_camera.setCenter(currentCenter);
+
         if(m_player->getPosition() != m_lastSentPosition){
             sf::Packet packet;
             packet << PacketType::PlayerPosition << m_player->getId() << m_player->getPosition();
@@ -192,6 +218,7 @@ void ClientEngine::update(sf::Time deltaTime){
 
 void ClientEngine::render(){
     m_window.clear(sf::Color(30, 30, 30));
+    m_window.setView(m_camera);
 
     if(m_mapRenderer) m_mapRenderer->render(m_window);
     if(m_projectileManager) m_projectileManager->render(m_window);
@@ -204,6 +231,8 @@ void ClientEngine::render(){
     for(const auto& [id, enemy]: m_enemies){
         enemy->render(m_window);
     }
+
+    m_window.setView(m_window.getDefaultView());
 
     renderUI();
     ImGui::SFML::Render(m_window);
