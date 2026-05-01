@@ -30,8 +30,13 @@ void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::
     m_projectiles.push_back({startPos, direction, 3.0f, true});
 }
 
-void ProjectileManager::update(sf::Time deltaTime){
+std::vector<std::uint32_t> ProjectileManager::update(
+    sf::Time deltaTime, 
+    const std::map<std::uint32_t, std::unique_ptr<Player>>& enemies,
+    const std::shared_ptr<MapGenerator>& map)
+{
     float dt = deltaTime.asSeconds();
+    std::vector<std::uint32_t> hitEnemies;
 
     for(auto& proj: m_projectiles){
         if(!proj.active) continue;
@@ -41,8 +46,34 @@ void ProjectileManager::update(sf::Time deltaTime){
 
         if(proj.lifetime < 0.0f){
             proj.active = false;
+            continue;
+        }
+
+        // Collision with walls
+        if(map){
+            int gridX = static_cast<int>(proj.position.x / 32.0f);
+            int gridY = static_cast<int>(proj.position.y / 32.0f);
+
+            if(map->getTile(gridX, gridY) == TileType::Wall){
+                proj.active = false;
+                continue;
+            }
+        }
+
+        // Collision with enemies
+        for(const auto& [id, enemy] : enemies){
+            sf::Vector2f diff = proj.position - enemy->getPosition();
+            float distSq = diff.lengthSquared();
+
+            if(distSq < 625.0f){
+                hitEnemies.push_back(id);
+                proj.active = false;
+                break;
+            }
         }
     }
+
+    return hitEnemies;
 }
 
 void ProjectileManager::render(sf::RenderTarget& target){

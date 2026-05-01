@@ -16,7 +16,7 @@ ClientEngine::ClientEngine(): m_isRunning(true){
     std::uint32_t id = std::rand() % 1000;
 
     m_player = std::make_unique<Player>(id, sf::Vector2f(640.0f, 360.0f));
-    m_lastSentPosition = sf::Vector2f(-9999.0f, -9999.0f);
+    m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
 
     m_serverAddress = sf::IpAddress::resolve("127.0.0.1");
 
@@ -70,39 +70,72 @@ void ClientEngine::processNetwork(){
                 std::cout<< "[CLIENT] Recieved PONG from server: " << message << std::endl;
             }
             else if(type == PacketType::WorldState){
-                std::uint32_t playerCount;
-                if(packet >> playerCount){
-
-                    std::vector<std::uint32_t> activeServerIds;
-
-                    for(std::uint32_t i = 0; i < playerCount; i++){
-                        std::uint32_t id;
-                        sf::Vector2f pos;
-                        packet >> id >> pos;
-
-                        activeServerIds.push_back(id);
-
-                        if(id == m_player->getId()) continue;
-
-                        if(m_otherPlayers.find(id) == m_otherPlayers.end()){
-                            m_otherPlayers[id] = std::make_unique<Player>(id, pos);
-                            m_otherPlayers[id]->setColor(sf::Color::Blue);
-                        }
-
-                        m_otherPlayers[id]->setPosition(pos);
-                    }
-
-                    for(auto it = m_otherPlayers.begin(); it != m_otherPlayers.end();){
-                        if(std::find(activeServerIds.begin(), activeServerIds.end(), it->first) == activeServerIds.end()){
-                            it = m_otherPlayers.erase(it);
-                        }else{
-                            ++it;
-                        }
-                    }
-                }
+                handleWorldState(packet);
             }
         }
     }
+}
+
+void ClientEngine::handleWorldState(sf::Packet& packet){
+    std::uint32_t playerCount;
+    if(!(packet >> playerCount)) return;
+
+    // --- PLAYERS ---
+    std::vector<std::uint32_t> activeServerIds;
+    for(std::uint32_t i = 0; i < playerCount; i++){
+        std::uint32_t id;
+        sf::Vector2f pos;
+        packet >> id >> pos;
+
+        activeServerIds.push_back(id);
+
+        if(id == m_player->getId()) continue;
+
+        if(m_otherPlayers.find(id) == m_otherPlayers.end()){
+            m_otherPlayers[id] = std::make_unique<Player>(id, pos);
+            m_otherPlayers[id]->setColor(sf::Color::Blue);
+        }
+
+        m_otherPlayers[id]->setPosition(pos);
+    }
+
+    // removing unactive players
+    for(auto it = m_otherPlayers.begin(); it != m_otherPlayers.end();){
+        if(std::find(activeServerIds.begin(), activeServerIds.end(), it->first) == activeServerIds.end()){
+            it = m_otherPlayers.erase(it);
+        }else{
+            ++it;
+        }
+    }
+
+    // --- ENEMIES ---
+    std::uint32_t enemyCount;
+    if(!(packet >> enemyCount)) return;
+    
+    std::vector<std::uint32_t> activeEnemyIds;
+
+    for(std::uint32_t i = 0; i < enemyCount; i++){
+        std::uint32_t id;
+        sf::Vector2f pos;
+        packet >> id >> pos;
+
+        activeEnemyIds.push_back(id);
+
+        if(m_enemies.find(id) == m_enemies.end()){
+        m_enemies[id] = std::make_unique<Player>(id, pos);
+        m_enemies[id]->setColor(sf::Color::Green);
+        m_enemies[id]->setFocused(false);
+        }
+        m_enemies[id]->setPosition(pos);
+    }
+
+    for(auto it = m_enemies.begin(); it != m_enemies.end();){
+        if(std::find(activeEnemyIds.begin(), activeEnemyIds.end(), it->first) == activeEnemyIds.end()){
+            it = m_enemies.erase(it);
+        }else{
+            ++it;
+        }
+    }   
 }
 
 void ClientEngine::update(sf::Time deltaTime){
@@ -125,7 +158,17 @@ void ClientEngine::update(sf::Time deltaTime){
     }
 
     if(m_projectileManager){
-        m_projectileManager->update(deltaTime);
+        auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map);
+
+        for(std::uint32_t enemyId : hitEnemies){
+            if(m_serverAddress){
+                sf::Packet hitPacket;
+                hitPacket << PacketType::EnemyHit << enemyId;
+                (void)m_socket.send(hitPacket, m_serverAddress.value(), 54000);
+            }
+
+            m_enemies.erase(enemyId);
+        }
     }
 }
 
@@ -138,6 +181,10 @@ void ClientEngine::render(){
 
     for(const auto& [id, otherPlayer]: m_otherPlayers){
         otherPlayer->render(m_window);
+    }
+
+    for(const auto& [id, enemy]: m_enemies){
+        enemy->render(m_window);
     }
 
     renderUI();

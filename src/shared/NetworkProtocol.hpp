@@ -6,7 +6,8 @@ enum class PacketType : std::uint8_t{
     Ping,
     Pong,
     PlayerPosition,
-    WorldState
+    WorldState,
+    EnemyHit
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType type){
