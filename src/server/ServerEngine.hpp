@@ -1,7 +1,9 @@
 #pragma once
 
-#include <SFML/System.hpp>
 #include "NetworkProtocol.hpp"
+
+#include <SFML/System.hpp>
+#include <map>
 
 class ServerEngine{
 public:
@@ -18,4 +20,5 @@ private:
     bool m_isRunning;
 
     int  m_tickCounter;
+    std::map<std::uint32_t, sf::Vector2f> m_players;
 };

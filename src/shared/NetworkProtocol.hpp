@@ -5,6 +5,7 @@
 enum class PacketType : std::uint8_t{
     Ping,
     Pong,
+    PlayerPosition
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType type){
@@ -16,4 +17,12 @@ inline sf::Packet& operator>>(sf::Packet& packet, PacketType& type){
     packet>>value;
     type = static_cast<PacketType>(value);
     return packet;
+}
+
+inline sf::Packet& operator<<(sf::Packet& packet, const sf::Vector2f& vector){
+    return packet << vector.x << vector.y;
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, sf::Vector2f& vector){
+    return packet >> vector.x >> vector.y;
 }

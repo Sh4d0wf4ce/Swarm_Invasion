@@ -1,16 +1,21 @@
 #pragma once
 
+#include "Player.hpp"
+#include "NetworkProtocol.hpp"
+#include "MapGenerator.hpp"
+#include "MapRenderer.hpp"
+
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 #include <imgui-SFML.h>
 #include <imgui.h>
+#include <memory>
 
 class ClientEngine{
 public:
     ClientEngine();
-
     void run();
 
 private:
@@ -24,4 +29,12 @@ private:
     sf::RenderWindow m_window;
     sf::Clock m_clock;
     bool m_isRunning;
+
+    std::unique_ptr<Player> m_player;
+    sf::Vector2f m_lastSentPosition;
+    
+    std::optional<sf::IpAddress> m_serverAddress;
+
+    std::shared_ptr<MapGenerator> m_map;
+    std::unique_ptr<MapRenderer> m_mapRenderer;
 };

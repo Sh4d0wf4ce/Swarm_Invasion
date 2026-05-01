@@ -52,6 +52,16 @@ void ServerEngine::processNetwork(){
                 reply << PacketType::Pong << "Server here!";
                 if(m_socket.send(reply, sender.value(), port) == sf::Socket::Status::Done);
             }
+            else if(type == PacketType::PlayerPosition){
+                std::uint32_t playerId;
+                sf::Vector2f position;
+                
+                if(packet >> playerId >> position){
+                    m_players[playerId] = position;
+
+                    std::cout << "[SERVER] Player ID: " << playerId << " moved to (x, y): (" << position.x << ", " << position.y << ")\n";
+                }
+            }
         }
     }
 }
