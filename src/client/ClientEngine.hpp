@@ -12,7 +12,9 @@
 #include <SFML/Network.hpp>
 #include <imgui-SFML.h>
 #include <imgui.h>
+#include <algorithm>
 #include <memory>
+#include <map>
 
 class ClientEngine{
 public:
@@ -33,6 +35,8 @@ private:
 
     std::unique_ptr<Player> m_player;
     sf::Vector2f m_lastSentPosition;
+
+    std::map<std::uint32_t, std::unique_ptr<Player>> m_otherPlayers;
     
     std::optional<sf::IpAddress> m_serverAddress;
 

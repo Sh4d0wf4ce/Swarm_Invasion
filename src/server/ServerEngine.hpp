@@ -20,5 +20,13 @@ private:
     bool m_isRunning;
 
     int  m_tickCounter;
-    std::map<std::uint32_t, sf::Vector2f> m_players;
+
+    struct ClientInfo {
+        sf::IpAddress ip;
+        unsigned short port;
+        sf::Vector2f position;
+        sf::Clock lastActivity;
+    };
+
+    std::map<std::uint32_t, ClientInfo> m_clients;
 };

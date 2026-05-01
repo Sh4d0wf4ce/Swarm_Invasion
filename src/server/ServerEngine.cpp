@@ -50,16 +50,14 @@ void ServerEngine::processNetwork(){
 
                 sf::Packet reply;
                 reply << PacketType::Pong << "Server here!";
-                if(m_socket.send(reply, sender.value(), port) == sf::Socket::Status::Done);
+                (void)m_socket.send(reply, sender.value(), port);
             }
             else if(type == PacketType::PlayerPosition){
                 std::uint32_t playerId;
                 sf::Vector2f position;
                 
-                if(packet >> playerId >> position){
-                    m_players[playerId] = position;
-
-                    std::cout << "[SERVER] Player ID: " << playerId << " moved to (x, y): (" << position.x << ", " << position.y << ")\n";
+                if(packet >> playerId >> position && sender.has_value()){
+                    m_clients.insert_or_assign(playerId, ClientInfo{sender.value(), port, position, sf::Clock()});
                 }
             }
         }
@@ -69,7 +67,29 @@ void ServerEngine::processNetwork(){
 void ServerEngine::update(sf::Time deltaTime){
     m_tickCounter++;
 
+    for(auto it = m_clients.begin(); it != m_clients.end();){
+        if(it->second.lastActivity.getElapsedTime().asSeconds() > 20.0f){
+            std::cout << "[SERVER] Player ID: " << it->first << " disconected (Timeout). \n";
+            it = m_clients.erase(it);
+        }else{
+            ++it;
+        }
+    }
+
     if(m_tickCounter % 60 == 0){
         std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
+    }
+
+    if(!m_clients.empty()){
+        sf::Packet worldPacket;
+        worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
+
+        for(const auto& [id, info] : m_clients){
+            worldPacket << id << info.position;
+        }
+
+        for(const auto& [id, info] : m_clients){
+            (void)m_socket.send(worldPacket, info.ip, info.port);
+        }
     }
 }
