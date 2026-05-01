@@ -20,6 +20,8 @@ ClientEngine::ClientEngine(): m_isRunning(true){
     m_map = std::make_shared<MapGenerator>(40, 22);
     m_map->generate(1337);
     m_mapRenderer = std::make_unique<MapRenderer>(m_map, 32.0f);
+
+    m_projectileManager = std::make_unique<ProjectileManager>();
 }
 
 void ClientEngine::run(){
@@ -42,6 +44,11 @@ void ClientEngine::processEvent(){
         if(event->is<sf::Event::Closed>()){
             m_isRunning = false;
             m_window.close();
+        }
+
+        if(const auto& mouseBtn = event->getIf<sf::Event::MouseButtonPressed>()){
+            sf::Vector2f targetPos(static_cast<float>(mouseBtn->position.x), static_cast<float>(mouseBtn->position.y));
+            m_projectileManager->spawnProjectile(m_player->getPosition(), targetPos, 800.0f);
         }
     }
 }
@@ -80,6 +87,10 @@ void ClientEngine::update(sf::Time deltaTime){
             m_lastSentPosition = m_player->getPosition();
         }
     }
+
+    if(m_projectileManager){
+        m_projectileManager->update(deltaTime);
+    }
 }
 
 void ClientEngine::render(){
@@ -91,6 +102,10 @@ void ClientEngine::render(){
 
     if(m_player){
         m_player->render(m_window);
+    }
+
+    if(m_projectileManager){
+        m_projectileManager->render(m_window);
     }
 
     renderUI();
@@ -121,7 +136,7 @@ void ClientEngine::renderUI(){
         m_isRunning = false;
     }
 
-    
+
 
     if(ImGui::Button("Draw random seed")){
         m_map->generate(rand() % 10000);

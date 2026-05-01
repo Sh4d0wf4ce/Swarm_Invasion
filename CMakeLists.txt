@@ -65,6 +65,7 @@ add_executable(SwarmClient
     src/client/ClientEngine.cpp
     src/client/Player.cpp
     src/Client/MapRenderer.cpp
+    src/Client/ProjectileManager.cpp
 )
 target_link_libraries(SwarmClient PRIVATE
     SharedStatic

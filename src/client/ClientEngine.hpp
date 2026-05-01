@@ -4,6 +4,7 @@
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
 #include "MapRenderer.hpp"
+#include "ProjectileManager.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -37,4 +38,6 @@ private:
 
     std::shared_ptr<MapGenerator> m_map;
     std::unique_ptr<MapRenderer> m_mapRenderer;
+
+    std::unique_ptr<ProjectileManager> m_projectileManager;
 };
