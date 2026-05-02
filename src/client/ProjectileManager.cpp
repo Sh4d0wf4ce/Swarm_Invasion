@@ -8,27 +8,28 @@ ProjectileManager::ProjectileManager(){
     m_projectiles.reserve(1000);
 }
 
-void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed){
+void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon){
+    const auto& stats = WeaponRegistry::getStats(weapon);
+
     sf::Vector2f direction = targetPos - startPos;
     float length = direction.length();
-
-    if(length != 0){
-        direction /= length;
-    }
-    direction *= speed;
+    if(length != 0) direction /= length;
+    direction *= stats.speed;
 
     for(auto& proj: m_projectiles){
         if(!proj.active){
             proj.ownerId = ownerId;
             proj.position = startPos;
             proj.velocity = direction;
-            proj.lifetime = Config::PROJECTILE_LIFETIME;
+            proj.lifetime = stats.lifetime;
             proj.active = true;
+            proj.radius = stats.radius;
+            proj.color = stats.color;
             return;
         }
     }
 
-    m_projectiles.push_back({ownerId, startPos, direction, Config::PROJECTILE_LIFETIME, true});
+    m_projectiles.push_back({ownerId, startPos, direction, stats.lifetime, true, stats.radius, stats.color});
 }
 
 std::vector<std::uint32_t> ProjectileManager::update(
@@ -64,8 +65,10 @@ std::vector<std::uint32_t> ProjectileManager::update(
 
         // Collision with enemies
         for(const auto& [id, enemy] : enemies){
+            float enemyRadius = EnemyRegistry::getStats(enemy->getType()).radius;
+
             sf::Vector2f diff = proj.position - enemy->getPosition();
-            float collisionDist = Config::ENEMY_RADIUS + Config::PROJECTILE_RADIUS;
+            float collisionDist = enemyRadius + proj.radius;
 
             if(diff.lengthSquared() < collisionDist * collisionDist){
                 if(proj.ownerId == myPlayerId){
@@ -84,6 +87,9 @@ void ProjectileManager::render(sf::RenderTarget& target){
     for(const auto& proj: m_projectiles){
         if(!proj.active) continue;
 
+        m_projectileShape.setRadius(proj.radius);
+        m_projectileShape.setFillColor(proj.color);
+        m_projectileShape.setOrigin({proj.radius, proj.radius});
         m_projectileShape.setPosition(proj.position);
         target.draw(m_projectileShape);
     }

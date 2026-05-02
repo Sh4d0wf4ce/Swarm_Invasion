@@ -2,6 +2,7 @@
 
 #include "Enemy.hpp"
 #include "MapGenerator.hpp"
+#include "WeaponRegistry.hpp"
 #include "Config.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -16,13 +17,16 @@ struct Projectile{
     sf::Vector2f velocity;
     float lifetime;
     bool active;
+
+    float radius;
+    sf::Color color;
 };
 
 class ProjectileManager{
 public:
     ProjectileManager();
 
-    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed);
+    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon);
 
     std::vector<std::uint32_t> update(
         sf::Time deltaTime, 

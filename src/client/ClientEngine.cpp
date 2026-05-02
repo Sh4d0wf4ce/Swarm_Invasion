@@ -49,11 +49,12 @@ void ClientEngine::processEvent(){
                 sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
                 sf::Vector2f worldPos = m_window.mapPixelToCoords(pixelPos, m_camera); 
 
-                m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, Config::PROJECTILE_SPEED);
+                WeaponType myWeapon = HeroRegistry::getStats(m_player->getClass()).defaultWeapon;
+                m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, myWeapon);
 
                 if(m_serverAddress){
                     sf::Packet shootPacket;
-                    shootPacket << PacketType::PlayerShoots << m_player->getId() << m_player->getPosition() << worldPos;
+                    shootPacket << PacketType::PlayerShoots << m_player->getId() << myWeapon << m_player->getPosition() << worldPos;
                     (void)m_socket.send(shootPacket, m_serverAddress.value(), Config::SERVER_PORT);
                 }
             }
@@ -93,11 +94,11 @@ void ClientEngine::processNetwork(){
             }
             else if(type == PacketType::PlayerShoots){
                 std::uint32_t shooterId;
+                WeaponType weaponUsed;
                 sf::Vector2f startPos, targetPos;
-                if(packet >> shooterId >> startPos >> targetPos){
+                if(packet >> shooterId >> weaponUsed >> startPos >> targetPos){
                     if(!m_projectileManager) continue;
-
-                    m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, Config::PROJECTILE_SPEED);
+                    m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, weaponUsed);
                 }
             }
             else if(type == PacketType::PlayerDied){
@@ -157,13 +158,14 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
     for(std::uint32_t i = 0; i < enemyCount; i++){
         std::uint32_t id;
         sf::Vector2f pos;
+        EnemyType eType;
         float hp;
-        packet >> id >> pos >> hp;
+        packet >> id >> eType >> pos >> hp;
 
         activeEnemyIds.push_back(id);
 
         if(m_enemies.find(id) == m_enemies.end()){
-            m_enemies[id] = std::make_unique<Enemy>(id, pos);
+            m_enemies[id] = std::make_unique<Enemy>(id, pos, eType);
         }
         m_enemies[id]->setPosition(pos);
         m_enemies[id]->setHp(hp);
@@ -240,7 +242,7 @@ void ClientEngine::update(sf::Time deltaTime){
         for(std::uint32_t enemyId : hitEnemies){
             if(m_serverAddress){
                 sf::Packet hitPacket;
-                hitPacket << PacketType::EnemyHit << enemyId;
+                hitPacket << PacketType::EnemyHit << enemyId << myId;
                 (void)m_socket.send(hitPacket, m_serverAddress.value(), Config::SERVER_PORT);
             }
         }

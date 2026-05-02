@@ -1,12 +1,14 @@
 #include "Enemy.hpp"
 
-Enemy::Enemy(std::uint32_t id, const sf::Vector2f& startPos) : Entity(id, startPos){
-    m_maxHp = Config::ENEMY_MAX_HP;
-    m_hp = Config::ENEMY_MAX_HP;
+Enemy::Enemy(std::uint32_t id, const sf::Vector2f& startPos, EnemyType type) : Entity(id, startPos), m_type(type){
+    const auto& stats = EnemyRegistry::getStats(type);
 
-    m_shape.setRadius(Config::ENEMY_RADIUS);
-    m_shape.setFillColor(sf::Color::Green);
-    m_shape.setOrigin({Config::ENEMY_RADIUS, Config::ENEMY_RADIUS});
+    m_maxHp = stats.maxHp;
+    m_hp = stats.maxHp;
+
+    m_shape.setRadius(stats.radius);
+    m_shape.setFillColor(stats.color);
+    m_shape.setOrigin({stats.radius, stats.radius});
     m_shape.setPosition(m_position);
 }
 

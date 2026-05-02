@@ -3,6 +3,8 @@
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
 #include "HeroRegistry.hpp"
+#include "EnemyRegistry.hpp"
+#include "WeaponRegistry.hpp"
 #include "Config.hpp"
 
 #include <SFML/System.hpp>
@@ -44,8 +46,9 @@ private:
     struct EnemyInfo {
         sf::Vector2f position;
         float speed;
-        float hp = Config::ENEMY_MAX_HP;
+        float hp;
         sf::Clock lastAttackTime;
+        EnemyType type;
     };
 
     std::map<std::uint32_t, EnemyInfo> m_enemies;

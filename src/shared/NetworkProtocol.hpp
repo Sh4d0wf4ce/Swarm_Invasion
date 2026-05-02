@@ -14,6 +14,46 @@ enum class PacketType : std::uint8_t{
     PlayerDied
 };
 
+enum class PlayerClass : std::uint8_t{
+    Soldier,
+    Scout,
+    Tank,
+    Medic
+};
+
+enum class EnemyType : std::uint8_t{
+    Crawler,
+    Bruiser
+};
+
+enum class WeaponType : std::uint8_t{
+    Rifle,
+    Laser,
+    Rocket
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const WeaponType& wType){
+    return packet << static_cast<std::uint8_t>(wType);
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, WeaponType& wType){
+    std::uint8_t value;
+    packet >> value;
+    wType = static_cast<WeaponType>(value);
+    return packet;
+}
+
+inline sf::Packet& operator<<(sf::Packet& packet, const EnemyType& eType){
+    return packet << static_cast<std::uint8_t>(eType);
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, EnemyType& eType){
+    std::uint8_t value;
+    packet >> value;
+    eType = static_cast<EnemyType>(value);
+    return packet;
+}
+
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType type){
     return packet << static_cast<std::uint8_t>(type);
 }
@@ -33,13 +73,6 @@ inline sf::Packet& operator>>(sf::Packet& packet, sf::Vector2f& vector){
     return packet >> vector.x >> vector.y;
 }
 
-enum class PlayerClass : std::uint8_t{
-    Soldier,
-    Scout,
-    Tank,
-    Medic
-};
-
 inline sf::Packet& operator<<(sf::Packet& packet, const PlayerClass& pClass){
     return packet << static_cast<std::uint8_t>(pClass);
 }
@@ -50,3 +83,4 @@ inline sf::Packet& operator>>(sf::Packet& packet, PlayerClass& pClass){
     pClass = static_cast<PlayerClass>(value);
     return packet;
 }
+

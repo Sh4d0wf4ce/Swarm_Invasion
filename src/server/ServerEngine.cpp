@@ -68,14 +68,19 @@ void ServerEngine::processNetwork(){
                 }
             }
             else if(type == PacketType::EnemyHit){
-                std::uint32_t enemyId;
-                if(packet >> enemyId){
-                    auto it = m_enemies.find(enemyId);
-                    if(it != m_enemies.end()){
-                        it->second.hp -= Config::PROJECTILE_DAMAGE;
+                std::uint32_t enemyId, shooterId;
+                if(packet >> enemyId >> shooterId){
+                    auto enemyIt = m_enemies.find(enemyId);
+                    auto playerIt = m_clients.find(shooterId);
+
+                    if(enemyIt != m_enemies.end() && playerIt != m_clients.end()){
+                        WeaponType weapon = HeroRegistry::getStats(playerIt->second.pClass).defaultWeapon;
+                        float damage = WeaponRegistry::getStats(weapon).damage;
+
+                        enemyIt->second.hp -= damage;
                         
-                        if(it->second.hp <= 0.0f){
-                            m_enemies.erase(it);
+                        if(enemyIt->second.hp <= 0.0f){
+                            m_enemies.erase(enemyIt);
                             std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
                         }
                     }
@@ -103,9 +108,10 @@ void ServerEngine::processNetwork(){
             else if(type == PacketType::PlayerShoots){
                 std::uint32_t shooterId;
                 sf::Vector2f startPos, targetPos;
-                if(packet >> shooterId >> startPos >> targetPos){
+                WeaponType weaponUsed;
+                if(packet >> shooterId >> weaponUsed >> startPos >> targetPos){
                     sf::Packet relayPacket;
-                    relayPacket << PacketType::PlayerShoots << shooterId << startPos << targetPos;
+                    relayPacket << PacketType::PlayerShoots << shooterId << weaponUsed << startPos << targetPos;
 
                     for(const auto& [id, info] : m_clients){
                         if(id == shooterId) continue;
@@ -134,13 +140,18 @@ void ServerEngine::update(sf::Time deltaTime){
     if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > Config::ENEMY_SPAWN_RATE){
         m_enemySpawnTimer.restart();
 
+        EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
+        const auto& stats = EnemyRegistry::getStats(randomType);
+
         EnemyInfo newEnemy;
         newEnemy.position = sf::Vector2f(100.0f, 100.0f);
-        newEnemy.speed = Config::ENEMY_SPEED;
+        newEnemy.speed = stats.speed;
+        newEnemy.hp = stats.maxHp;
+        newEnemy.type = randomType;
 
         std::uint32_t enemyId = m_globalEntityCounter++;
         m_enemies[enemyId] = newEnemy;
-        std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << "\n";
+        std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << " Type: " << (int)randomType << "\n";
     }
 
     //--- ENEMIES AI ---
@@ -150,14 +161,16 @@ void ServerEngine::update(sf::Time deltaTime){
         sf::Vector2f targetPos = targetIt->second.position;
 
         for(auto& [id, enemy] : m_enemies){
+            const auto& eStats = EnemyRegistry::getStats(enemy.type);
+
             sf::Vector2 direction = targetPos - enemy.position;
             float lenSq = direction.lengthSquared();
             float playerRadius = HeroRegistry::getStats(targetIt->second.pClass).radius;
-            float touchDist = Config::ENEMY_RADIUS + playerRadius;
+            float touchDist = eStats.radius + playerRadius;
             
             if(lenSq < touchDist * touchDist){
-                if(enemy.lastAttackTime.getElapsedTime().asSeconds() > Config::ENEMY_ATTACK_COOLDOWN){
-                    targetIt->second.hp -= Config::ENEMY_DAMAGE;
+                if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
+                    targetIt->second.hp -= eStats.damage;
                     enemy.lastAttackTime.restart();
                     std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetIt->second.hp << "\n";
 
@@ -181,11 +194,11 @@ void ServerEngine::update(sf::Time deltaTime){
                 sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
 
                 sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
-                if(!checkCollision(nextPosX, Config::ENEMY_RADIUS))
+                if(!checkCollision(nextPosX, eStats.radius))
                     enemy.position.x = nextPosX.x;
 
                 sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
-                if(!checkCollision(nextPosY, Config::ENEMY_RADIUS))
+                if(!checkCollision(nextPosY, eStats.radius))
                     enemy.position.y = nextPosY.y;
             }
         }
@@ -208,7 +221,7 @@ void ServerEngine::update(sf::Time deltaTime){
         // Enemy info
         worldPacket << static_cast<std::uint32_t>(m_enemies.size());
         for(const auto& [enemyId, enemy] : m_enemies){
-            worldPacket << enemyId << enemy.position << enemy.hp;
+            worldPacket << enemyId << enemy.type << enemy.position << enemy.hp;
         }
 
         // Sending
