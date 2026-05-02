@@ -33,6 +33,7 @@ private:
         unsigned short port;
         sf::Vector2f position;
         sf::Clock lastActivity;
+        float hp = Config::PLAYER_MAX_HP;
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;
@@ -40,6 +41,8 @@ private:
     struct EnemyInfo {
         sf::Vector2f position;
         float speed;
+        float hp = Config::ENEMY_MAX_HP;
+        sf::Clock lastAttackTime;
     };
 
     std::map<std::uint32_t, EnemyInfo> m_enemies;

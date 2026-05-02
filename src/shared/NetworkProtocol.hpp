@@ -10,7 +10,8 @@ enum class PacketType : std::uint8_t{
     EnemyHit,
     JoinRequest,
     JoinAccept,
-    PlayerShoots
+    PlayerShoots,
+    PlayerDied
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, PacketType type){

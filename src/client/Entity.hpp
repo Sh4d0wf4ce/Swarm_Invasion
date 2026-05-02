@@ -8,7 +8,7 @@
 
 class Entity{
 public:
-    Entity(std::uint32_t id, const sf::Vector2f& startPos): m_id(id), m_position(startPos) {}
+    Entity(std::uint32_t id, const sf::Vector2f& startPos, float maxHp): m_id(id), m_position(startPos), m_maxHp(maxHp) {}
 
     virtual ~Entity() = default;
 
@@ -17,9 +17,18 @@ public:
 
     std::uint32_t getId() const {return m_id;}
     sf::Vector2f getPosition() const {return m_position;}
+
     void setPosition(const sf::Vector2f&  pos) {m_position = pos;} 
+    void setHp(float current){
+        m_hp = current;
+    }
 
 protected:
     std::uint32_t m_id;
     sf::Vector2f m_position;
+
+    float m_hp;
+    float m_maxHp;
+
+    void drawHealthBar(sf::RenderTarget& target, float yOffset);
 };

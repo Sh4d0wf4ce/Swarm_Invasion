@@ -100,6 +100,13 @@ void ClientEngine::processNetwork(){
                     m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, Config::PROJECTILE_SPEED);
                 }
             }
+            else if(type == PacketType::PlayerDied){
+                std::cout<< "[CLIENT] You died! Leaving the game... \n";
+                m_player.reset();
+                m_otherPlayers.clear();
+                m_enemies.clear();
+                return;
+            }
         }
     }
 }
@@ -113,16 +120,21 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
     for(std::uint32_t i = 0; i < playerCount; i++){
         std::uint32_t id;
         sf::Vector2f pos;
-        packet >> id >> pos;
+        float hp;
+        packet >> id >> pos >> hp;
 
         activeServerIds.push_back(id);
 
-        if(id == m_player->getId()) continue;
+        if(m_player && id == m_player->getId()){
+            m_player->setHp(hp);   
+            continue;
+        }
 
         if(m_otherPlayers.find(id) == m_otherPlayers.end()){
             m_otherPlayers[id] = std::make_unique<Player>(id, pos);
         }
 
+        m_otherPlayers[id]->setHp(hp);
         m_otherPlayers[id]->setPosition(pos);
     }
 
@@ -144,7 +156,8 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
     for(std::uint32_t i = 0; i < enemyCount; i++){
         std::uint32_t id;
         sf::Vector2f pos;
-        packet >> id >> pos;
+        float hp;
+        packet >> id >> pos >> hp;
 
         activeEnemyIds.push_back(id);
 
@@ -152,6 +165,7 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
             m_enemies[id] = std::make_unique<Enemy>(id, pos);
         }
         m_enemies[id]->setPosition(pos);
+        m_enemies[id]->setHp(hp);
     }
 
     for(auto it = m_enemies.begin(); it != m_enemies.end();){
@@ -228,8 +242,6 @@ void ClientEngine::update(sf::Time deltaTime){
                 hitPacket << PacketType::EnemyHit << enemyId;
                 (void)m_socket.send(hitPacket, m_serverAddress.value(), Config::SERVER_PORT);
             }
-
-            m_enemies.erase(enemyId);
         }
     }
 }

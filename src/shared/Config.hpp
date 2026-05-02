@@ -19,14 +19,19 @@ namespace Config{
     // --- PLAYER ---
     constexpr float PLAYER_SPEED = 300.0f;
     constexpr float PLAYER_RADIUS = 20.0f;
+    constexpr float PLAYER_MAX_HP = 100.0f;
 
     // --- ENEMY ---
     constexpr float ENEMY_SPEED = 100.0f;
     constexpr float ENEMY_RADIUS = 15.0f;
     constexpr float ENEMY_SPAWN_RATE = 2.0f;
+    constexpr float ENEMY_MAX_HP = 50.0f;
+    constexpr float ENEMY_DAMAGE = 10.0f;
+    constexpr float ENEMY_ATTACK_COOLDOWN = 1.0f;
 
     // --- PROJECTILES ---
     constexpr float PROJECTILE_SPEED = 800.0f;
     constexpr float PROJECTILE_RADIUS = 5.0f;
     constexpr float PROJECTILE_LIFETIME = 3.0f;
+    constexpr float PROJECTILE_DAMAGE = 25.0f;
 }

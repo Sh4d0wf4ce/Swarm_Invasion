@@ -70,8 +70,14 @@ void ServerEngine::processNetwork(){
             else if(type == PacketType::EnemyHit){
                 std::uint32_t enemyId;
                 if(packet >> enemyId){
-                    if(m_enemies.erase(enemyId) > 0){
-                        std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
+                    auto it = m_enemies.find(enemyId);
+                    if(it != m_enemies.end()){
+                        it->second.hp -= Config::PROJECTILE_DAMAGE;
+                        
+                        if(it->second.hp <= 0.0f){
+                            m_enemies.erase(it);
+                            std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
+                        }
                     }
                 }
             }
@@ -133,14 +139,37 @@ void ServerEngine::update(sf::Time deltaTime){
 
     //--- ENEMIES AI ---
     if(!m_clients.empty()){
-        sf::Vector2f targetPos = m_clients.begin()->second.position;
+        auto targetIt = m_clients.begin();
+        std::uint32_t targetId = targetIt->first;
+        sf::Vector2f targetPos = targetIt->second.position;
 
         for(auto& [id, enemy] : m_enemies){
             sf::Vector2 direction = targetPos - enemy.position;
-            float length = direction.length();
+            float lenSq = direction.lengthSquared();
+            float touchDist = Config::ENEMY_RADIUS + Config::PLAYER_RADIUS;
+            
+            if(lenSq < touchDist * touchDist){
+                if(enemy.lastAttackTime.getElapsedTime().asSeconds() > Config::ENEMY_ATTACK_COOLDOWN){
+                    targetIt->second.hp -= Config::ENEMY_DAMAGE;
+                    enemy.lastAttackTime.restart();
+                    std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetIt->second.hp << "\n";
 
-            if(length > 0){
-                direction /= length;
+                    if(targetIt->second.hp <= 0.0f) {
+                        std::cout << "[SERVER] Player " << targetId << " died!\n";
+
+                        sf::Packet deathPacket;
+                        deathPacket << PacketType::PlayerDied;
+                        (void)m_socket.send(deathPacket, targetIt->second.ip, targetIt->second.port);
+
+                        m_clients.erase(targetId);
+                        break;
+                    }
+                }
+            }
+
+            
+            if(lenSq > 0){
+                direction /= std::sqrt(lenSq);
 
                 sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
 
@@ -165,19 +194,19 @@ void ServerEngine::update(sf::Time deltaTime){
 
         // Players info
         worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
-        for(const auto& [id, client] : m_clients){
-            worldPacket << id << client.position;
+        for(const auto& [clientId, info] : m_clients){
+            worldPacket << clientId << info.position << info.hp;
         }
 
         // Enemy info
         worldPacket << static_cast<std::uint32_t>(m_enemies.size());
-        for(const auto& [id, enemy] : m_enemies){
-            worldPacket << id << enemy.position;
+        for(const auto& [enemyId, enemy] : m_enemies){
+            worldPacket << enemyId << enemy.position << enemy.hp;
         }
 
         // Sending
-        for(const auto& [id, client] : m_clients){
-            (void)m_socket.send(worldPacket, client.ip, client.port);
+        for(const auto& [clientId, info] : m_clients){
+            (void)m_socket.send(worldPacket, info.ip, info.port);
         }
     }
 }

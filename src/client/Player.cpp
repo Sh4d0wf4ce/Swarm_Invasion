@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player(std::uint32_t id, const sf::Vector2f& startPos): Entity(id, startPos), m_speed(Config::PLAYER_SPEED), m_isFocused(true){
+Player::Player(std::uint32_t id, const sf::Vector2f& startPos): Entity(id, startPos, Config::PLAYER_MAX_HP), m_speed(Config::PLAYER_SPEED), m_isFocused(true){
     m_shape.setRadius(Config::PLAYER_RADIUS);
     m_shape.setFillColor(sf::Color::Red);
     m_shape.setOrigin({Config::PLAYER_RADIUS, Config::PLAYER_RADIUS});
@@ -38,6 +38,7 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
 void Player::render(sf::RenderTarget& target){
     m_shape.setPosition(m_position);
     target.draw(m_shape);
+    drawHealthBar(target, 30.0f);
 }
 
 void Player::setFocused(bool focuesd){
