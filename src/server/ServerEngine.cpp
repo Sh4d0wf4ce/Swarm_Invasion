@@ -4,11 +4,11 @@
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
 
-    if(m_socket.bind(54000) != sf::Socket::Status::Done) {
-        std::cerr<<"[SERVER ERROR] Cant bind to port 54000!\n";
+    if(m_socket.bind(Config::SERVER_PORT) != sf::Socket::Status::Done) {
+        std::cerr<<"[SERVER ERROR] Cant bind to port " << Config::SERVER_PORT << "!\n";
         m_isRunning = false;
     }else{
-        std::cout<<"[SERVER] Socket UDP open on port 54000.\n";
+        std::cout<<"[SERVER] Socket UDP open on port " << Config::SERVER_PORT << ".\n";
     }
 
     m_socket.setBlocking(false);
@@ -93,7 +93,7 @@ void ServerEngine::update(sf::Time deltaTime){
 
     //--- REMOVING UNACTIVE PLAYERS ---
     for(auto it = m_clients.begin(); it != m_clients.end();){
-        if(it->second.lastActivity.getElapsedTime().asSeconds() > 20.0f){
+        if(it->second.lastActivity.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
             std::cout << "[SERVER] Player ID: " << it->first << " disconected (Timeout). \n";
             it = m_clients.erase(it);
         }else{
@@ -102,12 +102,12 @@ void ServerEngine::update(sf::Time deltaTime){
     }
 
     //--- SPAWNING ENEMIES ---
-    if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > 2.0f){
+    if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > Config::ENEMY_SPAWN_RATE){
         m_enemySpawnTimer.restart();
 
         EnemyInfo newEnemy;
         newEnemy.position = sf::Vector2f(100.0f, 100.0f);
-        newEnemy.speed = 100.0f;
+        newEnemy.speed = Config::ENEMY_SPEED;
 
         m_enemies[m_nextEnemyId++] = newEnemy;
         std::cout << "[SERVER] Spawned enemy ID: " << m_nextEnemyId - 1 << "\n";

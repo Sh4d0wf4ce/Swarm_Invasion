@@ -3,6 +3,7 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "MapGenerator.hpp"
+#include "Config.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <vector>

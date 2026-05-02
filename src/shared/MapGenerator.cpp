@@ -1,7 +1,6 @@
 #include "MapGenerator.hpp"
-#include <random>
 
-MapGenerator::MapGenerator(int width, int height): m_width(width), m_height(height), m_fillPercent(45){
+MapGenerator::MapGenerator(int width, int height): m_width(width), m_height(height), m_fillPercent(Config::MAP_FILL_PERCENT){
     m_map.resize(m_width, std::vector<TileType>(m_height, TileType::Floor));
 }
 

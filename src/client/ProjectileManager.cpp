@@ -1,9 +1,9 @@
 #include "ProjectileManager.hpp"
 
 ProjectileManager::ProjectileManager(){
-    m_projectileShape.setRadius(5.0f);
+    m_projectileShape.setRadius(Config::PROJECTILE_RADIUS);
     m_projectileShape.setFillColor(sf::Color::Yellow);
-    m_projectileShape.setOrigin({5.0f, 5.0f});
+    m_projectileShape.setOrigin({Config::PROJECTILE_RADIUS, Config::PROJECTILE_RADIUS});
 
     m_projectiles.reserve(1000);
 }
@@ -21,13 +21,13 @@ void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::
         if(!proj.active){
             proj.position = startPos;
             proj.velocity = direction;
-            proj.lifetime = 3.0f;
+            proj.lifetime = Config::PROJECTILE_LIFETIME;
             proj.active = true;
             return;
         }
     }
 
-    m_projectiles.push_back({startPos, direction, 3.0f, true});
+    m_projectiles.push_back({startPos, direction, Config::PROJECTILE_LIFETIME, true});
 }
 
 std::vector<std::uint32_t> ProjectileManager::update(
@@ -51,8 +51,8 @@ std::vector<std::uint32_t> ProjectileManager::update(
 
         // Collision with walls
         if(map){
-            int gridX = static_cast<int>(proj.position.x / 32.0f);
-            int gridY = static_cast<int>(proj.position.y / 32.0f);
+            int gridX = static_cast<int>(proj.position.x / Config::TILE_SIZE);
+            int gridY = static_cast<int>(proj.position.y / Config::TILE_SIZE);
 
             if(map->getTile(gridX, gridY) == TileType::Wall){
                 proj.active = false;
@@ -64,8 +64,9 @@ std::vector<std::uint32_t> ProjectileManager::update(
         for(const auto& [id, enemy] : enemies){
             sf::Vector2f diff = proj.position - enemy->getPosition();
             float distSq = diff.lengthSquared();
+            float collisionDist = Config::PLAYER_RADIUS + Config::PROJECTILE_RADIUS;
 
-            if(distSq < 625.0f){
+            if(distSq < collisionDist * collisionDist){
                 hitEnemies.push_back(id);
                 proj.active = false;
                 break;

@@ -3,21 +3,21 @@
 
 
 ClientEngine::ClientEngine(): m_isRunning(true){
-    m_window.create(sf::VideoMode({1280, 720}), "Swarm Invasion - Client", sf::Style::Default);
+    m_window.create(sf::VideoMode({Config::WINDOW_WIDTH, Config::WINDOW_HEIGHT}), "Swarm Invasion - Client", sf::Style::Default);
     m_window.setFramerateLimit(60);
 
     if(!ImGui::SFML::Init(m_window)){
         std::cerr<<"Error: Failed to initialize ImGui\n";
     }
 
-    m_camera.setSize({1280.0f, 720.0f});
+    m_camera.setSize({static_cast<float>(Config::WINDOW_WIDTH), static_cast<float>(Config::WINDOW_HEIGHT)});
 
     m_socket.setBlocking(false);
     m_serverAddress = sf::IpAddress::resolve("127.0.0.1");
 
-    m_map = std::make_shared<MapGenerator>(100, 100);
+    m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
     m_map->generate(1337);
-    m_mapRenderer = std::make_unique<MapRenderer>(m_map, 32.0f);
+    m_mapRenderer = std::make_unique<MapRenderer>(m_map, Config::TILE_SIZE);
 
     m_projectileManager = std::make_unique<ProjectileManager>();
 }
@@ -49,7 +49,7 @@ void ClientEngine::processEvent(){
                 sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
                 sf::Vector2f worldPos = m_window.mapPixelToCoords(pixelPos, m_camera); 
 
-                m_projectileManager->spawnProjectile(m_player->getPosition(), worldPos, 800.0f);
+                m_projectileManager->spawnProjectile(m_player->getPosition(), worldPos, Config::PROJECTILE_SPEED);
             }
         }
     }
@@ -151,7 +151,7 @@ void ClientEngine::update(sf::Time deltaTime){
     ImGui::SFML::Update(m_window, deltaTime);
 
     if(m_player){
-        if(m_lastServerMessageTimer.getElapsedTime().asSeconds() > 3.0f){
+        if(m_lastServerMessageTimer.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
             std::cout << "[CLIENT] Lost connection to the server (Timeout)!\n";
 
             m_player.reset();
@@ -168,8 +168,8 @@ void ClientEngine::update(sf::Time deltaTime){
         sf::Vector2f targetCenter = m_player->getPosition();
 
         if(m_map){
-            float mapWidth = m_map->getWidth() * 32.0f;
-            float mapHeight = m_map->getHeight() * 32.0f;
+            float mapWidth = m_map->getWidth() * Config::TILE_SIZE;
+            float mapHeight = m_map->getHeight() * Config::TILE_SIZE;
             float halfCamX = m_camera.getSize().x / 2.0f;
             float halfCamY = m_camera.getSize().y / 2.0f;
 
@@ -194,7 +194,7 @@ void ClientEngine::update(sf::Time deltaTime){
             packet << PacketType::PlayerPosition << m_player->getId() << m_player->getPosition();
 
             if(m_serverAddress){
-                (void)m_socket.send(packet, m_serverAddress.value(), 54000);
+                (void)m_socket.send(packet, m_serverAddress.value(), Config::SERVER_PORT);
             }
 
             m_lastSentPosition = m_player->getPosition();
@@ -208,7 +208,7 @@ void ClientEngine::update(sf::Time deltaTime){
             if(m_serverAddress){
                 sf::Packet hitPacket;
                 hitPacket << PacketType::EnemyHit << enemyId;
-                (void)m_socket.send(hitPacket, m_serverAddress.value(), 54000);
+                (void)m_socket.send(hitPacket, m_serverAddress.value(), Config::SERVER_PORT);
             }
 
             m_enemies.erase(enemyId);
@@ -250,7 +250,7 @@ void ClientEngine::renderUI(){
             if(m_serverAddress){
                 sf::Packet joinPacket;
                 joinPacket << PacketType::JoinRequest;
-                (void)m_socket.send(joinPacket, m_serverAddress.value(), 54000);
+                (void)m_socket.send(joinPacket, m_serverAddress.value(), Config::SERVER_PORT);
                 std::cout << "[CLIENT] Request to join has been sent...\n";
             }
         }
@@ -263,7 +263,7 @@ void ClientEngine::renderUI(){
 
         if(m_serverAddress){
             packet << PacketType::Ping << "Hello Server, are you there?";
-            if(m_socket.send(packet, m_serverAddress.value(), 54000) != sf::Socket::Status::Done){
+            if(m_socket.send(packet, m_serverAddress.value(), Config::SERVER_PORT) != sf::Socket::Status::Done){
                 std::cout << "[CLIENT] Error sending PING...\n";
             }else{
                 std::cout << "[CLIENT] Sent PING...\n";
@@ -279,7 +279,7 @@ void ClientEngine::renderUI(){
 
     if(ImGui::Button("Draw random seed")){
         m_map->generate(rand() % 10000);
-        m_mapRenderer = std::make_unique<MapRenderer>(m_map, 32.0f);
+        m_mapRenderer = std::make_unique<MapRenderer>(m_map, Config::TILE_SIZE);
     }
 
     ImGui::End();

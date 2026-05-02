@@ -6,6 +6,7 @@
 #include "MapGenerator.hpp"
 #include "MapRenderer.hpp"
 #include "ProjectileManager.hpp"
+#include "Config.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>

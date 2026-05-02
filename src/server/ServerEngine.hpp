@@ -1,6 +1,7 @@
 #pragma once
 
 #include "NetworkProtocol.hpp"
+#include "Config.hpp"
 
 #include <SFML/System.hpp>
 #include <map>
