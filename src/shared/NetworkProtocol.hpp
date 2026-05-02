@@ -20,7 +20,7 @@ inline sf::Packet& operator<<(sf::Packet& packet, PacketType type){
 
 inline sf::Packet& operator>>(sf::Packet& packet, PacketType& type){
     std::uint8_t value;
-    packet>>value;
+    packet >> value;
     type = static_cast<PacketType>(value);
     return packet;
 }
@@ -31,4 +31,22 @@ inline sf::Packet& operator<<(sf::Packet& packet, const sf::Vector2f& vector){
 
 inline sf::Packet& operator>>(sf::Packet& packet, sf::Vector2f& vector){
     return packet >> vector.x >> vector.y;
+}
+
+enum class PlayerClass : std::uint8_t{
+    Soldier,
+    Scout,
+    Tank,
+    Medic
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const PlayerClass& pClass){
+    return packet << static_cast<std::uint8_t>(pClass);
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, PlayerClass& pClass){
+    std::uint8_t value;
+    packet >> value;
+    pClass = static_cast<PlayerClass>(value);
+    return packet;
 }

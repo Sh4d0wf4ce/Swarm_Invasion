@@ -2,6 +2,7 @@
 
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
+#include "HeroRegistry.hpp"
 #include "Config.hpp"
 
 #include <SFML/System.hpp>
@@ -33,7 +34,9 @@ private:
         unsigned short port;
         sf::Vector2f position;
         sf::Clock lastActivity;
-        float hp = Config::PLAYER_MAX_HP;
+        float hp;
+        float speed;
+        PlayerClass pClass;
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;

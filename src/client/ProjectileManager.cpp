@@ -65,7 +65,7 @@ std::vector<std::uint32_t> ProjectileManager::update(
         // Collision with enemies
         for(const auto& [id, enemy] : enemies){
             sf::Vector2f diff = proj.position - enemy->getPosition();
-            float collisionDist = Config::PLAYER_RADIUS + Config::PROJECTILE_RADIUS;
+            float collisionDist = Config::ENEMY_RADIUS + Config::PROJECTILE_RADIUS;
 
             if(diff.lengthSquared() < collisionDist * collisionDist){
                 if(proj.ownerId == myPlayerId){

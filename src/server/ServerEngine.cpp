@@ -82,17 +82,23 @@ void ServerEngine::processNetwork(){
                 }
             }
             else if(type == PacketType::JoinRequest){
-                if(!sender.has_value()) continue;
+                PlayerClass requestedClass;
+                if(sender.has_value() && (packet >> requestedClass)){
 
-                std::uint32_t newId = m_globalEntityCounter++;
-                sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
-                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, newPos, sf::Clock()});
-                
-                sf::Packet reply;
-                reply << PacketType::JoinAccept << newId;
-                (void)m_socket.send(reply, sender.value(), port);
+                    std::uint32_t newId = m_globalEntityCounter++;
+                    sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
+                    const auto& stats = HeroRegistry::getStats(requestedClass);
 
-                std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
+                    m_clients.insert_or_assign(newId, ClientInfo{
+                        sender.value(), port, newPos, sf::Clock(), stats.maxHp, stats.speed, requestedClass
+                    });
+                    
+                    sf::Packet reply;
+                    reply << PacketType::JoinAccept << newId;
+                    (void)m_socket.send(reply, sender.value(), port);
+
+                    std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
+                }
             }
             else if(type == PacketType::PlayerShoots){
                 std::uint32_t shooterId;
@@ -146,7 +152,8 @@ void ServerEngine::update(sf::Time deltaTime){
         for(auto& [id, enemy] : m_enemies){
             sf::Vector2 direction = targetPos - enemy.position;
             float lenSq = direction.lengthSquared();
-            float touchDist = Config::ENEMY_RADIUS + Config::PLAYER_RADIUS;
+            float playerRadius = HeroRegistry::getStats(targetIt->second.pClass).radius;
+            float touchDist = Config::ENEMY_RADIUS + playerRadius;
             
             if(lenSq < touchDist * touchDist){
                 if(enemy.lastAttackTime.getElapsedTime().asSeconds() > Config::ENEMY_ATTACK_COOLDOWN){
@@ -195,7 +202,7 @@ void ServerEngine::update(sf::Time deltaTime){
         // Players info
         worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
         for(const auto& [clientId, info] : m_clients){
-            worldPacket << clientId << info.position << info.hp;
+            worldPacket << clientId << info.pClass << info.position << info.hp;
         }
 
         // Enemy info

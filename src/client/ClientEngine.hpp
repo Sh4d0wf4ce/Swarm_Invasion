@@ -51,4 +51,6 @@ private:
     std::unique_ptr<MapRenderer> m_mapRenderer;
 
     std::unique_ptr<ProjectileManager> m_projectileManager;
+
+    PlayerClass m_selectedClass = PlayerClass::Soldier;
 };

@@ -12,7 +12,7 @@ void Entity::drawHealthBar(sf::RenderTarget& target, float yOffset){
     bg.setPosition({m_position.x, m_position.y - yOffset});
 
     float hpPercent = std::max(0.0f, m_hp / m_maxHp);
-    sf::RectangleShape fg({barWidth * hpPercent * 0.95f, barHeight * 0.95f});
+    sf::RectangleShape fg({barWidth * hpPercent, barHeight});
     fg.setFillColor(sf::Color::Green);
     fg.setOrigin({barWidth / 2.0f, barHeight / 2.0f});
     fg.setPosition({m_position.x, m_position.y - yOffset});

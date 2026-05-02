@@ -1,9 +1,15 @@
 #include "Player.hpp"
 
-Player::Player(std::uint32_t id, const sf::Vector2f& startPos): Entity(id, startPos, Config::PLAYER_MAX_HP), m_speed(Config::PLAYER_SPEED), m_isFocused(true){
-    m_shape.setRadius(Config::PLAYER_RADIUS);
-    m_shape.setFillColor(sf::Color::Red);
-    m_shape.setOrigin({Config::PLAYER_RADIUS, Config::PLAYER_RADIUS});
+Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass): Entity(id, startPos), m_isFocused(true), m_class(pClass){
+    const auto& stats = HeroRegistry::getStats(pClass);
+
+    m_maxHp = stats.maxHp;
+    m_hp = stats.maxHp;
+    m_speed = stats.speed;
+    
+    m_shape.setRadius(stats.radius);
+    m_shape.setFillColor(stats.color);
+    m_shape.setOrigin({stats.radius, stats.radius});
     m_shape.setPosition(m_position);
 }
 
@@ -48,7 +54,7 @@ void Player::setFocused(bool focuesd){
 bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map){
     if(!map) return false;
 
-    float hitBoxOffset = Config::PLAYER_RADIUS * 0.8f;
+    float hitBoxOffset = HeroRegistry::getStats(m_class).radius * 0.8f;
 
     sf::Vector2f points[4] = {
         {pos.x - hitBoxOffset, pos.y - hitBoxOffset},

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Player.hpp"
 #include "Enemy.hpp"
 #include "MapGenerator.hpp"
 #include "Config.hpp"

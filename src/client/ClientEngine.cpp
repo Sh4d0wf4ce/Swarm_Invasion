@@ -83,8 +83,8 @@ void ClientEngine::processNetwork(){
                 std::uint32_t playerId;
                 if(packet >> playerId){
                     if(!m_player){
-                        sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_WIDTH_TILES) * Config::TILE_SIZE / 2.0f;
-                        m_player = std::make_unique<Player>(playerId, newPos);
+                        sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES) * Config::TILE_SIZE / 2.0f;
+                        m_player = std::make_unique<Player>(playerId, newPos, m_selectedClass);
                         m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
 
                         std::cout << "[CLIENT] Player joined the server. Player ID: " << playerId << "\n";
@@ -119,9 +119,10 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
     std::vector<std::uint32_t> activeServerIds;
     for(std::uint32_t i = 0; i < playerCount; i++){
         std::uint32_t id;
+        PlayerClass pClass;
         sf::Vector2f pos;
         float hp;
-        packet >> id >> pos >> hp;
+        packet >> id >> pClass >> pos >> hp;
 
         activeServerIds.push_back(id);
 
@@ -131,7 +132,7 @@ void ClientEngine::handleWorldState(sf::Packet& packet){
         }
 
         if(m_otherPlayers.find(id) == m_otherPlayers.end()){
-            m_otherPlayers[id] = std::make_unique<Player>(id, pos);
+            m_otherPlayers[id] = std::make_unique<Player>(id, pos, pClass);
         }
 
         m_otherPlayers[id]->setHp(hp);
@@ -276,10 +277,18 @@ void ClientEngine::renderUI(){
     if(!m_player){
         ImGui::TextColored(ImGui::ColorConvertU32ToFloat4(IM_COL32(255, 0, 0, 255)), "DISCONECTED");
 
+        ImGui::Text("Choose your class:");
+        int classChoice = static_cast<int>(m_selectedClass);
+        ImGui::RadioButton("Soldier", &classChoice, 0);
+        ImGui::RadioButton("Scout", &classChoice, 1);
+        ImGui::RadioButton("Tank", &classChoice, 2);
+        ImGui::RadioButton("Medic", &classChoice, 3);
+        m_selectedClass = static_cast<PlayerClass>(classChoice);
+
         if(ImGui::Button("Join the game", ImVec2(200, 50))){
             if(m_serverAddress){
                 sf::Packet joinPacket;
-                joinPacket << PacketType::JoinRequest;
+                joinPacket << PacketType::JoinRequest << m_selectedClass;
                 (void)m_socket.send(joinPacket, m_serverAddress.value(), Config::SERVER_PORT);
                 std::cout << "[CLIENT] Request to join has been sent...\n";
             }

@@ -16,11 +16,6 @@ namespace Config{
     constexpr int MAP_HEIGHT_TILES = 100;
     constexpr int MAP_FILL_PERCENT = 45;
 
-    // --- PLAYER ---
-    constexpr float PLAYER_SPEED = 300.0f;
-    constexpr float PLAYER_RADIUS = 20.0f;
-    constexpr float PLAYER_MAX_HP = 100.0f;
-
     // --- ENEMY ---
     constexpr float ENEMY_SPEED = 100.0f;
     constexpr float ENEMY_RADIUS = 15.0f;
