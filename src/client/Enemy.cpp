@@ -7,8 +7,8 @@ Enemy::Enemy(std::uint32_t id, const sf::Vector2f& startPos) : Entity(id, startP
     m_shape.setPosition(m_position);
 }
 
-void Enemy::update(sf::Time deltaTime){
-    
+void Enemy::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
+    m_shape.setPosition(m_position);
 }
 
 void Enemy::render(sf::RenderTarget& target){

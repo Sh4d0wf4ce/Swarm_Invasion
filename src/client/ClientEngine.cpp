@@ -49,7 +49,13 @@ void ClientEngine::processEvent(){
                 sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
                 sf::Vector2f worldPos = m_window.mapPixelToCoords(pixelPos, m_camera); 
 
-                m_projectileManager->spawnProjectile(m_player->getPosition(), worldPos, Config::PROJECTILE_SPEED);
+                m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, Config::PROJECTILE_SPEED);
+
+                if(m_serverAddress){
+                    sf::Packet shootPacket;
+                    shootPacket << PacketType::PlayerShoots << m_player->getId() << m_player->getPosition() << worldPos;
+                    (void)m_socket.send(shootPacket, m_serverAddress.value(), Config::SERVER_PORT);
+                }
             }
         }
     }
@@ -77,11 +83,21 @@ void ClientEngine::processNetwork(){
                 std::uint32_t playerId;
                 if(packet >> playerId){
                     if(!m_player){
-                        m_player = std::make_unique<Player>(playerId, sf::Vector2f(1600.0f, 1600.0f));
+                        sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_WIDTH_TILES) * Config::TILE_SIZE / 2.0f;
+                        m_player = std::make_unique<Player>(playerId, newPos);
                         m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
 
                         std::cout << "[CLIENT] Player joined the server. Player ID: " << playerId << "\n";
                     }
+                }
+            }
+            else if(type == PacketType::PlayerShoots){
+                std::uint32_t shooterId;
+                sf::Vector2f startPos, targetPos;
+                if(packet >> shooterId >> startPos >> targetPos){
+                    if(!m_projectileManager) continue;
+
+                    m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, Config::PROJECTILE_SPEED);
                 }
             }
         }
@@ -162,7 +178,7 @@ void ClientEngine::update(sf::Time deltaTime){
         }
 
         m_player->setFocused(m_window.hasFocus());
-        m_player->update(deltaTime);
+        m_player->update(deltaTime, m_map);
 
 
         sf::Vector2f targetCenter = m_player->getPosition();
@@ -189,7 +205,7 @@ void ClientEngine::update(sf::Time deltaTime){
         currentCenter += (targetCenter - currentCenter) * 5.0f * deltaTime.asSeconds();
         m_camera.setCenter(currentCenter);
 
-        if(m_player->getPosition() != m_lastSentPosition){
+        if(m_player->getPosition() != m_lastSentPosition || m_heartbeatTimer.getElapsedTime().asSeconds() > 1.0f){
             sf::Packet packet;
             packet << PacketType::PlayerPosition << m_player->getId() << m_player->getPosition();
 
@@ -198,11 +214,13 @@ void ClientEngine::update(sf::Time deltaTime){
             }
 
             m_lastSentPosition = m_player->getPosition();
+            m_heartbeatTimer.restart();
         }
     }
 
     if(m_projectileManager){
-        auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map);
+        std::uint32_t myId = m_player ? m_player->getId() : 0;
+        auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map, myId);
 
         for(std::uint32_t enemyId : hitEnemies){
             if(m_serverAddress){

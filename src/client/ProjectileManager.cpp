@@ -8,7 +8,7 @@ ProjectileManager::ProjectileManager(){
     m_projectiles.reserve(1000);
 }
 
-void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed){
+void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed){
     sf::Vector2f direction = targetPos - startPos;
     float length = direction.length();
 
@@ -19,6 +19,7 @@ void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::
 
     for(auto& proj: m_projectiles){
         if(!proj.active){
+            proj.ownerId = ownerId;
             proj.position = startPos;
             proj.velocity = direction;
             proj.lifetime = Config::PROJECTILE_LIFETIME;
@@ -27,13 +28,14 @@ void ProjectileManager::spawnProjectile(const sf::Vector2f& startPos, const sf::
         }
     }
 
-    m_projectiles.push_back({startPos, direction, Config::PROJECTILE_LIFETIME, true});
+    m_projectiles.push_back({ownerId, startPos, direction, Config::PROJECTILE_LIFETIME, true});
 }
 
 std::vector<std::uint32_t> ProjectileManager::update(
     sf::Time deltaTime, 
     const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
-    const std::shared_ptr<MapGenerator>& map)
+    const std::shared_ptr<MapGenerator>& map,
+    std::uint32_t myPlayerId)
 {
     float dt = deltaTime.asSeconds();
     std::vector<std::uint32_t> hitEnemies;
@@ -63,11 +65,12 @@ std::vector<std::uint32_t> ProjectileManager::update(
         // Collision with enemies
         for(const auto& [id, enemy] : enemies){
             sf::Vector2f diff = proj.position - enemy->getPosition();
-            float distSq = diff.lengthSquared();
             float collisionDist = Config::PLAYER_RADIUS + Config::PROJECTILE_RADIUS;
 
-            if(distSq < collisionDist * collisionDist){
-                hitEnemies.push_back(id);
+            if(diff.lengthSquared() < collisionDist * collisionDist){
+                if(proj.ownerId == myPlayerId){
+                    hitEnemies.push_back(id);
+                }
                 proj.active = false;
                 break;
             }

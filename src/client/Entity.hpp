@@ -1,6 +1,10 @@
 #pragma once
 
+#include "MapGenerator.hpp"
+#include "Config.hpp"
+
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 class Entity{
 public:
@@ -8,7 +12,7 @@ public:
 
     virtual ~Entity() = default;
 
-    virtual void update(sf::Time deltaTime) = 0;
+    virtual void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) = 0;
     virtual void render(sf::RenderTarget& target) = 0;
 
     std::uint32_t getId() const {return m_id;}

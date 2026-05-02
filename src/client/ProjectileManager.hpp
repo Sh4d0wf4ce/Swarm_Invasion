@@ -12,6 +12,7 @@
 
 
 struct Projectile{
+    std::uint32_t ownerId;
     sf::Vector2f position;
     sf::Vector2f velocity;
     float lifetime;
@@ -22,12 +23,13 @@ class ProjectileManager{
 public:
     ProjectileManager();
 
-    void spawnProjectile(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed);
+    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, float speed);
 
     std::vector<std::uint32_t> update(
         sf::Time deltaTime, 
         const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
-        const std::shared_ptr<MapGenerator>& map
+        const std::shared_ptr<MapGenerator>& map,
+        std::uint32_t myPLayerId
     );
     void render(sf::RenderTarget& target);
 

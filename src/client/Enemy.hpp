@@ -1,13 +1,12 @@
 #pragma once
 
 #include "Entity.hpp"
-#include "Config.hpp"
 
 class Enemy : public Entity{
 public:
     Enemy(std::uint32_t id, const sf::Vector2f& startPos);
 
-    void update(sf::Time deltaTime) override;
+    void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override;
     void render(sf::RenderTarget& target) override;
 
 private:

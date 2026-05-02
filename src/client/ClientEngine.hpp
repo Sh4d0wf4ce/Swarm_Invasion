@@ -45,6 +45,7 @@ private:
     
     std::optional<sf::IpAddress> m_serverAddress;
     sf::Clock m_lastServerMessageTimer;
+    sf::Clock m_heartbeatTimer;
 
     std::shared_ptr<MapGenerator> m_map;
     std::unique_ptr<MapRenderer> m_mapRenderer;

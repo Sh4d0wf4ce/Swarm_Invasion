@@ -1,9 +1,11 @@
 #pragma once
 
 #include "NetworkProtocol.hpp"
+#include "MapGenerator.hpp"
 #include "Config.hpp"
 
 #include <SFML/System.hpp>
+#include <memory>
 #include <map>
 
 class ServerEngine{
@@ -14,6 +16,10 @@ public:
 private:
     void processNetwork();
     void update(sf::Time deltaTime);
+
+    bool checkCollision(const sf::Vector2f& pos, float radius);
+
+    std::shared_ptr<MapGenerator> m_map;
 
     sf::UdpSocket m_socket;
     sf::Clock m_clock;
@@ -30,7 +36,6 @@ private:
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;
-    std::uint32_t m_nextPlayerId = 1;
 
     struct EnemyInfo {
         sf::Vector2f position;
@@ -38,6 +43,7 @@ private:
     };
 
     std::map<std::uint32_t, EnemyInfo> m_enemies;
-    std::uint32_t m_nextEnemyId = 100000;
     sf::Clock m_enemySpawnTimer;
+
+    std::uint32_t m_globalEntityCounter = 1;
 };

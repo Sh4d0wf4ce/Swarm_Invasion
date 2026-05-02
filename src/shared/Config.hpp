@@ -3,7 +3,7 @@
 namespace Config{
     // --- NETWORK ---
     constexpr unsigned short SERVER_PORT = 54000;
-    constexpr float NETWORK_TIMEOUT_SECONDS = 20.0f;
+    constexpr float NETWORK_TIMEOUT_SECONDS = 3.0f;
 
     // --- WINDOW & CAMERA ---
     constexpr unsigned int WINDOW_WIDTH = 1280;

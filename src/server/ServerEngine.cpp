@@ -4,6 +4,9 @@
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
 
+    m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
+    m_map->generate(1337);
+
     if(m_socket.bind(Config::SERVER_PORT) != sf::Socket::Status::Done) {
         std::cerr<<"[SERVER ERROR] Cant bind to port " << Config::SERVER_PORT << "!\n";
         m_isRunning = false;
@@ -75,14 +78,28 @@ void ServerEngine::processNetwork(){
             else if(type == PacketType::JoinRequest){
                 if(!sender.has_value()) continue;
 
-                std::uint32_t newId = m_nextPlayerId++;
-                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, sf::Vector2f(1600.0f, 1600.0f), sf::Clock()});
+                std::uint32_t newId = m_globalEntityCounter++;
+                sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
+                m_clients.insert_or_assign(newId, ClientInfo{sender.value(), port, newPos, sf::Clock()});
                 
                 sf::Packet reply;
                 reply << PacketType::JoinAccept << newId;
                 (void)m_socket.send(reply, sender.value(), port);
 
                 std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
+            }
+            else if(type == PacketType::PlayerShoots){
+                std::uint32_t shooterId;
+                sf::Vector2f startPos, targetPos;
+                if(packet >> shooterId >> startPos >> targetPos){
+                    sf::Packet relayPacket;
+                    relayPacket << PacketType::PlayerShoots << shooterId << startPos << targetPos;
+
+                    for(const auto& [id, info] : m_clients){
+                        if(id == shooterId) continue;
+                        (void)m_socket.send(relayPacket, info.ip, info.port);
+                    }
+                }
             }
         }
     }
@@ -109,8 +126,9 @@ void ServerEngine::update(sf::Time deltaTime){
         newEnemy.position = sf::Vector2f(100.0f, 100.0f);
         newEnemy.speed = Config::ENEMY_SPEED;
 
-        m_enemies[m_nextEnemyId++] = newEnemy;
-        std::cout << "[SERVER] Spawned enemy ID: " << m_nextEnemyId - 1 << "\n";
+        std::uint32_t enemyId = m_globalEntityCounter++;
+        m_enemies[enemyId] = newEnemy;
+        std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << "\n";
     }
 
     //--- ENEMIES AI ---
@@ -123,7 +141,16 @@ void ServerEngine::update(sf::Time deltaTime){
 
             if(length > 0){
                 direction /= length;
-                enemy.position += direction * enemy.speed * deltaTime.asSeconds();
+
+                sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
+
+                sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
+                if(!checkCollision(nextPosX, Config::ENEMY_RADIUS))
+                    enemy.position.x = nextPosX.x;
+
+                sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
+                if(!checkCollision(nextPosY, Config::ENEMY_RADIUS))
+                    enemy.position.y = nextPosY.y;
             }
         }
     }
@@ -153,4 +180,27 @@ void ServerEngine::update(sf::Time deltaTime){
             (void)m_socket.send(worldPacket, client.ip, client.port);
         }
     }
+}
+
+bool ServerEngine::checkCollision(const sf::Vector2f& pos, float radius){
+    if(!m_map) return false;
+
+    float hitBoxOffset = radius * 0.8f;
+
+    sf::Vector2f points[4] = {
+        {pos.x - hitBoxOffset, pos.y - hitBoxOffset},
+        {pos.x + hitBoxOffset, pos.y - hitBoxOffset},
+        {pos.x - hitBoxOffset, pos.y + hitBoxOffset},
+        {pos.x + hitBoxOffset, pos.y + hitBoxOffset}
+    };
+
+    for(const auto& p: points){
+        int gridX = static_cast<int>(p.x / Config::TILE_SIZE);
+        int gridY = static_cast<int>(p.y / Config::TILE_SIZE);
+    
+        if(m_map->getTile(gridX, gridY) == TileType::Wall)
+            return true;
+    }
+
+    return false;
 }
