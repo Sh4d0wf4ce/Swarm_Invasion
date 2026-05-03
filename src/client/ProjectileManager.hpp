@@ -1,30 +1,16 @@
 #pragma once
 
-#include "Enemy.hpp"
-#include "MapGenerator.hpp"
+#include "Projectile.hpp"
 #include "WeaponRegistry.hpp"
-#include "Config.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <vector>
 #include <memory>
-#include <map>
-
-
-struct Projectile{
-    std::uint32_t ownerId;
-    sf::Vector2f position;
-    sf::Vector2f velocity;
-    float lifetime;
-    bool active;
-
-    float radius;
-    sf::Color color;
-};
 
 class ProjectileManager{
 public:
-    ProjectileManager();
+    ProjectileManager() = default;
 
     void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon);
 
@@ -37,6 +23,5 @@ public:
     void render(sf::RenderTarget& target);
 
 private:
-    std::vector<Projectile> m_projectiles;
-    sf::CircleShape m_projectileShape;
+    std::vector<std::unique_ptr<Projectile>> m_projectiles;
 };

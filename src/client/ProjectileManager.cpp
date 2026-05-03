@@ -1,12 +1,5 @@
 #include "ProjectileManager.hpp"
 
-ProjectileManager::ProjectileManager(){
-    m_projectileShape.setRadius(Config::PROJECTILE_RADIUS);
-    m_projectileShape.setFillColor(sf::Color::Yellow);
-    m_projectileShape.setOrigin({Config::PROJECTILE_RADIUS, Config::PROJECTILE_RADIUS});
-
-    m_projectiles.reserve(1000);
-}
 
 void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon){
     const auto& stats = WeaponRegistry::getStats(weapon);
@@ -14,22 +7,13 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
     sf::Vector2f direction = targetPos - startPos;
     float length = direction.length();
     if(length != 0) direction /= length;
-    direction *= stats.speed;
+    sf::Vector2f velocity = direction * stats.speed;
 
-    for(auto& proj: m_projectiles){
-        if(!proj.active){
-            proj.ownerId = ownerId;
-            proj.position = startPos;
-            proj.velocity = direction;
-            proj.lifetime = stats.lifetime;
-            proj.active = true;
-            proj.radius = stats.radius;
-            proj.color = stats.color;
-            return;
-        }
+    if(weapon == WeaponType::Rocket){
+        m_projectiles.push_back(std::make_unique<RocketProjectile>(ownerId, startPos, velocity));
+    }else{
+        m_projectiles.push_back(std::make_unique<RifleProjectile>(ownerId, startPos, velocity));
     }
-
-    m_projectiles.push_back({ownerId, startPos, direction, stats.lifetime, true, stats.radius, stats.color});
 }
 
 std::vector<std::uint32_t> ProjectileManager::update(
@@ -38,59 +22,32 @@ std::vector<std::uint32_t> ProjectileManager::update(
     const std::shared_ptr<MapGenerator>& map,
     std::uint32_t myPlayerId)
 {
-    float dt = deltaTime.asSeconds();
-    std::vector<std::uint32_t> hitEnemies;
+    std::vector<std::uint32_t> allHits;
 
     for(auto& proj: m_projectiles){
-        if(!proj.active) continue;
+        if(!proj->isActive()) continue;
 
-        proj.position += proj.velocity * dt;
-        proj.lifetime -= dt;
+        proj->update(deltaTime);
 
-        if(proj.lifetime < 0.0f){
-            proj.active = false;
-            continue;
-        }
+        auto hitsFromThisProj = proj->checkCollisions(enemies, map);
 
-        // Collision with walls
-        if(map){
-            int gridX = static_cast<int>(proj.position.x / Config::TILE_SIZE);
-            int gridY = static_cast<int>(proj.position.y / Config::TILE_SIZE);
-
-            if(map->getTile(gridX, gridY) == TileType::Wall){
-                proj.active = false;
-                continue;
-            }
-        }
-
-        // Collision with enemies
-        for(const auto& [id, enemy] : enemies){
-            float enemyRadius = EnemyRegistry::getStats(enemy->getType()).radius;
-
-            sf::Vector2f diff = proj.position - enemy->getPosition();
-            float collisionDist = enemyRadius + proj.radius;
-
-            if(diff.lengthSquared() < collisionDist * collisionDist){
-                if(proj.ownerId == myPlayerId){
-                    hitEnemies.push_back(id);
-                }
-                proj.active = false;
-                break;
-            }
+        if(proj->getOwnerId() == myPlayerId && !hitsFromThisProj.empty()){
+            allHits.insert(allHits.end(), hitsFromThisProj.begin(), hitsFromThisProj.end());
         }
     }
 
-    return hitEnemies;
+    m_projectiles.erase(
+        std::remove_if(m_projectiles.begin(), m_projectiles.end(), 
+            [](const std::unique_ptr<Projectile>& p) { return !p->isActive();}),
+            m_projectiles.end()
+    );
+
+    return allHits;
 }
 
 void ProjectileManager::render(sf::RenderTarget& target){
     for(const auto& proj: m_projectiles){
-        if(!proj.active) continue;
-
-        m_projectileShape.setRadius(proj.radius);
-        m_projectileShape.setFillColor(proj.color);
-        m_projectileShape.setOrigin({proj.radius, proj.radius});
-        m_projectileShape.setPosition(proj.position);
-        target.draw(m_projectileShape);
+        if(!proj->isActive()) continue;
+        proj->render(target);
     }
 }
