@@ -7,6 +7,7 @@
 #include "MapRenderer.hpp"
 #include "ProjectileManager.hpp"
 #include "Config.hpp"
+#include "State.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -23,6 +24,13 @@ public:
     ClientEngine();
     void run();
 
+    void changeState(std::unique_ptr<State> newState);
+
+    sf::RenderWindow& getWindow() { return m_window; }
+    sf::UdpSocket& getSocket() { return m_socket; }
+    std::optional<sf::IpAddress>& getServerAddress() { return m_serverAddress; }
+    void quit() { m_isRunning = false; }
+
 private:
     void processEvent();
     void processNetwork();
@@ -37,20 +45,7 @@ private:
     sf::Clock m_clock;
     bool m_isRunning;
 
-    std::unique_ptr<Player> m_player;
-    sf::Vector2f m_lastSentPosition;
-
-    std::map<std::uint32_t, std::unique_ptr<Player>> m_otherPlayers;
-    std::map<std::uint32_t, std::unique_ptr<Enemy>> m_enemies;
-    
     std::optional<sf::IpAddress> m_serverAddress;
-    sf::Clock m_lastServerMessageTimer;
-    sf::Clock m_heartbeatTimer;
 
-    std::shared_ptr<MapGenerator> m_map;
-    std::unique_ptr<MapRenderer> m_mapRenderer;
-
-    std::unique_ptr<ProjectileManager> m_projectileManager;
-
-    PlayerClass m_selectedClass = PlayerClass::Soldier;
+    std::unique_ptr<State> m_currentState;
 };

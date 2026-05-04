@@ -69,6 +69,8 @@ add_executable(SwarmClient
     src/Client/MapRenderer.cpp
     src/Client/ProjectileManager.cpp
     src/Client/Projectile.cpp
+    src/Client/GameState.cpp
+    src/Client/LobbyState.cpp
 )
 target_link_libraries(SwarmClient PRIVATE
     SharedStatic
