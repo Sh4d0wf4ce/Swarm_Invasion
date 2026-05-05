@@ -25,6 +25,7 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
 
     float len = movement.length();
     if(len > 0.0f) movement /= len;
+    m_lastMoveDirection = movement;
 
     sf::Vector2f velocity = movement * m_speed * deltaTime.asSeconds();
 
@@ -72,4 +73,21 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
     }
 
     return false;
+}
+
+std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos, PlayerClass pClass){
+    switch(pClass){
+        case PlayerClass::Scout:
+            return std::make_unique<ScoutPlayer>(id, startPos, pClass);
+        default:
+            return std::make_unique<Player>(id, startPos, pClass);
+    }
+}
+
+
+void ScoutPlayer::onShift(const sf::Vector2f& mouseWorldPos){
+    if(m_cooldownShift.getElapsedTime().asSeconds() >= 0.1f){
+        m_position += m_lastMoveDirection * 100.0f;
+        m_cooldownShift.restart();
+    }
 }

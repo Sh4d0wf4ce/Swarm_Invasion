@@ -119,6 +119,13 @@ void ServerEngine::processNetwork(){
                     }
                 }
             }
+            else if(type == PacketType::PlayerDisconnect){
+                std::uint32_t playerId;
+                if(packet >> playerId){
+                    m_clients.erase(playerId);
+                    std::cout << "[SERVER] Player " << playerId << " disconnected\n";
+                }
+            }
         }
     }
 }
@@ -134,6 +141,12 @@ void ServerEngine::update(sf::Time deltaTime){
         }else{
             ++it;
         }
+    }
+
+    // --- SERVER RESET ---
+    if(m_clients.empty() && !m_enemies.empty()){
+        m_enemies.clear();
+        std::cout << "[SERVER] All players left. Resetting world...\n";
     }
 
     //--- SPAWNING ENEMIES ---

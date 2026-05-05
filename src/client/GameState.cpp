@@ -11,14 +11,22 @@ GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass
     m_projectileManager = std::make_unique<ProjectileManager>();
 
     sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES) * Config::TILE_SIZE / 2.0f;
-    m_player = std::make_unique<Player>(myPlayerId, newPos, myClass);
+    m_player = Player::create(myPlayerId, newPos, myClass);
     m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
 
     m_camera.setCenter(newPos);
 }
 
+GameState::~GameState(){
+    if(m_player && m_engine.getServerAddress()){
+        sf::Packet packet;
+        packet << PacketType::PlayerDisconnect << m_player->getId();
+        (void)m_engine.getSocket().send(packet, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
+}
+
 void GameState::handleInput(const sf::Event& event){
-    if(const auto& mouseBtn = event.getIf<sf::Event::MouseButtonPressed>()){
+    if(const auto* mouseBtn = event.getIf<sf::Event::MouseButtonPressed>()){
         if(m_player){
             sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
 
@@ -33,6 +41,18 @@ void GameState::handleInput(const sf::Event& event){
                 shootPacket << PacketType::PlayerShoots << m_player->getId() << myWeapon << m_player->getPosition() << worldPos;
                 (void)m_engine.getSocket().send(shootPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
+        }
+    }
+
+    if(const auto* keyEvent = event.getIf<sf::Event::KeyPressed>()){
+        if(m_player) {
+            auto& window = m_engine.getWindow();
+            sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+            sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera);
+
+            if(keyEvent->code == sf::Keyboard::Key::LShift) m_player->onShift(worldPos);
+            if(keyEvent->code == sf::Keyboard::Key::Q) m_player->onQ(worldPos);
+            if(keyEvent->code == sf::Keyboard::Key::E) m_player->onE(worldPos);
         }
     }
 }
@@ -81,7 +101,7 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
 
         if(m_otherPlayers.find(id) == m_otherPlayers.end()){
-            m_otherPlayers[id] = std::make_unique<Player>(id, pos, pClass);
+            m_otherPlayers[id] = Player::create(id, pos, pClass);
         }
 
         m_otherPlayers[id]->setHp(hp);
@@ -215,6 +235,22 @@ void GameState::render() {
 }
 
 void GameState::renderUI(){
+    // --- DEATH SCREEN ---
+    if(!m_player){
+        ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 150.0f, Config::WINDOW_HEIGHT / 2.0f - 100.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(300.0f, 200.0f), ImGuiCond_Always);
+        ImGui::Begin("YOU DIED", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+
+        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "The swarm consumed you...");
+        ImGui::Dummy(ImVec2(0.0f, 40.0f));
+
+        if(ImGui::Button("Return to Lobby", ImVec2(-1, 50))){
+            m_engine.changeState(std::make_unique<LobbyState>(m_engine));
+        }
+        ImGui::End();
+        return;
+    } 
+
     ImGui::Begin("Swarm Invasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 

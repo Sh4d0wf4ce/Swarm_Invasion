@@ -24,6 +24,7 @@ out/
 Thumbs.db
 .DS_Store
 
+TODO.txt
 
 *.log
 *.sqlite

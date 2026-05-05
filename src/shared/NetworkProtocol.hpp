@@ -11,7 +11,8 @@ enum class PacketType : std::uint8_t{
     JoinRequest,
     JoinAccept,
     PlayerShoots,
-    PlayerDied
+    PlayerDied,
+    PlayerDisconnect
 };
 
 enum class PlayerClass : std::uint8_t{

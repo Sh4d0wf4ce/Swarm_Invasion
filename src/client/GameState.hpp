@@ -20,7 +20,7 @@
 class GameState : public State {
 public:
     GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass);
-    ~GameState() override = default;
+    ~GameState() override;
 
     void handlePacket(PacketType type, sf::Packet& packet) override;
     void handleInput(const sf::Event& event) override;
