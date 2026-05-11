@@ -21,6 +21,21 @@ void MapGenerator::generate(int seed){
     for(int i = 0; i < 5; i++){
         smoothMap();
     }
+
+     int centerX = m_width / 2;
+     int centerY = m_height / 2;
+     float clearRadius = 8.0f;
+
+     for(int x = centerX - clearRadius; x <= centerX + clearRadius; x++){
+        for(int y = centerY - clearRadius; y <= centerY + clearRadius; y++){
+             if(x > 0 && x < m_width - 1 && y > 0 && y < m_height -1){
+                float distSq = std::pow(x - centerX, 2) + std::pow(y - centerY, 2);
+                if(distSq <= clearRadius * clearRadius){
+                    m_map[x][y] = TileType::Floor;
+                }
+             }
+        }
+     }
 }
 
 void MapGenerator::smoothMap(){

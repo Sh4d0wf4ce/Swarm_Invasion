@@ -11,6 +11,12 @@
 #include <memory>
 #include <map>
 
+struct EnergyCellInfo {
+    sf::Vector2f position;
+    int expValue;
+    std::uint32_t targetPlayerId = 0;
+};
+
 class ServerEngine{
 public:
     ServerEngine();
@@ -39,9 +45,13 @@ private:
         float hp;
         float speed;
         PlayerClass pClass;
+        int exp = 0;
+        int level = 1;
+        int expToNext = 10;
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;
+    std::map<std::uint32_t, EnergyCellInfo> m_energyCells;
 
     struct EnemyInfo {
         sf::Vector2f position;

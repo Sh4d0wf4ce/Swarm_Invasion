@@ -25,6 +25,7 @@ Thumbs.db
 .DS_Store
 
 TODO.txt
+design_document.md
 
 *.log
 *.sqlite

@@ -12,8 +12,8 @@ namespace Config{
 
     // --- MAP ---
     constexpr float TILE_SIZE = 32.0f;
-    constexpr int MAP_WIDTH_TILES = 100;
-    constexpr int MAP_HEIGHT_TILES = 100;
+    constexpr int MAP_WIDTH_TILES = 250;
+    constexpr int MAP_HEIGHT_TILES = 250;
     constexpr int MAP_FILL_PERCENT = 45;
 
     // --- ENEMY ---
@@ -24,4 +24,9 @@ namespace Config{
     constexpr float PROJECTILE_RADIUS = 5.0f;
     constexpr float PROJECTILE_LIFETIME = 3.0f;
     constexpr float PROJECTILE_DAMAGE = 25.0f;
+
+    // -- EXP SYSTEM ---
+    constexpr float MAGNET_RADIUS = 150.0f;
+    constexpr float PICKUP_RADIUS = 30.0f;
+    constexpr float CRYSTAL_SPEED = 400.0f;
 }

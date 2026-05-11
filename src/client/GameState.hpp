@@ -38,6 +38,7 @@ private:
 
     std::map<std::uint32_t, std::unique_ptr<Player>> m_otherPlayers;
     std::map<std::uint32_t, std::unique_ptr<Enemy>> m_enemies;
+    std::map<std::uint32_t, sf::Vector2f> m_energyCells;
     
     sf::Clock m_lastServerMessageTimer;
     sf::Clock m_heartbeatTimer;

@@ -8,6 +8,7 @@ GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass
     m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
     m_map->generate(1337);
     m_mapRenderer = std::make_unique<MapRenderer>(m_map, Config::TILE_SIZE);
+    m_mapRenderer->rebuild();
     m_projectileManager = std::make_unique<ProjectileManager>();
 
     sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES) * Config::TILE_SIZE / 2.0f;
@@ -91,12 +92,14 @@ void GameState::handleWorldState(sf::Packet& packet){
         PlayerClass pClass;
         sf::Vector2f pos;
         float hp;
-        packet >> id >> pClass >> pos >> hp;
+        int exp, level, expMax;
+        packet >> id >> pClass >> pos >> hp >> exp >> level >> expMax;
 
         activeServerIds.push_back(id);
 
         if(m_player && id == m_player->getId()){
             m_player->setHp(hp);   
+            m_player->setExpData(level, exp, expMax);
             continue;
         }
 
@@ -106,6 +109,7 @@ void GameState::handleWorldState(sf::Packet& packet){
 
         m_otherPlayers[id]->setHp(hp);
         m_otherPlayers[id]->setPosition(pos);
+        m_otherPlayers[id]->setExpData(level, exp, expMax);
     }
 
     // removing unactive players
@@ -145,7 +149,19 @@ void GameState::handleWorldState(sf::Packet& packet){
         }else{
             ++it;
         }
-    }   
+    }  
+    
+    // --- ENERGY CELLS ---
+    std::uint32_t cellCount;
+    if(!(packet >> cellCount)) return;
+
+    m_energyCells.clear();
+    for(std::uint32_t i = 0; i < cellCount; i++){
+        std::uint32_t cId;
+        sf::Vector2f cPos;
+        packet >> cId >> cPos;
+        m_energyCells[cId] = cPos;
+    }
 }
 
 void GameState::update(sf::Time deltaTime){
@@ -220,6 +236,16 @@ void GameState::render() {
     window.setView(m_camera);
 
     if(m_mapRenderer) m_mapRenderer->render(window);
+
+    sf::CircleShape crystalShape(4.0f, 4);
+    crystalShape.setFillColor(sf::Color::Green);
+    crystalShape.setOrigin({4.0f, 4.0f});
+
+    for(const auto& [id, pos] : m_energyCells){
+        crystalShape.setPosition(pos);
+        window.draw(crystalShape);
+    }
+
     if(m_projectileManager) m_projectileManager->render(window);
     if(m_player) m_player->render(window);
 
@@ -249,7 +275,16 @@ void GameState::renderUI(){
         }
         ImGui::End();
         return;
-    } 
+    }else{
+        float expProgress = static_cast<float>(m_player->getExp()) / m_player->getExpMax();
+        char expOverlay[64];
+        sprintf(expOverlay, "LEVEL %d (%d/%d)", m_player->getLevel(), m_player->getExp(), m_player->getExpMax());
+
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+        ImGui::ProgressBar(expProgress, ImVec2(-1.0f, 24.0f), expOverlay);
+        ImGui::PopStyleColor();
+        ImGui::Separator();
+    }
 
     ImGui::Begin("Swarm Invasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);

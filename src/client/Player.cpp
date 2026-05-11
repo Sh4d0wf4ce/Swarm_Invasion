@@ -52,6 +52,12 @@ void Player::setFocused(bool focuesd){
     m_isFocused = focuesd;
 }
 
+void Player::setExpData(int level, int exp, int expMax){
+    m_level = level;
+    m_exp = exp;
+    m_expMax = expMax;
+}
+
 bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map){
     if(!map) return false;
 

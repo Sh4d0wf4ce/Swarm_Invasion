@@ -80,6 +80,8 @@ void ServerEngine::processNetwork(){
                         enemyIt->second.hp -= damage;
                         
                         if(enemyIt->second.hp <= 0.0f){
+                            m_energyCells[m_globalEntityCounter++] = {enemyIt->second.position, 1, 0};
+
                             m_enemies.erase(enemyIt);
                             std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
                         }
@@ -157,7 +159,7 @@ void ServerEngine::update(sf::Time deltaTime){
         const auto& stats = EnemyRegistry::getStats(randomType);
 
         EnemyInfo newEnemy;
-        newEnemy.position = sf::Vector2f(100.0f, 100.0f);
+        newEnemy.position = sf::Vector2f(120.0f, 120.0f);
         newEnemy.speed = stats.speed;
         newEnemy.hp = stats.maxHp;
         newEnemy.type = randomType;
@@ -217,6 +219,47 @@ void ServerEngine::update(sf::Time deltaTime){
         }
     }
 
+    //--- ENERGY CELLS BEHAVIOUR (EXP) ---
+    for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
+        auto& cell = it->second;
+
+        // 1. looking for closest player;
+        if(cell.targetPlayerId == 0){
+            float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
+            for(const auto& [pId, pInfo] : m_clients){
+                float distSq = (cell.position - pInfo.position).lengthSquared();
+                if(distSq < closestDist){
+                    closestDist = distSq;
+                    cell.targetPlayerId = pId;
+                }
+            }
+        }
+
+        // 2. exp goes to the closest player in magnet radius
+        if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
+            auto& pInfo = m_clients.at(cell.targetPlayerId);
+            sf::Vector2f dir = pInfo.position - cell.position;
+            float distSq = dir.lengthSquared();
+
+            if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
+                pInfo.exp += cell.expValue;
+                if(pInfo.exp >= pInfo.expToNext){
+                    pInfo.exp -= pInfo.expToNext;
+                    pInfo.level++;
+                    pInfo.expToNext = static_cast<int>(pInfo.expToNext * 1.5f);
+                    std::cout << "[SERVER] Player " << cell.targetPlayerId << " reached level " << pInfo.level << "!\n";
+                }
+                it = m_energyCells.erase(it);
+                continue;
+            }else if(distSq > 0){
+                cell.position += (dir / std::sqrt(distSq)) * Config::CRYSTAL_SPEED * deltaTime.asSeconds();
+            }
+        }else{
+            cell.targetPlayerId = 0;
+        }
+        ++it;
+    }
+
     if(m_tickCounter % 60 == 0){
         std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
     }
@@ -228,13 +271,19 @@ void ServerEngine::update(sf::Time deltaTime){
         // Players info
         worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
         for(const auto& [clientId, info] : m_clients){
-            worldPacket << clientId << info.pClass << info.position << info.hp;
+            worldPacket << clientId << info.pClass << info.position << info.hp << info.exp << info.level << info.expToNext;
         }
 
         // Enemy info
         worldPacket << static_cast<std::uint32_t>(m_enemies.size());
         for(const auto& [enemyId, enemy] : m_enemies){
             worldPacket << enemyId << enemy.type << enemy.position << enemy.hp;
+        }
+
+        // Energy Cells info
+        worldPacket << static_cast<std::uint32_t>(m_energyCells.size());
+        for(const auto& [cellId, cell] : m_energyCells){
+            worldPacket << cellId << cell.position;
         }
 
         // Sending
