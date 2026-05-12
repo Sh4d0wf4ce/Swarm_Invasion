@@ -25,8 +25,11 @@ namespace Config{
     constexpr float PROJECTILE_LIFETIME = 3.0f;
     constexpr float PROJECTILE_DAMAGE = 25.0f;
 
-    // -- EXP SYSTEM ---
+    // --- EXP SYSTEM ---
     constexpr float MAGNET_RADIUS = 150.0f;
     constexpr float PICKUP_RADIUS = 30.0f;
     constexpr float CRYSTAL_SPEED = 400.0f;
+
+    // --- LEVEL UP WINDOW ---
+    constexpr float LEVEL_UP_TIMEOUT = 15.0f;
 }

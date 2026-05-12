@@ -52,4 +52,8 @@ private:
     int m_teamLevel = 1;
     int m_teamExp = 0;
     int m_teamExpMax = 10;
+
+    bool m_isChoosingUpgrade = false;
+    int m_myChoice = 01;
+    sf::Clock m_clientUpgradeTimer;
 };

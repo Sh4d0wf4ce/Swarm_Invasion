@@ -128,12 +128,31 @@ void ServerEngine::processNetwork(){
                     std::cout << "[SERVER] Player " << playerId << " disconnected\n";
                 }
             }
+            else if(type == PacketType::CardSelected){
+                std::uint32_t playerId;
+                int choice;
+                if(packet >> playerId >> choice){
+                    m_playerChoices[playerId] = choice;
+                }
+            }
         }
     }
 }
 
 void ServerEngine::update(sf::Time deltaTime){
     m_tickCounter++;
+
+    if(m_isPaused){
+        bool allSelected = true;
+        for(auto& [id, info] : m_clients){
+            if(m_playerChoices[id] == -1) allSelected = false;
+        }
+
+        if(allSelected || m_upgradeTimer.getElapsedTime().asSeconds() > Config::LEVEL_UP_TIMEOUT){
+            m_isPaused = false;
+            std::cout << "[SERVER] Resuming game after upgrades. \n";
+        }
+    }
 
     //--- REMOVING UNACTIVE PLAYERS ---
     for(auto it = m_clients.begin(); it != m_clients.end();){
@@ -145,123 +164,136 @@ void ServerEngine::update(sf::Time deltaTime){
         }
     }
 
-    // --- SERVER RESET ---
-    if(m_clients.empty() && !m_enemies.empty()){
-        m_enemies.clear();
-        std::cout << "[SERVER] All players left. Resetting world...\n";
-    }
+    if(!m_isPaused){    
+        // --- SERVER RESET ---
+        if(m_clients.empty() && !m_enemies.empty()){
+            m_enemies.clear();
+            std::cout << "[SERVER] All players left. Resetting world...\n";
+        }
 
-    //--- SPAWNING ENEMIES ---
-    if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > Config::ENEMY_SPAWN_RATE){
-        m_enemySpawnTimer.restart();
+        //--- SPAWNING ENEMIES ---
+        if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > Config::ENEMY_SPAWN_RATE){
+            m_enemySpawnTimer.restart();
 
-        EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
-        const auto& stats = EnemyRegistry::getStats(randomType);
+            EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
+            const auto& stats = EnemyRegistry::getStats(randomType);
 
-        EnemyInfo newEnemy;
-        newEnemy.position = sf::Vector2f(120.0f, 120.0f);
-        newEnemy.speed = stats.speed;
-        newEnemy.hp = stats.maxHp;
-        newEnemy.type = randomType;
+            EnemyInfo newEnemy;
+            newEnemy.position = sf::Vector2f(120.0f, 120.0f);
+            newEnemy.speed = stats.speed;
+            newEnemy.hp = stats.maxHp;
+            newEnemy.type = randomType;
 
-        std::uint32_t enemyId = m_globalEntityCounter++;
-        m_enemies[enemyId] = newEnemy;
-        std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << " Type: " << (int)randomType << "\n";
-    }
+            std::uint32_t enemyId = m_globalEntityCounter++;
+            m_enemies[enemyId] = newEnemy;
+            std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << " Type: " << (int)randomType << "\n";
+        }
 
-    //--- ENEMIES AI ---
-    if(!m_clients.empty()){
-        auto targetIt = m_clients.begin();
-        std::uint32_t targetId = targetIt->first;
-        sf::Vector2f targetPos = targetIt->second.position;
+        //--- ENEMIES AI ---
+        if(!m_clients.empty()){
+            auto targetIt = m_clients.begin();
+            std::uint32_t targetId = targetIt->first;
+            sf::Vector2f targetPos = targetIt->second.position;
 
-        for(auto& [id, enemy] : m_enemies){
-            const auto& eStats = EnemyRegistry::getStats(enemy.type);
+            for(auto& [id, enemy] : m_enemies){
+                const auto& eStats = EnemyRegistry::getStats(enemy.type);
 
-            sf::Vector2 direction = targetPos - enemy.position;
-            float lenSq = direction.lengthSquared();
-            float playerRadius = HeroRegistry::getStats(targetIt->second.pClass).radius;
-            float touchDist = eStats.radius + playerRadius;
-            
-            if(lenSq < touchDist * touchDist){
-                if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                    targetIt->second.hp -= eStats.damage;
-                    enemy.lastAttackTime.restart();
-                    std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetIt->second.hp << "\n";
+                sf::Vector2 direction = targetPos - enemy.position;
+                float lenSq = direction.lengthSquared();
+                float playerRadius = HeroRegistry::getStats(targetIt->second.pClass).radius;
+                float touchDist = eStats.radius + playerRadius;
+                
+                if(lenSq < touchDist * touchDist){
+                    if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
+                        targetIt->second.hp -= eStats.damage;
+                        enemy.lastAttackTime.restart();
+                        std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetIt->second.hp << "\n";
 
-                    if(targetIt->second.hp <= 0.0f) {
-                        std::cout << "[SERVER] Player " << targetId << " died!\n";
+                        if(targetIt->second.hp <= 0.0f) {
+                            std::cout << "[SERVER] Player " << targetId << " died!\n";
 
-                        sf::Packet deathPacket;
-                        deathPacket << PacketType::PlayerDied;
-                        (void)m_socket.send(deathPacket, targetIt->second.ip, targetIt->second.port);
+                            sf::Packet deathPacket;
+                            deathPacket << PacketType::PlayerDied;
+                            (void)m_socket.send(deathPacket, targetIt->second.ip, targetIt->second.port);
 
-                        m_clients.erase(targetId);
-                        break;
+                            m_clients.erase(targetId);
+                            break;
+                        }
+                    }
+                }
+
+                
+                if(lenSq > 0){
+                    direction /= std::sqrt(lenSq);
+
+                    sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
+
+                    sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
+                    if(!checkCollision(nextPosX, eStats.radius))
+                        enemy.position.x = nextPosX.x;
+
+                    sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
+                    if(!checkCollision(nextPosY, eStats.radius))
+                        enemy.position.y = nextPosY.y;
+                }
+            }
+        }
+
+        //--- ENERGY CELLS BEHAVIOUR (EXP) ---
+        for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
+            auto& cell = it->second;
+
+            // 1. looking for closest player;
+            if(cell.targetPlayerId == 0){
+                float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
+                for(const auto& [pId, pInfo] : m_clients){
+                    float distSq = (cell.position - pInfo.position).lengthSquared();
+                    if(distSq < closestDist){
+                        closestDist = distSq;
+                        cell.targetPlayerId = pId;
                     }
                 }
             }
 
-            
-            if(lenSq > 0){
-                direction /= std::sqrt(lenSq);
+            // 2. exp goes to the closest player in magnet radius
+            if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
+                auto& pInfo = m_clients.at(cell.targetPlayerId);
+                sf::Vector2f dir = pInfo.position - cell.position;
+                float distSq = dir.lengthSquared();
 
-                sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
+                if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
+                    m_teamExp += cell.expValue;
+                    if(m_teamExp >= m_teamExpMax){
+                        m_teamExp -= m_teamExpMax;
+                        m_teamLevel++;
+                        m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
+                        std::cout << "[SERVER] Players reached level " << m_teamLevel << "!\n";
 
-                sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
-                if(!checkCollision(nextPosX, eStats.radius))
-                    enemy.position.x = nextPosX.x;
+                        m_isPaused = true;
+                        m_upgradeTimer.restart();
+                        m_playerChoices.clear();
+                        for(auto& [id, info] : m_clients) m_playerChoices[id] = -1;
 
-                sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
-                if(!checkCollision(nextPosY, eStats.radius))
-                    enemy.position.y = nextPosY.y;
-            }
-        }
-    }
-
-    //--- ENERGY CELLS BEHAVIOUR (EXP) ---
-    for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
-        auto& cell = it->second;
-
-        // 1. looking for closest player;
-        if(cell.targetPlayerId == 0){
-            float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
-            for(const auto& [pId, pInfo] : m_clients){
-                float distSq = (cell.position - pInfo.position).lengthSquared();
-                if(distSq < closestDist){
-                    closestDist = distSq;
-                    cell.targetPlayerId = pId;
+                        sf::Packet pausePacket;
+                        pausePacket << PacketType::LevelUpTriggered;
+                        for(auto& [id, info] : m_clients){
+                            (void)m_socket.send(pausePacket, info.ip, info.port);
+                        }
+                    }
+                    it = m_energyCells.erase(it);
+                    continue;
+                }else if(distSq > 0){
+                    cell.position += (dir / std::sqrt(distSq)) * Config::CRYSTAL_SPEED * deltaTime.asSeconds();
                 }
+            }else{
+                cell.targetPlayerId = 0;
             }
+            ++it;
         }
 
-        // 2. exp goes to the closest player in magnet radius
-        if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
-            auto& pInfo = m_clients.at(cell.targetPlayerId);
-            sf::Vector2f dir = pInfo.position - cell.position;
-            float distSq = dir.lengthSquared();
-
-            if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
-                m_teamExp += cell.expValue;
-                if(m_teamExp >= m_teamExpMax){
-                    m_teamExp -= m_teamExpMax;
-                    m_teamLevel++;
-                    m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
-                    std::cout << "[SERVER] Player " << cell.targetPlayerId << " reached level " << m_teamLevel << "!\n";
-                }
-                it = m_energyCells.erase(it);
-                continue;
-            }else if(distSq > 0){
-                cell.position += (dir / std::sqrt(distSq)) * Config::CRYSTAL_SPEED * deltaTime.asSeconds();
-            }
-        }else{
-            cell.targetPlayerId = 0;
+        if(m_tickCounter % 60 == 0){
+            std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
         }
-        ++it;
-    }
-
-    if(m_tickCounter % 60 == 0){
-        std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
     }
 
     //--- CREATING WORLD STATE PACKET ---
@@ -276,7 +308,7 @@ void ServerEngine::update(sf::Time deltaTime){
         }
 
         // Exp info
-        worldPacket << m_teamLevel << m_teamExp << m_teamExpMax;
+        worldPacket << m_teamLevel << m_teamExp << m_teamExpMax << m_isPaused;
 
         // Enemy info
         worldPacket << static_cast<std::uint32_t>(m_enemies.size());

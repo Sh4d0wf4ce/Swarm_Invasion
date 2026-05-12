@@ -27,6 +27,8 @@ GameState::~GameState(){
 }
 
 void GameState::handleInput(const sf::Event& event){
+    if(m_isChoosingUpgrade) return;
+
     if(const auto* mouseBtn = event.getIf<sf::Event::MouseButtonPressed>()){
         if(m_player){
             sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
@@ -79,6 +81,11 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         m_otherPlayers.clear();
         m_enemies.clear();
     }
+    else if(type == PacketType::LevelUpTriggered){
+        m_isChoosingUpgrade = true;
+        m_myChoice = -1;
+        m_clientUpgradeTimer.restart();
+    }
 }
 
 void GameState::handleWorldState(sf::Packet& packet){
@@ -109,7 +116,17 @@ void GameState::handleWorldState(sf::Packet& packet){
         m_otherPlayers[id]->setPosition(pos);
     }
 
-    packet >> m_teamLevel >> m_teamExp >> m_teamExpMax;
+    bool serverIsPaused;
+    packet >> m_teamLevel >> m_teamExp >> m_teamExpMax >> serverIsPaused;
+
+    if(!serverIsPaused && m_isChoosingUpgrade){
+        m_isChoosingUpgrade = false;
+        m_myChoice = -1;
+    }
+
+    if(serverIsPaused && !m_isChoosingUpgrade){
+        m_isChoosingUpgrade = true;
+    }
 
     // removing unactive players
     for(auto it = m_otherPlayers.begin(); it != m_otherPlayers.end();){
@@ -174,9 +191,11 @@ void GameState::update(sf::Time deltaTime){
         }
 
         m_player->setFocused(m_engine.getWindow().hasFocus());
-        m_player->update(deltaTime, m_map);
 
-        auto view = m_engine.getWindow().getView();
+        if(!m_isChoosingUpgrade){
+            m_player->update(deltaTime, m_map);
+        }
+
         sf::Vector2f targetCenter = m_player->getPosition();
 
         if(m_map){
@@ -216,14 +235,16 @@ void GameState::update(sf::Time deltaTime){
     }
 
     if(m_projectileManager){
-        std::uint32_t myId = m_player ? m_player->getId() : 0;
-        auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map, myId);
+        if(!m_isChoosingUpgrade){
+            std::uint32_t myId = m_player ? m_player->getId() : 0;
+            auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map, myId);
 
-        for(std::uint32_t enemyId : hitEnemies){
-            if(m_engine.getServerAddress()){
-                sf::Packet hitPacket;
-                hitPacket << PacketType::EnemyHit << enemyId << myId;
-                (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+            for(std::uint32_t enemyId : hitEnemies){
+                if(m_engine.getServerAddress()){
+                    sf::Packet hitPacket;
+                    hitPacket << PacketType::EnemyHit << enemyId << myId;
+                    (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+                }
             }
         }
     }
@@ -274,6 +295,45 @@ void GameState::renderUI(){
         }
         ImGui::End();
         return;
+    }
+
+    if(m_isChoosingUpgrade){
+        ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH/2.0f - 300.0f, Config::WINDOW_HEIGHT/2.0f - 200.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(600, 400));
+        ImGui::Begin("CHOOSE YOUR AUGMENT", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+
+        float timePassed = m_clientUpgradeTimer.getElapsedTime().asSeconds();
+        float progress = 1.0f - (timePassed / Config::LEVEL_UP_TIMEOUT);
+        ImGui::ProgressBar(progress, ImVec2(-1, 20), "Time Remaining");
+
+        ImGui::Columns(3, "Cards", true);
+        for(int i = 0; i < 3; i++){
+            bool isSelected = (m_myChoice == i);
+            bool pushedColor = false;
+
+            if(isSelected){
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+                pushedColor = true;
+            }else if(m_myChoice != -1){
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
+                pushedColor = true;
+            } 
+                
+
+            char label[32];
+            sprintf(label, "CARD %d", i + 1);
+            if(ImGui::Button(label, ImVec2(-1, 200))){
+                m_myChoice = i;
+                sf::Packet packet;
+                packet << PacketType::CardSelected << m_player->getId() << m_myChoice;
+                (void)m_engine.getSocket().send(packet, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+            }
+
+            if(pushedColor) ImGui::PopStyleColor();
+            ImGui::NextColumn();
+        }
+        ImGui::Columns(1);
+        ImGui::End();
     }
 
 

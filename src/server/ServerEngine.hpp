@@ -66,4 +66,8 @@ private:
     int m_teamLevel = 1;
     int m_teamExp = 0;
     int m_teamExpMax = 10;
+
+    bool m_isPaused = false;
+    sf::Clock m_upgradeTimer;
+    std::map<std::uint32_t, int> m_playerChoices;
 };
