@@ -45,9 +45,6 @@ private:
         float hp;
         float speed;
         PlayerClass pClass;
-        int exp = 0;
-        int level = 1;
-        int expToNext = 10;
     };
 
     std::map<std::uint32_t, ClientInfo> m_clients;
@@ -65,4 +62,8 @@ private:
     sf::Clock m_enemySpawnTimer;
 
     std::uint32_t m_globalEntityCounter = 1;
+
+    int m_teamLevel = 1;
+    int m_teamExp = 0;
+    int m_teamExpMax = 10;
 };

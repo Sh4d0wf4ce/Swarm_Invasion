@@ -22,12 +22,6 @@ public:
     virtual void onQ(const sf::Vector2f& mouseWorldPos) {}
     virtual void onE(const sf::Vector2f& mouseWorldPos) {}
 
-    int getLevel() const { return m_level; }
-    int getExp() const { return m_exp; }
-    int getExpMax() const { return m_expMax; }
-
-    void setExpData(int level, int exp, int expMax);
-
 protected:
     bool checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map);
 
@@ -41,10 +35,6 @@ protected:
     sf::Clock m_cooldownShift;
     sf::Clock m_cooldownQ;
     sf::Clock m_cooldownE;
-
-    int m_level = 1;
-    int m_exp = 0;
-    int m_expMax = 10;
 };
 
 

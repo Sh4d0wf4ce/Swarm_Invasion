@@ -242,12 +242,12 @@ void ServerEngine::update(sf::Time deltaTime){
             float distSq = dir.lengthSquared();
 
             if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
-                pInfo.exp += cell.expValue;
-                if(pInfo.exp >= pInfo.expToNext){
-                    pInfo.exp -= pInfo.expToNext;
-                    pInfo.level++;
-                    pInfo.expToNext = static_cast<int>(pInfo.expToNext * 1.5f);
-                    std::cout << "[SERVER] Player " << cell.targetPlayerId << " reached level " << pInfo.level << "!\n";
+                m_teamExp += cell.expValue;
+                if(m_teamExp >= m_teamExpMax){
+                    m_teamExp -= m_teamExpMax;
+                    m_teamLevel++;
+                    m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
+                    std::cout << "[SERVER] Player " << cell.targetPlayerId << " reached level " << m_teamLevel << "!\n";
                 }
                 it = m_energyCells.erase(it);
                 continue;
@@ -270,9 +270,13 @@ void ServerEngine::update(sf::Time deltaTime){
 
         // Players info
         worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
+        
         for(const auto& [clientId, info] : m_clients){
-            worldPacket << clientId << info.pClass << info.position << info.hp << info.exp << info.level << info.expToNext;
+            worldPacket << clientId << info.pClass << info.position << info.hp;
         }
+
+        // Exp info
+        worldPacket << m_teamLevel << m_teamExp << m_teamExpMax;
 
         // Enemy info
         worldPacket << static_cast<std::uint32_t>(m_enemies.size());

@@ -48,4 +48,8 @@ private:
     std::unique_ptr<ProjectileManager> m_projectileManager;
 
     PlayerClass m_selectedClass = PlayerClass::Soldier;
+
+    int m_teamLevel = 1;
+    int m_teamExp = 0;
+    int m_teamExpMax = 10;
 };

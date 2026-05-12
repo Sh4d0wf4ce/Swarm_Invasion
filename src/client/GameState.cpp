@@ -92,14 +92,12 @@ void GameState::handleWorldState(sf::Packet& packet){
         PlayerClass pClass;
         sf::Vector2f pos;
         float hp;
-        int exp, level, expMax;
-        packet >> id >> pClass >> pos >> hp >> exp >> level >> expMax;
+        packet >> id >> pClass >> pos >> hp;
 
         activeServerIds.push_back(id);
 
         if(m_player && id == m_player->getId()){
-            m_player->setHp(hp);   
-            m_player->setExpData(level, exp, expMax);
+            m_player->setHp(hp);
             continue;
         }
 
@@ -109,8 +107,9 @@ void GameState::handleWorldState(sf::Packet& packet){
 
         m_otherPlayers[id]->setHp(hp);
         m_otherPlayers[id]->setPosition(pos);
-        m_otherPlayers[id]->setExpData(level, exp, expMax);
     }
+
+    packet >> m_teamLevel >> m_teamExp >> m_teamExpMax;
 
     // removing unactive players
     for(auto it = m_otherPlayers.begin(); it != m_otherPlayers.end();){
@@ -275,17 +274,18 @@ void GameState::renderUI(){
         }
         ImGui::End();
         return;
-    }else{
-        float expProgress = static_cast<float>(m_player->getExp()) / m_player->getExpMax();
-        char expOverlay[64];
-        sprintf(expOverlay, "LEVEL %d (%d/%d)", m_player->getLevel(), m_player->getExp(), m_player->getExpMax());
-
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
-        ImGui::ProgressBar(expProgress, ImVec2(-1.0f, 24.0f), expOverlay);
-        ImGui::PopStyleColor();
-        ImGui::Separator();
     }
 
+
+    float expProgress = static_cast<float>(m_teamExp) / m_teamExpMax;
+    char expOverlay[64];
+    sprintf(expOverlay, "LEVEL %d (%d/%d)", m_teamLevel, m_teamExp, m_teamExpMax);
+
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+    ImGui::ProgressBar(expProgress, ImVec2(-1.0f, 24.0f), expOverlay);
+    ImGui::PopStyleColor();
+    ImGui::Separator();
+    
     ImGui::Begin("Swarm Invasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
