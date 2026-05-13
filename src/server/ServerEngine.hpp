@@ -9,6 +9,7 @@
 
 #include <SFML/System.hpp>
 #include <memory>
+#include <random>
 #include <map>
 
 struct EnergyCellInfo {
@@ -29,6 +30,7 @@ private:
     bool checkCollision(const sf::Vector2f& pos, float radius);
 
     std::shared_ptr<MapGenerator> m_map;
+    std::mt19937 m_rng;
 
     sf::UdpSocket m_socket;
     sf::Clock m_clock;
@@ -59,7 +61,10 @@ private:
     };
 
     std::map<std::uint32_t, EnemyInfo> m_enemies;
-    sf::Clock m_enemySpawnTimer;
+    int m_currentWave = 1;
+    sf::Clock m_waveTimer;
+    sf::Clock m_spawnTimer;
+    float m_currentSpawnRate = 2.0f;
 
     std::uint32_t m_globalEntityCounter = 1;
 

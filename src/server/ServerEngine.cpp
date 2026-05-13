@@ -15,6 +15,9 @@ ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     }
 
     m_socket.setBlocking(false);
+
+    std::random_device rd;
+    m_rng.seed(rd());
 }
 
 void ServerEngine::run(){
@@ -170,51 +173,102 @@ void ServerEngine::update(sf::Time deltaTime){
             m_enemies.clear();
             std::cout << "[SERVER] All players left. Resetting world...\n";
         }
+        
+
+        // --- ENEMIES DIRECTOR ---
+        if(m_waveTimer.getElapsedTime().asSeconds() >= 30.0f){
+            m_currentWave++;
+            m_waveTimer.restart();
+
+            m_currentSpawnRate = std::max(0.1f, m_currentSpawnRate * 0.75f);
+            std::cout << "[SERVER] WAVE " << m_currentWave << " STARTED! Spawn rate: " << m_currentSpawnRate << "s\n";
+        }
 
         //--- SPAWNING ENEMIES ---
-        if(!m_clients.empty() && m_enemySpawnTimer.getElapsedTime().asSeconds() > Config::ENEMY_SPAWN_RATE){
-            m_enemySpawnTimer.restart();
+        if(m_spawnTimer.getElapsedTime().asSeconds() > m_currentSpawnRate && !m_clients.empty()){
+            m_spawnTimer.restart();
 
-            EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
-            const auto& stats = EnemyRegistry::getStats(randomType);
+            std::uniform_int_distribution<int> distX(1, m_map->getWidth() - 2);
+            std::uniform_int_distribution<int> distY(1, m_map->getHeight() - 2);
 
-            EnemyInfo newEnemy;
-            newEnemy.position = sf::Vector2f(120.0f, 120.0f);
-            newEnemy.speed = stats.speed;
-            newEnemy.hp = stats.maxHp;
-            newEnemy.type = randomType;
+            sf::Vector2f spawnPos;
+            bool validSpawn = false;
 
-            std::uint32_t enemyId = m_globalEntityCounter++;
-            m_enemies[enemyId] = newEnemy;
-            std::cout << "[SERVER] Spawned enemy ID: " << enemyId - 1 << " Type: " << (int)randomType << "\n";
+            for(int i = 0; i < 50; i++){
+                int tx = distX(m_rng);
+                int ty = distY(m_rng);
+
+                if(m_map->getTile(tx, ty) == TileType::Floor){
+                    spawnPos = sf::Vector2f(tx * Config::TILE_SIZE, ty * Config::TILE_SIZE);
+
+                    bool tooClose = false;
+                    for(const auto& [id, info] : m_clients){
+                        float distSq = (spawnPos - info.position).lengthSquared();
+                        if(distSq < 400.0f * 400.0f){
+                            tooClose = true;
+                            break;
+                        }
+                    }
+
+                    if(!tooClose){
+                        validSpawn = true;
+                        break;
+                    }
+                }
+            }
+
+            if(validSpawn){
+                EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
+                const auto& stats = EnemyRegistry::getStats(randomType);
+
+                EnemyInfo newEnemy;
+                newEnemy.position = spawnPos;
+                newEnemy.speed = stats.speed;
+                newEnemy.hp = stats.maxHp;
+                newEnemy.type = randomType;
+
+                m_enemies[m_globalEntityCounter++] = newEnemy;
+            }else{
+                std::cout << "[SERVER] INVALID SPAWN POINT!!!!\n";
+            }
         }
 
         //--- ENEMIES AI ---
         if(!m_clients.empty()){
-            auto targetIt = m_clients.begin();
-            std::uint32_t targetId = targetIt->first;
-            sf::Vector2f targetPos = targetIt->second.position;
-
             for(auto& [id, enemy] : m_enemies){
-                const auto& eStats = EnemyRegistry::getStats(enemy.type);
+                std::uint32_t targetId = m_clients.begin()->first;
+                float minDistanceSq = (m_clients.begin()->second.position - enemy.position).lengthSquared();
 
-                sf::Vector2 direction = targetPos - enemy.position;
+                for(const auto& [playerId, playerInfo] : m_clients){
+                    float distSq = (playerInfo.position - enemy.position).lengthSquared();
+                    if(distSq < minDistanceSq){
+                        minDistanceSq = distSq;
+                        targetId = playerId;
+                    }    
+                }
+
+
+
+                const auto& eStats = EnemyRegistry::getStats(enemy.type);
+                ClientInfo& targetInfo = m_clients.at(targetId);
+
+                sf::Vector2 direction = targetInfo.position - enemy.position;
                 float lenSq = direction.lengthSquared();
-                float playerRadius = HeroRegistry::getStats(targetIt->second.pClass).radius;
+                float playerRadius = HeroRegistry::getStats(targetInfo.pClass).radius;
                 float touchDist = eStats.radius + playerRadius;
                 
                 if(lenSq < touchDist * touchDist){
                     if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                        targetIt->second.hp -= eStats.damage;
+                        targetInfo.hp -= eStats.damage;
                         enemy.lastAttackTime.restart();
-                        std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetIt->second.hp << "\n";
+                        std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetInfo.hp << "\n";
 
-                        if(targetIt->second.hp <= 0.0f) {
+                        if(targetInfo.hp <= 0.0f) {
                             std::cout << "[SERVER] Player " << targetId << " died!\n";
 
                             sf::Packet deathPacket;
                             deathPacket << PacketType::PlayerDied;
-                            (void)m_socket.send(deathPacket, targetIt->second.ip, targetIt->second.port);
+                            (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
 
                             m_clients.erase(targetId);
                             break;
