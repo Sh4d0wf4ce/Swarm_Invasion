@@ -26,6 +26,7 @@ public:
 
 private:
         bool checkCollision(const sf::Vector2f& pos, float radius, std::shared_ptr<MapGenerator> map);
+        bool hasLineOfSight(sf::Vector2f start, sf::Vector2f end, float radius, std::shared_ptr<MapGenerator> map);
         void buildFlowField(std::shared_ptr<MapGenerator> map, const std::map<uint32_t, ClientInfo>& clients);
 
         sf::Clock m_pathFindingTimer;
