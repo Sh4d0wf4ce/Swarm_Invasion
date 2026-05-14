@@ -49,7 +49,6 @@ FetchContent_MakeAvailable(json)
 
 add_library(SharedStatic STATIC
     src/shared/MapGenerator.cpp
-    src/shared/NetworkProtocol.cpp
 )
 target_include_directories(SharedStatic PUBLIC src/shared)
 target_link_libraries(SharedStatic PUBLIC nlohmann_json::nlohmann_json)
@@ -57,6 +56,7 @@ target_link_libraries(SharedStatic PUBLIC nlohmann_json::nlohmann_json)
 add_executable(SwarmServer
     src/server/main.cpp
     src/server/ServerEngine.cpp
+    src/server/AIDirector.cpp
 )
 target_link_libraries(SwarmServer PRIVATE SharedStatic SFML::Network SFML::System SFML::Main)
 

@@ -15,9 +15,6 @@ ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     }
 
     m_socket.setBlocking(false);
-
-    std::random_device rd;
-    m_rng.seed(rd());
 }
 
 void ServerEngine::run(){
@@ -46,97 +43,19 @@ void ServerEngine::processNetwork(){
     unsigned short port;
 
     while(m_socket.receive(packet, sender, port) == sf::Socket::Status::Done){
+        if(!sender.has_value()) continue;
+
         PacketType type;
         if(packet >> type){
-            if(type == PacketType::Ping){
-                std::string message;
-                packet >> message;
-                std::cout << "[SERVER] Recieved PING from " << sender.value() << ":" << port
-                          << " | Message: " << message << "\n";
-
-                sf::Packet reply;
-                reply << PacketType::Pong << "Server here!";
-                (void)m_socket.send(reply, sender.value(), port);
-            }
-            else if(type == PacketType::PlayerPosition){
-                std::uint32_t playerId;
-                sf::Vector2f position;
-                
-                if(packet >> playerId >> position && sender.has_value()){
-                    auto it = m_clients.find(playerId);
-                    if(it != m_clients.end()){
-                        it->second.position = position;
-                        it->second.lastActivity.restart();
-                    }
-                }
-            }
-            else if(type == PacketType::EnemyHit){
-                std::uint32_t enemyId, shooterId;
-                if(packet >> enemyId >> shooterId){
-                    auto enemyIt = m_enemies.find(enemyId);
-                    auto playerIt = m_clients.find(shooterId);
-
-                    if(enemyIt != m_enemies.end() && playerIt != m_clients.end()){
-                        WeaponType weapon = HeroRegistry::getStats(playerIt->second.pClass).defaultWeapon;
-                        float damage = WeaponRegistry::getStats(weapon).damage;
-
-                        enemyIt->second.hp -= damage;
-                        
-                        if(enemyIt->second.hp <= 0.0f){
-                            m_energyCells[m_globalEntityCounter++] = {enemyIt->second.position, 1, 0};
-
-                            m_enemies.erase(enemyIt);
-                            std::cout << "[SERVER] Enemy ID: " << enemyId << " died!\n";
-                        }
-                    }
-                }
-            }
-            else if(type == PacketType::JoinRequest){
-                PlayerClass requestedClass;
-                if(sender.has_value() && (packet >> requestedClass)){
-
-                    std::uint32_t newId = m_globalEntityCounter++;
-                    sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
-                    const auto& stats = HeroRegistry::getStats(requestedClass);
-
-                    m_clients.insert_or_assign(newId, ClientInfo{
-                        sender.value(), port, newPos, sf::Clock(), stats.maxHp, stats.speed, requestedClass
-                    });
-                    
-                    sf::Packet reply;
-                    reply << PacketType::JoinAccept << newId;
-                    (void)m_socket.send(reply, sender.value(), port);
-
-                    std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
-                }
-            }
-            else if(type == PacketType::PlayerShoots){
-                std::uint32_t shooterId;
-                sf::Vector2f startPos, targetPos;
-                WeaponType weaponUsed;
-                if(packet >> shooterId >> weaponUsed >> startPos >> targetPos){
-                    sf::Packet relayPacket;
-                    relayPacket << PacketType::PlayerShoots << shooterId << weaponUsed << startPos << targetPos;
-
-                    for(const auto& [id, info] : m_clients){
-                        if(id == shooterId) continue;
-                        (void)m_socket.send(relayPacket, info.ip, info.port);
-                    }
-                }
-            }
-            else if(type == PacketType::PlayerDisconnect){
-                std::uint32_t playerId;
-                if(packet >> playerId){
-                    m_clients.erase(playerId);
-                    std::cout << "[SERVER] Player " << playerId << " disconnected\n";
-                }
-            }
-            else if(type == PacketType::CardSelected){
-                std::uint32_t playerId;
-                int choice;
-                if(packet >> playerId >> choice){
-                    m_playerChoices[playerId] = choice;
-                }
+            switch(type){
+                case PacketType::Ping:              handlePing(packet, sender.value(), port); break;
+                case PacketType::PlayerPosition:    handlePlayerPosition(packet); break;
+                case PacketType::EnemyHit:          handleEnemyHit(packet); break;
+                case PacketType::JoinRequest:       handleJoinRequest(packet, sender.value(), port); break;
+                case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
+                case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
+                case PacketType::CardSelected:      handleCardSelected(packet); break;
+                default: break;
             }
         }
     }
@@ -145,19 +64,158 @@ void ServerEngine::processNetwork(){
 void ServerEngine::update(sf::Time deltaTime){
     m_tickCounter++;
 
+    // CARD SELECTION SCREEN
     if(m_isPaused){
-        bool allSelected = true;
-        for(auto& [id, info] : m_clients){
-            if(m_playerChoices[id] == -1) allSelected = false;
-        }
+        proccessUpgradeMenuTimeout();
+        sendWorldState();
+        return;
+    }
 
-        if(allSelected || m_upgradeTimer.getElapsedTime().asSeconds() > Config::LEVEL_UP_TIMEOUT){
-            m_isPaused = false;
-            std::cout << "[SERVER] Resuming game after upgrades. \n";
+    // REMOVING UNACTIVE PLAYERS
+    removeAFKPlayers();
+
+
+    // SERVER RESET
+    if(m_clients.empty() && !m_enemies.empty()){
+        m_enemies.clear();
+        std::cout << "[SERVER] All players left. Resetting world...\n";
+    }
+
+    // ENEMIES DIRECTOR
+    if(!m_clients.empty()){
+        m_aiDirector.updateWaves(deltaTime, m_enemies, m_clients, m_map, m_globalEntityCounter);
+        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, m_clients, m_map);
+
+        for(std::uint32_t deadId : deadPlayers){
+            if(m_clients.count(deadId)){
+                auto& targetInfo = m_clients.at(deadId);
+                std::cout << "[SERVER] Player " << deadId << " died!\n";
+
+                sf::Packet deathPacket;
+                deathPacket << PacketType::PlayerDied;
+                (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
+
+                m_clients.erase(deadId);
+            }
         }
     }
 
-    //--- REMOVING UNACTIVE PLAYERS ---
+    // EXP SYSTEM
+    updateEnergyCells(deltaTime);
+
+
+    // SENDING CURRENT WORLD STATE TO CLiENTS
+    if(m_tickCounter % 60 == 0){
+            std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
+    }
+    sendWorldState();
+}
+
+void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
+    std::string message;
+    packet >> message;
+    std::cout << "[SERVER] Recieved PING from " << sender << ":" << port << " | Message: " << message << "\n";
+    sf::Packet reply;
+    reply << PacketType::Pong << "Server here!";
+    (void)m_socket.send(reply, sender, port);
+}
+
+void ServerEngine::handlePlayerPosition(sf::Packet& packet){
+    std::uint32_t playerId;
+    sf::Vector2f position;
+
+    if(packet >> playerId >> position){
+        auto it = m_clients.find(playerId);
+        if(it != m_clients.end()){
+            it->second.position = position;
+            it->second.lastActivity.restart();
+        }
+    }
+}
+
+void ServerEngine::handleEnemyHit(sf::Packet& packet){
+    std::uint32_t enemyId, shooterId;
+    if(packet >> enemyId >> shooterId){
+        auto enemyIt = m_enemies.find(enemyId);
+        auto playerIt = m_clients.find(shooterId);
+
+        if(enemyIt != m_enemies.end() && playerIt != m_clients.end()){
+            WeaponType weapon = HeroRegistry::getStats(playerIt->second.pClass).defaultWeapon;
+            float damage = WeaponRegistry::getStats(weapon).damage;
+
+            enemyIt->second.hp -= damage;
+            
+            if(enemyIt->second.hp <= 0.0f){
+                m_energyCells[m_globalEntityCounter++] = {enemyIt->second.position, 1, 0};
+                m_enemies.erase(enemyIt);
+            }
+        }
+    }
+}
+
+void ServerEngine::handleJoinRequest(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
+    PlayerClass requestedClass;
+    if(packet >> requestedClass){
+        std::uint32_t newId = m_globalEntityCounter++;
+        sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
+        const auto& stats = HeroRegistry::getStats(requestedClass);
+
+        m_clients.insert_or_assign(newId, ClientInfo{
+            sender, port, newPos, sf::Clock(), stats.maxHp, stats.speed, requestedClass
+        });
+        
+        sf::Packet reply;
+        reply << PacketType::JoinAccept << newId;
+        (void)m_socket.send(reply, sender, port);
+        std::cout << "[SERVER] New player joined the game! Given ID: " << newId << "\n";
+    }
+}
+
+void ServerEngine::handlePlayerShoots(sf::Packet& packet){
+    std::uint32_t shooterId;
+    sf::Vector2f startPos, targetPos;
+    WeaponType weaponUsed;
+    if(packet >> shooterId >> weaponUsed >> startPos >> targetPos){
+        sf::Packet relayPacket;
+        relayPacket << PacketType::PlayerShoots << shooterId << weaponUsed << startPos << targetPos;
+
+        for(const auto& [id, info] : m_clients){
+            if(id == shooterId) continue;
+            (void)m_socket.send(relayPacket, info.ip, info.port);
+        }
+    }
+}
+
+void ServerEngine::handlePlayerDisconnect(sf::Packet& packet){
+    std::uint32_t playerId;
+    if(packet >> playerId){
+        m_clients.erase(playerId);
+        std::cout << "[SERVER] Player " << playerId << " disconnected\n";
+    }
+}
+
+void ServerEngine::handleCardSelected(sf::Packet& packet){
+    std::uint32_t playerId;
+    int choice;
+    if(packet >> playerId >> choice){
+        m_playerChoices[playerId] = choice;
+    }
+}
+
+
+void ServerEngine::proccessUpgradeMenuTimeout(){
+    bool allSelected = true;
+    for(auto& [id, info] : m_clients){
+        if(m_playerChoices[id] == -1) allSelected = false;
+    }
+
+    if(allSelected || m_upgradeTimer.getElapsedTime().asSeconds() > Config::LEVEL_UP_TIMEOUT){
+        m_isPaused = false;
+        std::cout << "[SERVER] Resuming game after upgrades. \n";
+    }
+}
+
+void ServerEngine::removeAFKPlayers(){
     for(auto it = m_clients.begin(); it != m_clients.end();){
         if(it->second.lastActivity.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
             std::cout << "[SERVER] Player ID: " << it->first << " disconected (Timeout). \n";
@@ -166,242 +224,90 @@ void ServerEngine::update(sf::Time deltaTime){
             ++it;
         }
     }
+}
 
-    if(!m_isPaused){    
-        // --- SERVER RESET ---
-        if(m_clients.empty() && !m_enemies.empty()){
-            m_enemies.clear();
-            std::cout << "[SERVER] All players left. Resetting world...\n";
-        }
-        
+void ServerEngine::updateEnergyCells(sf::Time deltaTime){
+    for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
+        auto& cell = it->second;
 
-        // --- ENEMIES DIRECTOR ---
-        if(m_waveTimer.getElapsedTime().asSeconds() >= 30.0f){
-            m_currentWave++;
-            m_waveTimer.restart();
-
-            m_currentSpawnRate = std::max(0.1f, m_currentSpawnRate * 0.75f);
-            std::cout << "[SERVER] WAVE " << m_currentWave << " STARTED! Spawn rate: " << m_currentSpawnRate << "s\n";
-        }
-
-        //--- SPAWNING ENEMIES ---
-        if(m_spawnTimer.getElapsedTime().asSeconds() > m_currentSpawnRate && !m_clients.empty()){
-            m_spawnTimer.restart();
-
-            std::uniform_int_distribution<int> distX(1, m_map->getWidth() - 2);
-            std::uniform_int_distribution<int> distY(1, m_map->getHeight() - 2);
-
-            sf::Vector2f spawnPos;
-            bool validSpawn = false;
-
-            for(int i = 0; i < 50; i++){
-                int tx = distX(m_rng);
-                int ty = distY(m_rng);
-
-                if(m_map->getTile(tx, ty) == TileType::Floor){
-                    spawnPos = sf::Vector2f(tx * Config::TILE_SIZE, ty * Config::TILE_SIZE);
-
-                    bool tooClose = false;
-                    for(const auto& [id, info] : m_clients){
-                        float distSq = (spawnPos - info.position).lengthSquared();
-                        if(distSq < 400.0f * 400.0f){
-                            tooClose = true;
-                            break;
-                        }
-                    }
-
-                    if(!tooClose){
-                        validSpawn = true;
-                        break;
-                    }
-                }
-            }
-
-            if(validSpawn){
-                EnemyType randomType = (rand() % 100 < 70) ? EnemyType::Crawler : EnemyType::Bruiser;
-                const auto& stats = EnemyRegistry::getStats(randomType);
-
-                EnemyInfo newEnemy;
-                newEnemy.position = spawnPos;
-                newEnemy.speed = stats.speed;
-                newEnemy.hp = stats.maxHp;
-                newEnemy.type = randomType;
-
-                m_enemies[m_globalEntityCounter++] = newEnemy;
-            }else{
-                std::cout << "[SERVER] INVALID SPAWN POINT!!!!\n";
-            }
-        }
-
-        //--- ENEMIES AI ---
-        if(!m_clients.empty()){
-            for(auto& [id, enemy] : m_enemies){
-                std::uint32_t targetId = m_clients.begin()->first;
-                float minDistanceSq = (m_clients.begin()->second.position - enemy.position).lengthSquared();
-
-                for(const auto& [playerId, playerInfo] : m_clients){
-                    float distSq = (playerInfo.position - enemy.position).lengthSquared();
-                    if(distSq < minDistanceSq){
-                        minDistanceSq = distSq;
-                        targetId = playerId;
-                    }    
-                }
-
-
-
-                const auto& eStats = EnemyRegistry::getStats(enemy.type);
-                ClientInfo& targetInfo = m_clients.at(targetId);
-
-                sf::Vector2 direction = targetInfo.position - enemy.position;
-                float lenSq = direction.lengthSquared();
-                float playerRadius = HeroRegistry::getStats(targetInfo.pClass).radius;
-                float touchDist = eStats.radius + playerRadius;
-                
-                if(lenSq < touchDist * touchDist){
-                    if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                        targetInfo.hp -= eStats.damage;
-                        enemy.lastAttackTime.restart();
-                        std::cout << "[SERVER] Player " << targetId << "got bitten! HP left: " << targetInfo.hp << "\n";
-
-                        if(targetInfo.hp <= 0.0f) {
-                            std::cout << "[SERVER] Player " << targetId << " died!\n";
-
-                            sf::Packet deathPacket;
-                            deathPacket << PacketType::PlayerDied;
-                            (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
-
-                            m_clients.erase(targetId);
-                            break;
-                        }
-                    }
-                }
-
-                
-                if(lenSq > 0){
-                    direction /= std::sqrt(lenSq);
-
-                    sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
-
-                    sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
-                    if(!checkCollision(nextPosX, eStats.radius))
-                        enemy.position.x = nextPosX.x;
-
-                    sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
-                    if(!checkCollision(nextPosY, eStats.radius))
-                        enemy.position.y = nextPosY.y;
+        // 1. looking for closest player;
+        if(cell.targetPlayerId == 0){
+            float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
+            for(const auto& [pId, pInfo] : m_clients){
+                float distSq = (cell.position - pInfo.position).lengthSquared();
+                if(distSq < closestDist){
+                    closestDist = distSq;
+                    cell.targetPlayerId = pId;
                 }
             }
         }
 
-        //--- ENERGY CELLS BEHAVIOUR (EXP) ---
-        for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
-            auto& cell = it->second;
+        // 2. exp goes to the closest player in magnet radius
+        if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
+            auto& pInfo = m_clients.at(cell.targetPlayerId);
+            sf::Vector2f dir = pInfo.position - cell.position;
+            float distSq = dir.lengthSquared();
 
-            // 1. looking for closest player;
-            if(cell.targetPlayerId == 0){
-                float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
-                for(const auto& [pId, pInfo] : m_clients){
-                    float distSq = (cell.position - pInfo.position).lengthSquared();
-                    if(distSq < closestDist){
-                        closestDist = distSq;
-                        cell.targetPlayerId = pId;
+            if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
+                m_teamExp += cell.expValue;
+                if(m_teamExp >= m_teamExpMax){
+                    m_teamExp -= m_teamExpMax;
+                    m_teamLevel++;
+                    m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
+                    std::cout << "[SERVER] Players reached level " << m_teamLevel << "!\n";
+
+                    m_isPaused = true;
+                    m_upgradeTimer.restart();
+                    m_playerChoices.clear();
+                    for(auto& [id, info] : m_clients) m_playerChoices[id] = -1;
+
+                    sf::Packet pausePacket;
+                    pausePacket << PacketType::LevelUpTriggered;
+                    for(auto& [id, info] : m_clients){
+                        (void)m_socket.send(pausePacket, info.ip, info.port);
                     }
                 }
+                it = m_energyCells.erase(it);
+                continue;
+            }else if(distSq > 0){
+                cell.position += (dir / std::sqrt(distSq)) * Config::CRYSTAL_SPEED * deltaTime.asSeconds();
             }
-
-            // 2. exp goes to the closest player in magnet radius
-            if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
-                auto& pInfo = m_clients.at(cell.targetPlayerId);
-                sf::Vector2f dir = pInfo.position - cell.position;
-                float distSq = dir.lengthSquared();
-
-                if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
-                    m_teamExp += cell.expValue;
-                    if(m_teamExp >= m_teamExpMax){
-                        m_teamExp -= m_teamExpMax;
-                        m_teamLevel++;
-                        m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
-                        std::cout << "[SERVER] Players reached level " << m_teamLevel << "!\n";
-
-                        m_isPaused = true;
-                        m_upgradeTimer.restart();
-                        m_playerChoices.clear();
-                        for(auto& [id, info] : m_clients) m_playerChoices[id] = -1;
-
-                        sf::Packet pausePacket;
-                        pausePacket << PacketType::LevelUpTriggered;
-                        for(auto& [id, info] : m_clients){
-                            (void)m_socket.send(pausePacket, info.ip, info.port);
-                        }
-                    }
-                    it = m_energyCells.erase(it);
-                    continue;
-                }else if(distSq > 0){
-                    cell.position += (dir / std::sqrt(distSq)) * Config::CRYSTAL_SPEED * deltaTime.asSeconds();
-                }
-            }else{
-                cell.targetPlayerId = 0;
-            }
-            ++it;
+        }else{
+            cell.targetPlayerId = 0;
         }
-
-        if(m_tickCounter % 60 == 0){
-            std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
-        }
-    }
-
-    //--- CREATING WORLD STATE PACKET ---
-    if(!m_clients.empty()){
-        sf::Packet worldPacket;
-
-        // Players info
-        worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
-        
-        for(const auto& [clientId, info] : m_clients){
-            worldPacket << clientId << info.pClass << info.position << info.hp;
-        }
-
-        // Exp info
-        worldPacket << m_teamLevel << m_teamExp << m_teamExpMax << m_isPaused;
-
-        // Enemy info
-        worldPacket << static_cast<std::uint32_t>(m_enemies.size());
-        for(const auto& [enemyId, enemy] : m_enemies){
-            worldPacket << enemyId << enemy.type << enemy.position << enemy.hp;
-        }
-
-        // Energy Cells info
-        worldPacket << static_cast<std::uint32_t>(m_energyCells.size());
-        for(const auto& [cellId, cell] : m_energyCells){
-            worldPacket << cellId << cell.position;
-        }
-
-        // Sending
-        for(const auto& [clientId, info] : m_clients){
-            (void)m_socket.send(worldPacket, info.ip, info.port);
-        }
+        ++it;
     }
 }
 
-bool ServerEngine::checkCollision(const sf::Vector2f& pos, float radius){
-    if(!m_map) return false;
+void ServerEngine::sendWorldState(){
+    if(m_clients.empty()) return;
 
-    float hitBoxOffset = radius * 0.8f;
+    sf::Packet worldPacket;
 
-    sf::Vector2f points[4] = {
-        {pos.x - hitBoxOffset, pos.y - hitBoxOffset},
-        {pos.x + hitBoxOffset, pos.y - hitBoxOffset},
-        {pos.x - hitBoxOffset, pos.y + hitBoxOffset},
-        {pos.x + hitBoxOffset, pos.y + hitBoxOffset}
-    };
-
-    for(const auto& p: points){
-        int gridX = static_cast<int>(p.x / Config::TILE_SIZE);
-        int gridY = static_cast<int>(p.y / Config::TILE_SIZE);
+    // Players info
+    worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
     
-        if(m_map->getTile(gridX, gridY) == TileType::Wall)
-            return true;
+    for(const auto& [clientId, info] : m_clients){
+        worldPacket << clientId << info.pClass << info.position << info.hp;
     }
 
-    return false;
+    // Exp info
+    worldPacket << m_teamLevel << m_teamExp << m_teamExpMax << m_isPaused;
+
+    // Enemy info
+    worldPacket << static_cast<std::uint32_t>(m_enemies.size());
+    for(const auto& [enemyId, enemy] : m_enemies){
+        worldPacket << enemyId << enemy.type << enemy.position << enemy.hp;
+    }
+
+    // Energy Cells info
+    worldPacket << static_cast<std::uint32_t>(m_energyCells.size());
+    for(const auto& [cellId, cell] : m_energyCells){
+        worldPacket << cellId << cell.position;
+    }
+
+    // Sending
+    for(const auto& [clientId, info] : m_clients){
+        (void)m_socket.send(worldPacket, info.ip, info.port);
+    }
 }
