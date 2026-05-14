@@ -7,7 +7,7 @@
 #include <memory>
 #include <random>
 #include <vector>
-
+#include <queue>
 
 class AIDirector{
 public:
@@ -26,6 +26,10 @@ public:
 
 private:
         bool checkCollision(const sf::Vector2f& pos, float radius, std::shared_ptr<MapGenerator> map);
+        void buildFlowField(std::shared_ptr<MapGenerator> map, const std::map<uint32_t, ClientInfo>& clients);
+
+        sf::Clock m_pathFindingTimer;
+        std::vector <std::vector<int>> m_flowField;
 
         std::mt19937 m_rng;
         int m_currentWave;

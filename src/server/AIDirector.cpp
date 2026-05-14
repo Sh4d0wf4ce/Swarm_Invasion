@@ -62,53 +62,72 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, EnemyIn
 
 std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std::map<std::uint32_t, EnemyInfo>& enemies, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map){
     std::vector<std::uint32_t> deadPlayers;
-    
     if(clients.empty()) return deadPlayers;
+
+    if(m_pathFindingTimer.getElapsedTime().asSeconds() > 0.25f){
+        buildFlowField(map, clients);
+        m_pathFindingTimer.restart();
+    }
 
 
     for(auto& [id, enemy] : enemies){
-        std::uint32_t targetId = clients.begin()->first;
-        float minDistanceSq = (clients.begin()->second.position - enemy.position).lengthSquared();
+        const auto& eStats = EnemyRegistry::getStats(enemy.type);
 
-        for(const auto& [playerId, playerInfo] : clients){
+
+        // DEALING DAMAGE TO PLAYERS
+        for(auto& [playerId, playerInfo] : clients){
             float distSq = (playerInfo.position - enemy.position).lengthSquared();
-            if(distSq < minDistanceSq){
-                minDistanceSq = distSq;
-                targetId = playerId;
-            }    
+            float touchDist = eStats.radius + HeroRegistry::getStats(playerInfo.pClass).radius;
+
+            if(distSq < touchDist * touchDist){
+                if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
+                    playerInfo.hp -= eStats.damage;
+                    enemy.lastAttackTime.restart();
+                    std::cout << "[AI DIRECTOR] Player " << playerId << "got bitten! HP left: " << playerInfo.hp << "\n";
+
+                    if(playerInfo.hp <= 0.0f) deadPlayers.push_back(playerId);
+                }
+            }   
         }
 
-
-
-        const auto& eStats = EnemyRegistry::getStats(enemy.type);
-        ClientInfo& targetInfo = clients.at(targetId);
-
-        sf::Vector2 direction = targetInfo.position - enemy.position;
-        float lenSq = direction.lengthSquared();
-        float touchDist = eStats.radius + HeroRegistry::getStats(targetInfo.pClass).radius;
         
-        if(lenSq < touchDist * touchDist){
-            if(enemy.lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                targetInfo.hp -= eStats.damage;
-                enemy.lastAttackTime.restart();
-                std::cout << "[AI DIRECTOR] Player " << targetId << "got bitten! HP left: " << targetInfo.hp << "\n";
+        // MOVING ENEMIES
+        if(m_flowField.empty()) continue;
 
-                if(targetInfo.hp <= 0.0f) {
-                    deadPlayers.push_back(targetId);
+        int ex = static_cast<int>(enemy.position.x / Config::TILE_SIZE);
+        int ey = static_cast<int>(enemy.position.y / Config::TILE_SIZE);
+
+        if(ex > 0 && ex < map->getWidth() - 1 && ey > 0 && ey < map->getHeight() - 1){
+            int minCost = m_flowField[ex][ey];
+            sf::Vector2f bestTarget = enemy.position;
+
+            for(int dx = -1; dx <= 1; dx++){
+                for(int dy = -1; dy <= 1; dy++){
+                    if(dx == 0 && dy == 0) continue;
+
+                    int nx = ex + dx;
+                    int ny = ey + dy;
+
+                    if(m_flowField[nx][ny] < minCost){
+                        minCost = m_flowField[nx][ny];
+                        bestTarget = sf::Vector2f((nx + 0.5f) * Config::TILE_SIZE, (ny + 0.5f) * Config::TILE_SIZE);
+                    }
                 }
             }
-        }
 
-        
-        if(lenSq > 0){
-            direction /= std::sqrt(lenSq);
-            sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
+            sf::Vector2f direction = bestTarget - enemy.position;
+            float lenSq = direction.lengthSquared();
 
-            sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
-            if(!checkCollision(nextPosX, eStats.radius, map)) enemy.position.x = nextPosX.x;
+            if(lenSq > 0){
+                direction /= std::sqrt(lenSq);
+                sf::Vector2f velocity = direction * enemy.speed * deltaTime.asSeconds();
 
-            sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
-            if(!checkCollision(nextPosY, eStats.radius, map)) enemy.position.y = nextPosY.y;
+                sf::Vector2f nextPosX = enemy.position + sf::Vector2f(velocity.x, 0.0f);
+                if(!checkCollision(nextPosX, eStats.radius, map)) enemy.position.x = nextPosX.x;
+
+                sf::Vector2f nextPosY = enemy.position + sf::Vector2f(0.0f, velocity.y);
+                if(!checkCollision(nextPosY, eStats.radius, map)) enemy.position.y = nextPosY.y;
+            }
         }
     }
 
@@ -135,4 +154,53 @@ bool AIDirector::checkCollision(const sf::Vector2f& pos, float radius, std::shar
     }
 
     return false;
+}
+
+void AIDirector::buildFlowField(std::shared_ptr<MapGenerator> map, const std::map<uint32_t, ClientInfo>& clients){
+    if(!map || clients.empty()) return;
+
+    int width = map->getWidth();
+    int height = map->getHeight();
+
+    m_flowField.assign(width, std::vector<int>(height, MAXINT32));
+    
+    std::queue<sf::Vector2i> q;
+
+    for(const auto& [id, info]: clients){
+        int px = static_cast<int>(info.position.x / Config::TILE_SIZE);
+        int py = static_cast<int>(info.position.y / Config::TILE_SIZE);
+
+        if(px > 0 && px < width && py > 0 && py < height){
+            m_flowField[px][py] = 0;
+            q.push({px, py});
+        }
+    }
+
+    //directions
+    int dx[] = {-1, 1, 0, 0, -1, 1, -1, 1};
+    int dy[] = {0, 0, -1, 1, -1, -1, 1, 1};
+
+    //BFS
+    while(!q.empty()){
+        auto curr = q.front();
+        q.pop();
+
+        int currentDist = m_flowField[curr.x][curr.y];
+
+        for(int i = 0; i < 8; i++){
+            int nx = curr.x + dx[i];
+            int ny = curr.y + dy[i];
+
+            if(nx <= 0 || nx >= width - 1 || ny <= 0 || ny >= height -1) continue;
+            if(map->getTile(nx, ny) == TileType::Wall) continue;
+
+            // cost in not diagonal direction: 10, cost in diagonal direction 10 * sqrt(2) = approx 14
+            int moveCost = (i < 4) ? 10 : 14;
+
+            if(currentDist + moveCost < m_flowField[nx][ny]){
+                m_flowField[nx][ny] = currentDist + moveCost;
+                q.push({nx, ny});
+            }
+        }
+    }
 }
