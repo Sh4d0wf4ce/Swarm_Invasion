@@ -1,0 +1,5 @@
+{
+    "Crawler": { "maxHp": 30.0, "speed": 150.0, "radius": 15.0, "damage": 10.0, "attackCooldown": 0.5, "color": [0, 255, 0, 255] },
+    "Bruiser": { "maxHp": 150.0, "speed": 60.0, "radius": 30.0, "damage": 35.0, "attackCooldown": 1.5, "color": [128, 0, 128, 255] },
+    "Spitter": { "maxHp": 50.0, "speed": 100.0, "radius": 18.0, "damage": 0.0, "attackCooldown": 2.0, "color": [255, 255, 0, 255] }
+}
