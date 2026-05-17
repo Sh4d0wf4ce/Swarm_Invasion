@@ -2,6 +2,7 @@
 
 #include "Entity.hpp"
 #include "HeroRegistry.hpp"
+#include "WeaponRegistry.hpp"
 
 #include <algorithm>
 

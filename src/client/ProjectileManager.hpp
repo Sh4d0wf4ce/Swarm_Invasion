@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Projectile.hpp"
+#include "Player.hpp"
 #include "WeaponRegistry.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -12,13 +13,14 @@ class ProjectileManager{
 public:
     ProjectileManager() = default;
 
-    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon);
+    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, bool isEnemy = false);
 
-    std::vector<std::uint32_t> update(
+    ProjectileHits update(
         sf::Time deltaTime, 
         const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
         const std::shared_ptr<MapGenerator>& map,
-        std::uint32_t myPLayerId
+        std::uint32_t myPLayerId,
+        Player* localPlayer
     );
     void render(sf::RenderTarget& target);
 

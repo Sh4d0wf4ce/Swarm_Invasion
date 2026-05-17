@@ -51,12 +51,13 @@ add_library(SharedStatic STATIC
     src/shared/MapGenerator.cpp
 )
 target_include_directories(SharedStatic PUBLIC src/shared)
-target_link_libraries(SharedStatic PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(SharedStatic PUBLIC nlohmann_json::nlohmann_json SFML::System)
 
 add_executable(SwarmServer
     src/server/main.cpp
     src/server/ServerEngine.cpp
     src/server/AIDirector.cpp
+    src/server/ServerEnemy.cpp
 )
 target_link_libraries(SwarmServer PRIVATE SharedStatic SFML::Network SFML::System SFML::Main)
 

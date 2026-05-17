@@ -55,6 +55,7 @@ void ServerEngine::processNetwork(){
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
                 case PacketType::CardSelected:      handleCardSelected(packet); break;
+                case PacketType::PlayerHit:         handlePlayerHit(packet); break;
                 default: break;
             }
         }
@@ -84,7 +85,9 @@ void ServerEngine::update(sf::Time deltaTime){
     // ENEMIES DIRECTOR
     if(!m_clients.empty()){
         m_aiDirector.updateWaves(deltaTime, m_enemies, m_clients, m_map, m_globalEntityCounter);
-        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, m_clients, m_map);
+        
+        std::vector<EnemyShootEvent> shootEvents;
+        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, m_clients, m_map, shootEvents);
 
         for(std::uint32_t deadId : deadPlayers){
             if(m_clients.count(deadId)){
@@ -96,6 +99,15 @@ void ServerEngine::update(sf::Time deltaTime){
                 (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
 
                 m_clients.erase(deadId);
+            }
+        }
+
+        for(const auto& shoot: shootEvents){
+            sf::Packet shootPacket;
+            shootPacket << PacketType::EnemyShoots << shoot.weapon << shoot.startPos << shoot.targetPos;
+
+            for(const auto& [playerId, info] : m_clients){
+                (void)m_socket.send(shootPacket, info.ip, info.port);
             }
         }
     }
@@ -143,10 +155,10 @@ void ServerEngine::handleEnemyHit(sf::Packet& packet){
             WeaponType weapon = HeroRegistry::getStats(playerIt->second.pClass).defaultWeapon;
             float damage = WeaponRegistry::getStats(weapon).damage;
 
-            enemyIt->second.hp -= damage;
+            enemyIt->second->takeDamage(damage);
             
-            if(enemyIt->second.hp <= 0.0f){
-                m_energyCells[m_globalEntityCounter++] = {enemyIt->second.position, 1, 0};
+            if(enemyIt->second->getHp() <= 0.0f){
+                m_energyCells[m_globalEntityCounter++] = {enemyIt->second->getPosition(), 1, 0};
                 m_enemies.erase(enemyIt);
             }
         }
@@ -199,6 +211,26 @@ void ServerEngine::handleCardSelected(sf::Packet& packet){
     int choice;
     if(packet >> playerId >> choice){
         m_playerChoices[playerId] = choice;
+    }
+}
+
+void ServerEngine::handlePlayerHit(sf::Packet& packet){
+    std::uint32_t playerId;
+    float damage;
+
+    if(packet >> playerId >> damage){
+        auto it = m_clients.find(playerId);
+        if(it != m_clients.end()){
+            it->second.hp -= damage;
+
+            if(it->second.hp <= 0.0f){
+                std::cout << "[SERVER] Player " << playerId << " died from projectile!\n";
+                sf::Packet deathPacket;
+                deathPacket << PacketType::PlayerDied;
+                (void)m_socket.send(deathPacket, it->second.ip, it->second.port);
+                m_clients.erase(it);
+            }
+        }
     }
 }
 
@@ -297,7 +329,7 @@ void ServerEngine::sendWorldState(){
     // Enemy info
     worldPacket << static_cast<std::uint32_t>(m_enemies.size());
     for(const auto& [enemyId, enemy] : m_enemies){
-        worldPacket << enemyId << enemy.type << enemy.position << enemy.hp;
+        worldPacket << enemyId << enemy->getType() << enemy->getPosition() << enemy->getHp();
     }
 
     // Energy Cells info

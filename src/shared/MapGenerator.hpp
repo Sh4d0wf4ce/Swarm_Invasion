@@ -2,6 +2,7 @@
 
 #include "Config.hpp"
 
+#include <SFML/System.hpp>
 #include <vector>
 #include <random>
 
@@ -19,6 +20,8 @@ public:
     TileType getTile(int x, int y) const;
     int getWidth() const {return m_width;}
     int getHeight() const {return m_height;}
+
+    bool checkCollision(const sf::Vector2f& pos, float radius) const;
 
 private:
     void smoothMap();

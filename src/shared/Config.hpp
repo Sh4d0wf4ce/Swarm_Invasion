@@ -11,7 +11,7 @@ namespace Config{
     constexpr unsigned int FPS_LIMIT = 60;
 
     // --- MAP ---
-    constexpr float TILE_SIZE = 32.0f;
+    constexpr float TILE_SIZE = 64.0f;
     constexpr int MAP_WIDTH_TILES = 250;
     constexpr int MAP_HEIGHT_TILES = 250;
     constexpr int MAP_FILL_PERCENT = 45;

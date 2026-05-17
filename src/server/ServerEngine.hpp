@@ -32,6 +32,7 @@ private:
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
     void handleCardSelected(sf::Packet& packet);
+    void handlePlayerHit(sf::Packet& packet);
 
     void proccessUpgradeMenuTimeout();
     void removeAFKPlayers();
@@ -53,7 +54,7 @@ private:
     std::map<std::uint32_t, EnergyCellInfo> m_energyCells;
 
 
-    std::map<std::uint32_t, EnemyInfo> m_enemies;
+    std::map<std::uint32_t, std::unique_ptr<ServerEnemy>> m_enemies;
 
     std::uint32_t m_globalEntityCounter = 1;
 

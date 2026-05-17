@@ -86,6 +86,15 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         m_myChoice = -1;
         m_clientUpgradeTimer.restart();
     }
+    else if(type == PacketType::EnemyShoots){
+        WeaponType weapon;
+        sf::Vector2f startPos, targetPos;
+        if(packet >> weapon >> startPos >> targetPos){
+            if(m_projectileManager){
+                m_projectileManager->spawnProjectile(-1, startPos, targetPos, weapon, true);
+            }
+        }
+    }
 }
 
 void GameState::handleWorldState(sf::Packet& packet){
@@ -237,14 +246,20 @@ void GameState::update(sf::Time deltaTime){
     if(m_projectileManager){
         if(!m_isChoosingUpgrade){
             std::uint32_t myId = m_player ? m_player->getId() : 0;
-            auto hitEnemies = m_projectileManager->update(deltaTime, m_enemies, m_map, myId);
+            auto hits = m_projectileManager->update(deltaTime, m_enemies, m_map, myId, m_player.get());
 
-            for(std::uint32_t enemyId : hitEnemies){
+            for(std::uint32_t enemyId : hits.hitEnemies){
                 if(m_engine.getServerAddress()){
                     sf::Packet hitPacket;
                     hitPacket << PacketType::EnemyHit << enemyId << myId;
                     (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
                 }
+            }
+
+            if(hits.hitLocalPlayer && m_engine.getServerAddress()){
+                sf::Packet dmgPacket;
+                dmgPacket << PacketType::PlayerHit << myId << hits.damageToPlayer;
+                (void)m_engine.getSocket().send(dmgPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
         }
     }

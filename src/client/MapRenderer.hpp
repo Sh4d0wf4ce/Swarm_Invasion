@@ -14,6 +14,6 @@ public:
 private:
     std::shared_ptr<MapGenerator> m_mapGen;
     float m_tileSize;
-
+    
     sf::VertexArray m_vertices;
 };

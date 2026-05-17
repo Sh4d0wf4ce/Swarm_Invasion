@@ -76,3 +76,23 @@ TileType MapGenerator::getTile(int x, int y) const{
     if(x < 0 || x >= m_width || y < 0 || y >= m_height) return TileType::Wall;
     return m_map[x][y];
 }
+
+bool MapGenerator::checkCollision(const sf::Vector2f& pos, float radius) const {
+    float hitBoxOffset = radius * 0.8f;
+
+    sf::Vector2f points[4] = {
+        {pos.x - hitBoxOffset, pos.y - hitBoxOffset},
+        {pos.x + hitBoxOffset, pos.y - hitBoxOffset},
+        {pos.x - hitBoxOffset, pos.y + hitBoxOffset},
+        {pos.x + hitBoxOffset, pos.y + hitBoxOffset}
+    };
+
+    for(const auto& p: points){
+        int gridX = static_cast<int>(p.x / Config::TILE_SIZE);
+        int gridY = static_cast<int>(p.y / Config::TILE_SIZE);
+    
+        if(getTile(gridX, gridY) == TileType::Wall) return true;
+    }
+
+    return false;
+}

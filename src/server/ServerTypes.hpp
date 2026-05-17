@@ -20,12 +20,3 @@ struct ClientInfo {
     float speed;
     PlayerClass pClass;
 };
-
-
-struct EnemyInfo {
-    sf::Vector2f position;
-    float speed;
-    float hp;
-    sf::Clock lastAttackTime;
-    EnemyType type;
-};
