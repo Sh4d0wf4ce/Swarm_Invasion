@@ -27,12 +27,11 @@ private:
 
     void handlePing(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port);
     void handlePlayerPosition(sf::Packet& packet);
-    void handleEnemyHit(sf::Packet& packet);
+    void handleEntityHit(sf::Packet& packet);
     void handleJoinRequest(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port);
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
     void handleCardSelected(sf::Packet& packet);
-    void handlePlayerHit(sf::Packet& packet);
 
     void proccessUpgradeMenuTimeout();
     void removeAFKPlayers();

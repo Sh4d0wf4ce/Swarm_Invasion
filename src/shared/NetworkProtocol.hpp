@@ -7,7 +7,6 @@ enum class PacketType : std::uint8_t{
     Pong,
     PlayerPosition,
     WorldState,
-    EnemyHit,
     JoinRequest,
     JoinAccept,
     PlayerShoots,
@@ -16,7 +15,7 @@ enum class PacketType : std::uint8_t{
     LevelUpTriggered,
     CardSelected,
     EnemyShoots,
-    PlayerHit
+    EntityHit
 };
 
 enum class PlayerClass : std::uint8_t{

@@ -248,18 +248,11 @@ void GameState::update(sf::Time deltaTime){
             std::uint32_t myId = m_player ? m_player->getId() : 0;
             auto hits = m_projectileManager->update(deltaTime, m_enemies, m_map, myId, m_player.get());
 
-            for(std::uint32_t enemyId : hits.hitEnemies){
-                if(m_engine.getServerAddress()){
-                    sf::Packet hitPacket;
-                    hitPacket << PacketType::EnemyHit << enemyId << myId;
-                    (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
-                }
-            }
-
-            if(hits.hitLocalPlayer && m_engine.getServerAddress()){
-                sf::Packet dmgPacket;
-                dmgPacket << PacketType::PlayerHit << myId << hits.damageToPlayer;
-                (void)m_engine.getSocket().send(dmgPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+            for(const auto& hit : hits){
+                if(!m_engine.getServerAddress()) break;
+                sf::Packet hitPacket;
+                hitPacket << PacketType::EntityHit << hit.targetId << hit.weapon;
+                (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
         }
     }

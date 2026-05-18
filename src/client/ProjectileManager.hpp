@@ -9,13 +9,18 @@
 #include <vector>
 #include <memory>
 
+struct HitRecord {
+    std::uint32_t targetId;
+    WeaponType weapon;
+};
+
 class ProjectileManager{
 public:
     ProjectileManager() = default;
 
     void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, bool isEnemy = false);
 
-    ProjectileHits update(
+    std::vector<HitRecord> update(
         sf::Time deltaTime, 
         const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
         const std::shared_ptr<MapGenerator>& map,

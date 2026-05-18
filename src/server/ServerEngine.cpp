@@ -50,12 +50,11 @@ void ServerEngine::processNetwork(){
             switch(type){
                 case PacketType::Ping:              handlePing(packet, sender.value(), port); break;
                 case PacketType::PlayerPosition:    handlePlayerPosition(packet); break;
-                case PacketType::EnemyHit:          handleEnemyHit(packet); break;
+                case PacketType::EntityHit:         handleEntityHit(packet); break;
                 case PacketType::JoinRequest:       handleJoinRequest(packet, sender.value(), port); break;
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
                 case PacketType::CardSelected:      handleCardSelected(packet); break;
-                case PacketType::PlayerHit:         handlePlayerHit(packet); break;
                 default: break;
             }
         }
@@ -145,21 +144,30 @@ void ServerEngine::handlePlayerPosition(sf::Packet& packet){
     }
 }
 
-void ServerEngine::handleEnemyHit(sf::Packet& packet){
-    std::uint32_t enemyId, shooterId;
-    if(packet >> enemyId >> shooterId){
-        auto enemyIt = m_enemies.find(enemyId);
-        auto playerIt = m_clients.find(shooterId);
+void ServerEngine::handleEntityHit(sf::Packet& packet){
+    std::uint32_t targetId;
+    WeaponType weaponUsed;
 
-        if(enemyIt != m_enemies.end() && playerIt != m_clients.end()){
-            WeaponType weapon = HeroRegistry::getStats(playerIt->second.pClass).defaultWeapon;
-            float damage = WeaponRegistry::getStats(weapon).damage;
+    if(packet >> targetId >> weaponUsed){
+        float damage = WeaponRegistry::getStats(weaponUsed).damage;
 
-            enemyIt->second->takeDamage(damage);
-            
-            if(enemyIt->second->getHp() <= 0.0f){
-                m_energyCells[m_globalEntityCounter++] = {enemyIt->second->getPosition(), 1, 0};
-                m_enemies.erase(enemyIt);
+        // Player hit
+        if(m_clients.count(targetId)){
+            m_clients.at(targetId).hp -= damage;
+
+            if(m_clients.at(targetId).hp <= 0.0f){
+                sf::Packet deathPacket;
+                deathPacket << PacketType::PlayerDied;
+                (void)m_socket.send(deathPacket, m_clients.at(targetId).ip, m_clients.at(targetId).port);
+            }
+        }
+        // Enemy hit
+        else if(m_enemies.count(targetId)){
+            m_enemies[targetId]->takeDamage(damage);
+
+            if(m_enemies[targetId]->getHp() <= 0.0f){
+                m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
+                m_enemies.erase(targetId);
             }
         }
     }
@@ -211,26 +219,6 @@ void ServerEngine::handleCardSelected(sf::Packet& packet){
     int choice;
     if(packet >> playerId >> choice){
         m_playerChoices[playerId] = choice;
-    }
-}
-
-void ServerEngine::handlePlayerHit(sf::Packet& packet){
-    std::uint32_t playerId;
-    float damage;
-
-    if(packet >> playerId >> damage){
-        auto it = m_clients.find(playerId);
-        if(it != m_clients.end()){
-            it->second.hp -= damage;
-
-            if(it->second.hp <= 0.0f){
-                std::cout << "[SERVER] Player " << playerId << " died from projectile!\n";
-                sf::Packet deathPacket;
-                deathPacket << PacketType::PlayerDied;
-                (void)m_socket.send(deathPacket, it->second.ip, it->second.port);
-                m_clients.erase(it);
-            }
-        }
     }
 }
 
