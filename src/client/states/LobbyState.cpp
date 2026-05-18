@@ -1,6 +1,6 @@
 #include "LobbyState.hpp"
 #include "GameState.hpp"
-#include "ClientEngine.hpp"
+#include "../core/ClientEngine.hpp"
 #include <SFML/Network/Dns.hpp>
 #include <imgui.h>
 #include <iostream>

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Player.hpp"
-#include "Enemy.hpp"
+#include "../entities/Player.hpp"
+#include "../entities/Enemy.hpp"
+#include "../core/MapRenderer.hpp"
+#include "../core/ClientEngine.hpp"
+#include "../projectiles/ProjectileManager.hpp"
 #include "MapGenerator.hpp"
-#include "MapRenderer.hpp"
-#include "ProjectileManager.hpp"
 #include "HeroRegistry.hpp"
-#include "ClientEngine.hpp"
 #include "Config.hpp"
 #include "State.hpp"
 

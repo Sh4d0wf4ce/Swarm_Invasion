@@ -1,4 +1,8 @@
 #include "ProjectileManager.hpp"
+#include "LaserProjectile.hpp"
+#include "AcidProjectile.hpp"
+#include "RifleProjectile.hpp"
+#include "RocketProjectile.hpp"
 
 
 void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction){

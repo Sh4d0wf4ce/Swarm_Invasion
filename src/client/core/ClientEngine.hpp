@@ -1,13 +1,13 @@
 #pragma once
 
-#include "Player.hpp"
-#include "Enemy.hpp"
+#include "../entities/Player.hpp"
+#include "../entities/Enemy.hpp"
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
 #include "MapRenderer.hpp"
-#include "ProjectileManager.hpp"
+#include "../projectiles/ProjectileManager.hpp"
 #include "Config.hpp"
-#include "State.hpp"
+#include "../states/State.hpp"
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Projectile.hpp"
-#include "Player.hpp"
+#include "../entities/Player.hpp"
 #include "WeaponRegistry.hpp"
 
 #include <SFML/Graphics.hpp>

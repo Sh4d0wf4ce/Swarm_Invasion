@@ -62,16 +62,20 @@ add_executable(SwarmServer
 target_link_libraries(SwarmServer PRIVATE SharedStatic SFML::Network SFML::System SFML::Main)
 
 add_executable(SwarmClient
-    src/client/main.cpp
-    src/client/ClientEngine.cpp
-    src/client/Entity.cpp
-    src/client/Player.cpp
-    src/client/Enemy.cpp
-    src/Client/MapRenderer.cpp
-    src/Client/ProjectileManager.cpp
-    src/Client/Projectile.cpp
-    src/Client/GameState.cpp
-    src/Client/LobbyState.cpp
+    src/client/core/main.cpp
+    src/client/core/ClientEngine.cpp
+    src/client/core/MapRenderer.cpp
+    src/client/entities/Entity.cpp
+    src/client/entities/Player.cpp
+    src/client/entities/Enemy.cpp
+    src/client/states/GameState.cpp
+    src/client/states/LobbyState.cpp
+    src/client/projectiles/ProjectileManager.cpp
+    src/client/projectiles/Projectile.cpp
+    src/client/projectiles/LaserProjectile.cpp
+    src/client/projectiles/RifleProjectile.cpp
+    src/client/projectiles/RocketProjectile.cpp
+    src/client/projectiles/AcidProjectile.cpp
 )
 target_link_libraries(SwarmClient PRIVATE
     SharedStatic

@@ -1,5 +1,5 @@
 #include "ClientEngine.hpp"
-#include "LobbyState.hpp"
+#include "../states/LobbyState.hpp"
 #include <iostream>
 
 
