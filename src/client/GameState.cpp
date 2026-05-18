@@ -37,7 +37,7 @@ void GameState::handleInput(const sf::Event& event){
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera); 
 
             WeaponType myWeapon = HeroRegistry::getStats(m_player->getClass()).defaultWeapon;
-            m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, myWeapon);
+            m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, myWeapon, Faction::Players);
 
             if(m_engine.getServerAddress()){
                 sf::Packet shootPacket;
@@ -72,7 +72,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         sf::Vector2f startPos, targetPos;
         if(packet >> shooterId >> weaponUsed >> startPos >> targetPos){
             if(m_projectileManager)
-                m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, weaponUsed);
+                m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, weaponUsed, Faction::Players);
         }
     }
     else if(type == PacketType::PlayerDied){
@@ -91,7 +91,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         sf::Vector2f startPos, targetPos;
         if(packet >> weapon >> startPos >> targetPos){
             if(m_projectileManager){
-                m_projectileManager->spawnProjectile(-1, startPos, targetPos, weapon, true);
+                m_projectileManager->spawnProjectile(-1, startPos, targetPos, weapon, Faction::Enemies);
             }
         }
     }
@@ -245,8 +245,13 @@ void GameState::update(sf::Time deltaTime){
 
     if(m_projectileManager){
         if(!m_isChoosingUpgrade){
-            std::uint32_t myId = m_player ? m_player->getId() : 0;
-            auto hits = m_projectileManager->update(deltaTime, m_enemies, m_map, myId, m_player.get());
+            std::vector<Entity*> collisionTargets;
+
+            if(m_player) collisionTargets.push_back(m_player.get());
+            for(auto& [id, otherPlayer] : m_otherPlayers) collisionTargets.push_back(otherPlayer.get());
+            for(auto& [id, enemy] : m_enemies) collisionTargets.push_back(enemy.get());
+
+            auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map);
 
             for(const auto& hit : hits){
                 if(!m_engine.getServerAddress()) break;

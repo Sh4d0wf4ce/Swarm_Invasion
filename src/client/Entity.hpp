@@ -6,6 +6,11 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
+enum class Faction{
+    Players,
+    Enemies
+};
+
 class Entity{
 public:
     Entity(std::uint32_t id, const sf::Vector2f& startPos): m_id(id), m_position(startPos) {}
@@ -19,9 +24,10 @@ public:
     sf::Vector2f getPosition() const {return m_position;}
 
     void setPosition(const sf::Vector2f&  pos) {m_position = pos;} 
-    void setHp(float current){
-        m_hp = current;
-    }
+    void setHp(float hp){ m_hp = hp; }
+
+    virtual Faction getFaction() const = 0;
+    virtual float getRadius() const = 0;
 
 protected:
     std::uint32_t m_id;

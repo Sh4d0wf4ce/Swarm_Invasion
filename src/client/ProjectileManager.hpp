@@ -18,15 +18,9 @@ class ProjectileManager{
 public:
     ProjectileManager() = default;
 
-    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, bool isEnemy = false);
+    void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction);
 
-    std::vector<HitRecord> update(
-        sf::Time deltaTime, 
-        const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies,
-        const std::shared_ptr<MapGenerator>& map,
-        std::uint32_t myPLayerId,
-        Player* localPlayer
-    );
+    std::vector<HitRecord> update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map);
     void render(sf::RenderTarget& target);
 
 private:

@@ -18,6 +18,9 @@ public:
 
     void setFocused(bool focuesd);
     PlayerClass getClass() const { return m_class; }
+    Faction getFaction()  const override { return Faction::Players; }
+    float getRadius() const override { return HeroRegistry::getStats(m_class).radius; }
+
 
     virtual void onShift(const sf::Vector2f& mouseWorldPos) {}
     virtual void onQ(const sf::Vector2f& mouseWorldPos) {}
