@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ServerTypes.hpp"
-#include "ServerEnemy.hpp"
+#include "../enemies/ServerEnemy.hpp"
 #include "MapGenerator.hpp"
 
 #include <map>

@@ -1,3 +1,6 @@
+#include "../enemies/ServerBruiser.hpp"
+#include "../enemies/ServerSpitter.hpp"
+#include "../enemies/ServerCrawler.hpp"
 #include "AIDirector.hpp"
 #include "Config.hpp"
 #include "EnemyRegistry.hpp"

@@ -2,7 +2,8 @@
 
 #include "NetworkProtocol.hpp"
 #include "MapGenerator.hpp"
-#include "ServerTypes.hpp"
+#include "../core/ServerTypes.hpp"
+#include "EnemyRegistry.hpp"
 
 #include <SFML/System.hpp>
 #include <vector>
@@ -48,20 +49,4 @@ protected:
     float m_speed;
     EnemyType m_type;
     sf::Clock m_lastAttackTime;
-};
-
-
-class ServerCrawler : public ServerEnemy {
-    using ServerEnemy::ServerEnemy;
-    std::vector<std::uint32_t> update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies);
-};
-
-class ServerBruiser : public ServerEnemy {
-    using ServerEnemy::ServerEnemy;
-    std::vector<std::uint32_t> update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies);
-};
-
-class ServerSpitter : public ServerEnemy {
-    using ServerEnemy::ServerEnemy;
-    std::vector<std::uint32_t> update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies);
 };
