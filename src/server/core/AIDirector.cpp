@@ -37,6 +37,7 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
 
             int rng = rand() % 100;
             EnemyType randomType = (rng < 50) ? EnemyType::Crawler : (rng < 70) ? EnemyType::Bruiser : EnemyType::Spitter;
+            // EnemyType randomType = EnemyType::Bruiser;
             const auto& stats = EnemyRegistry::getStats(randomType);
 
             spawnPos = sf::Vector2f((tx + 0.5f) * Config::TILE_SIZE, (ty + 0.5f) * Config::TILE_SIZE);
