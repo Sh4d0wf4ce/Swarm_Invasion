@@ -33,7 +33,8 @@ public:
         std::unordered_map<std::string, EnemyType> typeMap = {
             {"Crawler", EnemyType::Crawler},
             {"Bruiser", EnemyType::Bruiser},
-            {"Spitter", EnemyType::Spitter}
+            {"Spitter", EnemyType::Spitter},
+            {"Kamikaze", EnemyType::Kamikaze}
         };
 
         for (auto& [key, val] : j.items()) {

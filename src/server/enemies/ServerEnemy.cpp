@@ -102,3 +102,17 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
     }
     return deadPlayers;
 }
+
+std::uint32_t ServerEnemy::getClosestPlayerId(const std::map<std::uint32_t, ClientInfo>& clients, float& outMinDistSq) const {
+    std::uint32_t targetId = clients.begin()->first;
+    outMinDistSq = (clients.begin()->second.position - m_position).lengthSquared();
+
+    for(const auto& [playerId, playerInfo] : clients){
+        float distSq = (playerInfo.position - m_position).lengthSquared();
+        if(distSq < outMinDistSq){
+            outMinDistSq = distSq;
+            targetId = playerId;
+        }
+    }
+    return targetId;
+}

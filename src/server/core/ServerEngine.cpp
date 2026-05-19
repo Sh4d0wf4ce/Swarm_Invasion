@@ -111,6 +111,11 @@ void ServerEngine::update(sf::Time deltaTime){
         }
     }
 
+    for(auto it = m_enemies.begin(); it != m_enemies.end(); ){
+        if(it->second->getHp() <= 0.0f) it = m_enemies.erase(it);
+        else ++it;
+    }
+
     // EXP SYSTEM
     updateEnergyCells(deltaTime);
 

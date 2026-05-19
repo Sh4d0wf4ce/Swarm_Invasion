@@ -1,6 +1,7 @@
 #include "../enemies/ServerBruiser.hpp"
 #include "../enemies/ServerSpitter.hpp"
 #include "../enemies/ServerCrawler.hpp"
+#include "../enemies/ServerKamikaze.hpp"
 #include "AIDirector.hpp"
 #include "Config.hpp"
 #include "EnemyRegistry.hpp"
@@ -35,9 +36,30 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int tx = distX(m_rng);
             int ty = distY(m_rng);
 
-            int rng = rand() % 100;
-            EnemyType randomType = (rng < 50) ? EnemyType::Crawler : (rng < 70) ? EnemyType::Bruiser : EnemyType::Spitter;
-            // EnemyType randomType = EnemyType::Bruiser;
+            std::vector<std::pair<EnemyType, int>> spawnWeights = {
+                {EnemyType::Crawler, 50},
+                {EnemyType::Bruiser, 20},
+                {EnemyType::Spitter, 20},
+                {EnemyType::Kamikaze, 10},
+            };
+
+            int totalWeight = 0;
+            for(const auto& [type, weight] : spawnWeights){
+                totalWeight += weight;
+            }
+
+            int rng = rand() % totalWeight;
+            EnemyType randomType = EnemyType::Crawler;
+            int currentSum = 0;;
+
+            for(const auto& [type, weight] : spawnWeights){
+                currentSum += weight;
+                if(rng < currentSum){
+                    randomType = type;
+                    break;
+                }
+            }
+
             const auto& stats = EnemyRegistry::getStats(randomType);
 
             spawnPos = sf::Vector2f((tx + 0.5f) * Config::TILE_SIZE, (ty + 0.5f) * Config::TILE_SIZE);
@@ -55,6 +77,7 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
                 if(!tooClose){
                     if (randomType == EnemyType::Crawler) enemies[entityCounter] = std::make_unique<ServerCrawler>(entityCounter, spawnPos, randomType);
                     else if (randomType == EnemyType::Bruiser) enemies[entityCounter] = std::make_unique<ServerBruiser>(entityCounter, spawnPos, randomType);
+                    else if (randomType == EnemyType::Kamikaze) enemies[entityCounter] = std::make_unique<ServerKamikaze>(entityCounter, spawnPos, randomType);
                     else enemies[entityCounter] = std::make_unique<ServerSpitter>(entityCounter, spawnPos, randomType);
                     
                     entityCounter++;

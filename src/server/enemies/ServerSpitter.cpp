@@ -5,16 +5,8 @@ std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<st
     const auto& eStats = EnemyRegistry::getStats(m_type);
     float shootRange = 350.0f;
 
-    std::uint32_t targetId = clients.begin()->first;
-    float minDistanceSq  = (clients.begin()->second.position - m_position).lengthSquared();
-
-    for(auto& [playerId, playerInfo] : clients){
-        float distSq = (playerInfo.position - m_position).lengthSquared();
-        if(distSq < minDistanceSq){
-            minDistanceSq = distSq;
-            targetId = playerId;
-        }
-    }
+    float minDistanceSq;
+    std::uint32_t targetId = getClosestPlayerId(clients, minDistanceSq);
 
     if (minDistanceSq > shootRange * shootRange || !hasLineOfSight(m_position, clients.at(targetId).position, eStats.radius, map)) {
         return performMeleeChase(deltaTime, clients, map, flowField, allEnemies);

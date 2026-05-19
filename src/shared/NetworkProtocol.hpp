@@ -28,7 +28,8 @@ enum class PlayerClass : std::uint8_t{
 enum class EnemyType : std::uint8_t{
     Crawler,
     Bruiser,
-    Spitter
+    Spitter,
+    Kamikaze
 };
 
 enum class WeaponType : std::uint8_t{

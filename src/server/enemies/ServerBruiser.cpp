@@ -7,18 +7,10 @@ std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<st
 
     const auto& eStats = EnemyRegistry::getStats(m_type);
 
-    std::uint32_t targetId = clients.begin()->first;
-    float minDistanceSq = (clients.begin()->second.position - m_position).lengthSquared();
+    float minDistanceSq;
+    std::uint32_t targetId = getClosestPlayerId(clients, minDistanceSq);
 
-    for(auto& [playerId, playerInfo] : clients){
-        float distSq = (playerInfo.position - m_position).lengthSquared();
-        if(distSq < minDistanceSq){
-            minDistanceSq = distSq;
-            targetId = playerId;
-        }
-    }
-
-    float chargeRange = 1200.0f;
+    float chargeRange = 800.0f;
 
     switch(m_state){
         case BruiserState::Chasing:
@@ -74,7 +66,7 @@ std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<st
             break;
         }
         case BruiserState::Resting:
-            if(m_stateTimer.getElapsedTime().asSeconds() > 1.5f) {
+            if(m_stateTimer.getElapsedTime().asSeconds() > 1.0f) {
                 m_state = BruiserState::Chasing;
                 m_cooldownTimer.restart();
             }

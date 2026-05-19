@@ -61,6 +61,7 @@ add_executable(SwarmServer
     src/server/enemies/ServerCrawler.cpp
     src/server/enemies/ServerSpitter.cpp
     src/server/enemies/ServerBruiser.cpp
+    src/server/enemies/ServerKamikaze.cpp
 )
 target_link_libraries(SwarmServer PRIVATE SharedStatic SFML::Network SFML::System SFML::Main)
 
