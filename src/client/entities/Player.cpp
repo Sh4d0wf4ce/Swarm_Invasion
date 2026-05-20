@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include "Soldier.hpp"
 
 Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass): Entity(id, startPos), m_isFocused(true), m_class(pClass){
     const auto& stats = HeroRegistry::getStats(pClass);
@@ -27,7 +28,8 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
     if(len > 0.0f) movement /= len;
     m_lastMoveDirection = movement;
 
-    sf::Vector2f velocity = movement * m_speed * deltaTime.asSeconds();
+    float actualSpeed = m_speed * m_speedMultiplier;
+    sf::Vector2f velocity = movement * actualSpeed * deltaTime.asSeconds();
 
     sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);
     if(!checkCollision(nextPosX, map)){
@@ -78,7 +80,9 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
 std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos, PlayerClass pClass){
     switch(pClass){
         case PlayerClass::Scout:
-            return std::make_unique<ScoutPlayer>(id, startPos, pClass);
+            return std::make_unique<ScoutPlayer>(id, startPos, pClass); break;
+        case PlayerClass::Soldier:
+            return std::make_unique<Soldier>(id, startPos, pClass); break;
         default:
             return std::make_unique<Player>(id, startPos, pClass);
     }

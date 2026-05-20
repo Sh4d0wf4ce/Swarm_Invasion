@@ -72,6 +72,7 @@ add_executable(SwarmClient
     src/client/entities/Entity.cpp
     src/client/entities/Player.cpp
     src/client/entities/Enemy.cpp
+    src/client/entities/Soldier.cpp
     src/client/states/GameState.cpp
     src/client/states/LobbyState.cpp
     src/client/projectiles/ProjectileManager.cpp

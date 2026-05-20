@@ -15,6 +15,7 @@ public:
 
     void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override;
     void render(sf::RenderTarget& target) override;
+    virtual void renderUI() {};
 
     void setFocused(bool focuesd);
     PlayerClass getClass() const { return m_class; }
@@ -39,6 +40,8 @@ protected:
     sf::Clock m_cooldownShift;
     sf::Clock m_cooldownQ;
     sf::Clock m_cooldownE;
+
+    float m_speedMultiplier{1.0f};
 };
 
 

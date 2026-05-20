@@ -359,6 +359,8 @@ void GameState::renderUI(){
     ImGui::PopStyleColor();
     ImGui::Separator();
     
+    if(m_player) m_player->renderUI();
+
     ImGui::Begin("Swarm Invasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
