@@ -25,8 +25,6 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
         }
     }
 
-    addUltCharge(1);
-
     if(m_fireCooldown > 0.0f) m_fireCooldown -= deltaTime.asSeconds();
     
     sf::Vector2f movement(0.0f, 0.0f);
@@ -110,6 +108,7 @@ void Player::reload(){
 }
 
 void Player::addUltCharge(float amount){
+    if(m_isUltActive) return;
     m_ultCharge += amount;
     if(m_ultCharge > m_maxUltCharge) m_ultCharge = m_maxUltCharge;
 }

@@ -33,7 +33,7 @@ std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::
 
         auto hitIds = proj->checkCollisions(entities, map);
         for(std::uint32_t id: hitIds){
-            allHits.push_back({id, proj->getWeaponType()});
+            allHits.push_back({proj->getOwnerId(), id, proj->getWeaponType()});
         }
     }
 

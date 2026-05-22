@@ -49,6 +49,13 @@ void Soldier::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& ma
     Player::update(deltaTime, map);
 }
 
+void Soldier::usePrimary(){
+    if(m_ammo > 0){
+        if(!m_isUltActive) m_ammo--;
+        m_fireCooldown = m_fireRate * m_fireRateMultiplier;
+    }
+}
+
 bool Soldier::canUseSecondary() const{
     return m_rocketCooldown <= 0.0f;
 }

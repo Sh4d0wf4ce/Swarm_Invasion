@@ -293,7 +293,7 @@ void GameState::update(sf::Time deltaTime){
             for(const auto& hit : hits){
                 if(!m_engine.getServerAddress()) break;
                 sf::Packet hitPacket;
-                hitPacket << PacketType::EntityHit << hit.targetId << hit.weapon;
+                hitPacket << PacketType::EntityHit << hit.shooterId << hit.targetId << hit.weapon;
                 (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
         }

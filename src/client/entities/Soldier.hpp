@@ -12,6 +12,8 @@ public:
     void onQ(const sf::Vector2f& mouseWorldPos) override;
     void onE(const sf::Vector2f& mouseWorldPos) override;
 
+    void usePrimary() override;
+
     bool canUseSecondary() const override;
     void useSecondary() override;
     WeaponType getSecondaryWeapon() const override;
@@ -36,9 +38,6 @@ private:
     float m_maxStamina{100.0f};
     bool m_isExhausted{false};
     bool m_isSprinting{false};
-
-    float m_ultTimer{0.0f};
-    bool m_isUltActive{false};
 
     float m_rocketCooldown{0.0f};
     const float m_rocketCooldownMax{6.0f};

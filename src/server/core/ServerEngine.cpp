@@ -153,10 +153,10 @@ void ServerEngine::handlePlayerPosition(sf::Packet& packet){
 }
 
 void ServerEngine::handleEntityHit(sf::Packet& packet){
-    std::uint32_t targetId;
+    std::uint32_t shooterId, targetId;
     WeaponType weaponUsed;
 
-    if(packet >> targetId >> weaponUsed){
+    if(packet >> shooterId >> targetId >> weaponUsed){
         float damage = WeaponRegistry::getStats(weaponUsed).damage;
 
         // Player hit
@@ -172,6 +172,12 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
         // Enemy hit
         else if(m_enemies.count(targetId)){
             m_enemies[targetId]->takeDamage(damage);
+
+            if(m_clients.count(shooterId)){
+                sf::Packet damagePacket;
+                damagePacket << PacketType::PlayerDealtDamage << damage;
+                (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
+            }
 
             if(m_enemies[targetId]->getHp() <= 0.0f){
                 m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};

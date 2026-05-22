@@ -10,6 +10,7 @@
 #include <memory>
 
 struct HitRecord {
+    std::uint32_t shooterId;
     std::uint32_t targetId;
     WeaponType weapon;
 };

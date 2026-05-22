@@ -45,6 +45,7 @@ public:
     virtual void addUltCharge(float amount);
     virtual bool canUseUltimate() const { return m_ultCharge >= m_maxUltCharge; }
     virtual void useUltimate() {}
+    bool isUltActive() const { return m_isUltActive; }
 
     virtual bool hasAutoAim() const { return false; }
 
@@ -80,7 +81,9 @@ protected:
     float m_fireRate{0.15f};
 
     float m_ultCharge{0.0f};
-    float m_maxUltCharge{500.0f}; //500
+    float m_maxUltCharge{500.0f};
+    float m_ultTimer{0.0f};
+    bool m_isUltActive{false};
 
     float m_fireRateMultiplier{1.0f};
     float m_speedMultiplier{1.0f};
