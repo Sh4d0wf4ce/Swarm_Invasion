@@ -10,6 +10,12 @@ struct EnergyCellInfo {
     std::uint32_t targetPlayerId = 0;
 };
 
+struct ServerHealField{
+    sf::Vector2f position;
+    float radius{100.0f};
+    float duration{5.0f};
+    float healPerSecond{10.0f};
+};
 
 struct ClientInfo {
     sf::IpAddress ip;

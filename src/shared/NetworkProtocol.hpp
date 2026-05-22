@@ -15,7 +15,10 @@ enum class PacketType : std::uint8_t{
     LevelUpTriggered,
     CardSelected,
     EnemyShoots,
-    EntityHit
+    EntityHit,
+    PlayerUsesSkillE,
+    SpawnHealField,
+    PlayerDealtDamage
 };
 
 enum class PlayerClass : std::uint8_t{
@@ -33,6 +36,7 @@ enum class EnemyType : std::uint8_t{
 };
 
 enum class WeaponType : std::uint8_t{
+    None,
     Rifle,
     Laser,
     Rocket,

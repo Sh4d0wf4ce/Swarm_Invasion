@@ -1,5 +1,7 @@
 #include "Player.hpp"
 #include "Soldier.hpp"
+#include "imgui.h"
+
 
 Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass): Entity(id, startPos), m_isFocused(true), m_class(pClass){
     const auto& stats = HeroRegistry::getStats(pClass);
@@ -15,6 +17,18 @@ Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClas
 }
 
 void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
+    if(m_isReloading){
+        m_reloadTimer -= deltaTime.asSeconds();
+        if(m_reloadTimer <= 0.0f){
+            m_isReloading = false;
+            m_ammo = m_maxAmmo;
+        }
+    }
+
+    addUltCharge(1);
+
+    if(m_fireCooldown > 0.0f) m_fireCooldown -= deltaTime.asSeconds();
+    
     sf::Vector2f movement(0.0f, 0.0f);
 
     if(m_isFocused){
@@ -77,6 +91,29 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
     return false;
 }
 
+bool Player::canUsePrimary() const{
+    return m_ammo > 0 && !m_isReloading && m_fireCooldown <= 0.0f;
+}
+
+void Player::usePrimary() {
+    if(m_ammo > 0){
+        m_ammo--;
+        m_fireCooldown = m_fireRate * m_fireRateMultiplier;
+    }
+}
+
+void Player::reload(){
+    if(!m_isReloading){
+        m_isReloading = true;
+        m_reloadTimer = m_reloadTime;
+    }
+}
+
+void Player::addUltCharge(float amount){
+    m_ultCharge += amount;
+    if(m_ultCharge > m_maxUltCharge) m_ultCharge = m_maxUltCharge;
+}
+
 std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos, PlayerClass pClass){
     switch(pClass){
         case PlayerClass::Scout:
@@ -88,6 +125,87 @@ std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos
     }
 }
 
+void Player::renderUI(){
+    renderLeftPanel();
+    renderRightPanel();
+}
+
+void Player::renderRightPanel() {
+    ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH - 320.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);
+    
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+    ImGui::Begin("HeroStatsLeft", nullptr, flags);
+
+    // HP
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "HP: %.0f / %.0f", m_hp, m_maxHp);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+    ImGui::ProgressBar(m_hp / m_maxHp, ImVec2(-1, 15.0f), "");
+    ImGui::PopStyleColor();
+
+    // AMMO
+    if (m_isReloading) {
+        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "RELOADING... %.1fs", std::max(0.0f, m_reloadTimer));
+    } else {
+        if (m_ammo <= 5) {
+            ImGui::TextColored(ImVec4(1.0f, 0.1f, 0.1f, 1.0f), "AMMO: %d / %d", m_ammo, m_maxAmmo);
+        } else {
+            ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "AMMO: %d / %d", m_ammo, m_maxAmmo);
+        }
+    }
+
+    ImGui::End();
+}
+
+void Player::renderLeftPanel() {
+    ImGui::SetNextWindowPos(ImVec2(20.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(400.0f, 100.0f), ImGuiCond_Always);
+    
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+    ImGui::Begin("HeroSkillsRight", nullptr, flags);
+
+    ImGui::Columns(4, "Skills", false);
+
+    renderShiftSkill(); ImGui::NextColumn();
+    renderESkill();     ImGui::NextColumn();
+    renderRMBSkill();   ImGui::NextColumn();
+    renderQSkill();     ImGui::NextColumn();
+
+    ImGui::Columns(1);
+    ImGui::End();
+}
+
+void Player::renderShiftSkill() {
+    ImGui::Text("SHIFT");
+    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "DASH");
+}
+
+void Player::renderESkill() {
+    ImGui::Text("E");
+    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+}
+
+void Player::renderQSkill() {
+    ImGui::Text("Q");
+    float progress = m_ultCharge / m_maxUltCharge;
+    
+    if (progress >= 1.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.7f, 0.1f, 0.8f, 1.0f)); 
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        char percText[16];
+        sprintf(percText, "%.0f%%", progress * 100.0f);
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.4f, 0.4f, 0.4f, 1.0f)); 
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), percText);
+        ImGui::PopStyleColor();
+    }
+}
+
+void Player::renderRMBSkill() {
+    ImGui::Text("RMB");
+    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "ALT FIRE");
+}
 
 void ScoutPlayer::onShift(const sf::Vector2f& mouseWorldPos){
     if(m_cooldownShift.getElapsedTime().asSeconds() >= 0.1f){

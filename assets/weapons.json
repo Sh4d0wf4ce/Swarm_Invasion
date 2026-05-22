@@ -1,6 +1,6 @@
 {
     "Rifle": { "speed": 800.0, "radius": 5.0, "damage": 25.0, "lifetime": 3.0, "color": [0, 255, 255, 255] },
     "Laser": { "speed": 1500.0, "radius": 3.0, "damage": 10.0, "lifetime": 1.5, "color": [255, 255, 0, 255] },
-    "Rocket": { "speed": 300.0, "radius": 12.0, "damage": 75.0, "lifetime": 5.0, "color": [255, 0, 0, 255] },
+    "Rocket": { "speed": 400.0, "radius": 12.0, "damage": 75.0, "lifetime": 5.0, "color": [255, 0, 0, 255] },
     "AcidSpit": { "speed": 400.0, "radius": 8.0, "damage": 15.0, "lifetime": 4.0, "color": [0, 255, 0, 255] }
 }

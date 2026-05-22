@@ -55,6 +55,7 @@ void ServerEngine::processNetwork(){
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
                 case PacketType::CardSelected:      handleCardSelected(packet); break;
+                case PacketType::PlayerUsesSkillE:  handlePlayerUsesSkillE(packet); break;
                 default: break;
             }
         }
@@ -119,6 +120,8 @@ void ServerEngine::update(sf::Time deltaTime){
     // EXP SYSTEM
     updateEnergyCells(deltaTime);
 
+    // HEALING FIELDS
+    updateHealingFields(deltaTime);
 
     // SENDING CURRENT WORLD STATE TO CLiENTS
     if(m_tickCounter % 60 == 0){
@@ -227,6 +230,20 @@ void ServerEngine::handleCardSelected(sf::Packet& packet){
     }
 }
 
+void ServerEngine::handlePlayerUsesSkillE(sf::Packet& packet){
+    std::uint32_t playerId;
+    sf::Vector2f pos;
+    if (packet >> playerId >> pos) {
+        m_activeHealFields.push_back({pos, 100.0f, 5.0f, 10.0f});
+
+        sf::Packet broadcastPacket;
+        broadcastPacket << PacketType::SpawnHealField << pos << 100.0f << 5.0f;
+        for (const auto& [id, clientInfo] : m_clients) {
+            (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+        }
+    }
+}
+
 
 void ServerEngine::proccessUpgradeMenuTimeout(){
     bool allSelected = true;
@@ -301,6 +318,28 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
             cell.targetPlayerId = 0;
         }
         ++it;
+    }
+}
+
+void ServerEngine::updateHealingFields(sf::Time deltaTime){
+    for (auto it = m_activeHealFields.begin(); it != m_activeHealFields.end(); ) {
+        for (auto& [id, clientInfo] : m_clients) {
+            float distSq = (clientInfo.position - it->position).lengthSquared();
+            if (distSq <= (it->radius * it->radius)) {
+                float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
+                clientInfo.hp += it->healPerSecond * deltaTime.asSeconds();
+                if (clientInfo.hp > maxHp) {
+                    clientInfo.hp = maxHp;
+                }
+            }
+        }
+
+        it->duration -= deltaTime.asSeconds();
+        if (it->duration <= 0.0f) {
+            it = m_activeHealFields.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
 

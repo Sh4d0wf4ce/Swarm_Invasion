@@ -14,8 +14,6 @@
 #include <random>
 #include <map>
 
-
-
 class ServerEngine{
 public:
     ServerEngine();
@@ -32,10 +30,12 @@ private:
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
     void handleCardSelected(sf::Packet& packet);
+    void handlePlayerUsesSkillE(sf::Packet& packet);
 
     void proccessUpgradeMenuTimeout();
     void removeAFKPlayers();
     void updateEnergyCells(sf::Time deltaTime);
+    void updateHealingFields(sf::Time deltaTime);
     void sendWorldState();
 
     std::shared_ptr<MapGenerator> m_map;
@@ -51,7 +51,7 @@ private:
 
     std::map<std::uint32_t, ClientInfo> m_clients;
     std::map<std::uint32_t, EnergyCellInfo> m_energyCells;
-
+    std::vector<ServerHealField> m_activeHealFields;
 
     std::map<std::uint32_t, std::unique_ptr<ServerEnemy>> m_enemies;
 

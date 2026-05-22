@@ -17,6 +17,7 @@
 #include <memory>
 #include <map>
 
+
 class GameState : public State {
 public:
     GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass);
@@ -56,4 +57,11 @@ private:
     bool m_isChoosingUpgrade = false;
     int m_myChoice = 01;
     sf::Clock m_clientUpgradeTimer;
+
+    struct ClientHealField {
+        sf::Vector2f position;
+        float radius;
+        float duration;
+    };
+    std::vector<ClientHealField> m_healFields;
 };
