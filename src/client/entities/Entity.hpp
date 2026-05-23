@@ -20,10 +20,11 @@ public:
     virtual void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) = 0;
     virtual void render(sf::RenderTarget& target) = 0;
 
-    std::uint32_t getId() const {return m_id;}
-    sf::Vector2f getPosition() const {return m_position;}
+    std::uint32_t getId() const { return m_id; }
+    sf::Vector2f getPosition() const { return m_position; }
+    float getHp() const { return m_hp; }
 
-    void setPosition(const sf::Vector2f&  pos) {m_position = pos;} 
+    void setPosition(const sf::Vector2f&  pos) { m_position = pos; } 
     void setHp(float hp){ m_hp = hp; }
 
     virtual Faction getFaction() const = 0;

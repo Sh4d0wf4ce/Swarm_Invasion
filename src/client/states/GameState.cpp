@@ -36,19 +36,7 @@ void GameState::handleInput(const sf::Event& event){
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera); 
 
             if(mouseBtn->button == sf::Mouse::Button::Right){
-                if(!m_player->canUseSecondary()) return;
-                WeaponType weapon = m_player->getSecondaryWeapon();
-                if(weapon == WeaponType::None) return;
-
-                m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, weapon, Faction::Players);
-    
-                if(m_engine.getServerAddress()){
-                    sf::Packet shootPacket;
-                    shootPacket << PacketType::PlayerShoots << m_player->getId() << weapon << m_player->getPosition() << worldPos;
-                    (void)m_engine.getSocket().send(shootPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
-                }
-
-                m_player->useSecondary();
+                m_player->onRMB(worldPos, m_engine, *m_projectileManager);
             }
 
         }
@@ -60,26 +48,10 @@ void GameState::handleInput(const sf::Event& event){
             sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera);
 
-            if(keyEvent->code == sf::Keyboard::Key::LShift) m_player->onShift(worldPos);
-            if(keyEvent->code == sf::Keyboard::Key::Q) m_player->onQ(worldPos);
-            if(keyEvent->code == sf::Keyboard::Key::E) m_player->onE(worldPos);
+            if(keyEvent->code == sf::Keyboard::Key::LShift) m_player->onShift(worldPos, m_engine, *m_projectileManager);
+            if(keyEvent->code == sf::Keyboard::Key::Q) m_player->onQ(worldPos, m_engine, *m_projectileManager);
+            if(keyEvent->code == sf::Keyboard::Key::E) m_player->onE(worldPos, m_engine, *m_projectileManager);
             if(keyEvent->code == sf::Keyboard::Key::R) m_player->reload();
-
-            if (keyEvent->code == sf::Keyboard::Key::E) {
-                if (m_player && m_player->canUseSkillE()) {
-                    m_player->useSkillE();
-
-                    if (m_engine.getServerAddress()) {
-                        sf::Packet skillPacket;
-                        skillPacket << PacketType::PlayerUsesSkillE << m_player->getId() << m_player->getPosition();
-                        (void)m_engine.getSocket().send(skillPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
-                    }
-                }
-            }
-
-            if(keyEvent->code == sf::Keyboard::Key::Q){
-                if(m_player->canUseUltimate()) m_player->useUltimate();
-            }
         }
     }
 }
@@ -120,10 +92,11 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         }
     }
     else if(type == PacketType::SpawnHealField){
+        std::uint32_t id;
         sf::Vector2f pos;
         float radius, duration;
-        if(packet >> pos >> radius >> duration){
-            m_healFields.push_back({pos, radius, duration});
+        if(packet >> id >> pos >> radius >> duration){
+            m_healFields[id] = std::make_unique<HealField>(id, pos, duration, radius);
         }
     }
     else if(type == PacketType::PlayerDealtDamage){
@@ -300,53 +273,18 @@ void GameState::update(sf::Time deltaTime){
     }
 
     for (auto it = m_healFields.begin(); it != m_healFields.end(); ) {
-        it->duration -= deltaTime.asSeconds();
-        if (it->duration <= 0.0f) it = m_healFields.erase(it);
+        auto& field = it->second;
+        field->update(deltaTime, m_map);
+        if (field->getHp() <= 0.0f) it = m_healFields.erase(it);
         else ++it;
     }
 
     if (m_player && m_engine.getWindow().hasFocus()) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-            
-            if (m_player->canUsePrimary()) {
-                sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
-                sf::Vector2f worldPos = m_engine.getWindow().mapPixelToCoords(pixelPos, m_camera);
+            sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
+            sf::Vector2f worldPos = m_engine.getWindow().mapPixelToCoords(pixelPos, m_camera);
 
-                if(m_player->hasAutoAim()){
-                    float bestDistSq = 300.f * 300.0f;
-                    bool foundEnemy = false;
-                    sf::Vector2f lockedEnemyPos = worldPos;
-
-                    for(const auto& [id, enemy] : m_enemies){
-                        float distSq = (enemy->getPosition() - worldPos).lengthSquared();
-                        if(distSq < bestDistSq){
-                            bestDistSq = distSq;
-                            lockedEnemyPos = enemy->getPosition();
-                            foundEnemy = true;
-                        }
-                    }
-
-                    if(foundEnemy){
-                        worldPos = lockedEnemyPos;
-                    }
-                }
-
-                WeaponType weapon = m_player->getPrimaryWeapon();
-                if (weapon != WeaponType::None) {
-                    m_projectileManager->spawnProjectile(m_player->getId(), m_player->getPosition(), worldPos, weapon, Faction::Players);
-                    
-                    if (m_engine.getServerAddress()) {
-                        sf::Packet shootPacket;
-                        shootPacket << PacketType::PlayerShoots << m_player->getId() << weapon << m_player->getPosition() << worldPos;
-                        (void)m_engine.getSocket().send(shootPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
-                    }
-                    
-                    m_player->usePrimary(); 
-                }
-            }
-            else if (m_player->getAmmo() == 0 && !m_player->isReloading()) {
-                m_player->reload();
-            }
+            m_player->onLMB(worldPos, m_engine, *m_projectileManager, m_enemies);
         }
     }
 }
@@ -358,14 +296,8 @@ void GameState::render() {
 
     if(m_mapRenderer) m_mapRenderer->render(window);
 
-    for(const auto& field : m_healFields){
-        sf::CircleShape healCircle(field.radius);
-        healCircle.setOrigin({field.radius, field.radius});
-        healCircle.setPosition(field.position);
-        healCircle.setFillColor(sf::Color(0, 255, 0, 50));
-        healCircle.setOutlineColor(sf::Color(0, 255, 0, 150));
-        healCircle.setOutlineThickness(2.0f);
-        m_engine.getWindow().draw(healCircle);
+    for(const auto& [id, field] : m_healFields){
+        field->render(window);
     }
     
     sf::CircleShape crystalShape(4.0f, 4);

@@ -2,6 +2,7 @@
 
 #include "../entities/Player.hpp"
 #include "../entities/Enemy.hpp"
+#include "../entities/HealField.hpp"
 #include "../core/MapRenderer.hpp"
 #include "../core/ClientEngine.hpp"
 #include "../projectiles/ProjectileManager.hpp"
@@ -40,6 +41,7 @@ private:
     std::map<std::uint32_t, std::unique_ptr<Player>> m_otherPlayers;
     std::map<std::uint32_t, std::unique_ptr<Enemy>> m_enemies;
     std::map<std::uint32_t, sf::Vector2f> m_energyCells;
+    std::map<std::uint32_t, std::unique_ptr<HealField>> m_healFields;
     
     sf::Clock m_lastServerMessageTimer;
     sf::Clock m_heartbeatTimer;
@@ -63,5 +65,4 @@ private:
         float radius;
         float duration;
     };
-    std::vector<ClientHealField> m_healFields;
 };

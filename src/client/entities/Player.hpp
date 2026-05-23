@@ -6,6 +6,10 @@
 
 #include <algorithm>
 
+class ClientEngine;
+class ProjectileManager;
+class Enemy;
+
 class Player : public Entity{
 public:
     static std::unique_ptr<Player> create(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass)    ;
@@ -23,31 +27,19 @@ public:
     float getRadius() const override { return HeroRegistry::getStats(m_class).radius; }
 
 
-    virtual void onShift(const sf::Vector2f& mouseWorldPos) {}
-    virtual void onQ(const sf::Vector2f& mouseWorldPos) {}
-    virtual void onE(const sf::Vector2f& mouseWorldPos) {}
+    virtual void onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+    virtual void onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+    virtual void onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+    virtual void onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+    virtual void onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) {}
 
-    virtual bool canUsePrimary() const;
-    virtual void usePrimary();
-    virtual WeaponType getPrimaryWeapon() const { return HeroRegistry::getStats(m_class).defaultWeapon; }
-
-    virtual bool canUseSecondary() const { return false; }
-    virtual void useSecondary() {}
-    virtual WeaponType getSecondaryWeapon() const { return WeaponType::None; }
-
-    virtual bool canUseSkillE() const { return false; }
-    virtual void useSkillE() {}
+    virtual void reload();
+    virtual void addUltCharge(float amount);
+    bool isUltActive() const { return m_isUltActive; }
+    
 
     int getAmmo() const { return m_ammo; }
     bool isReloading() const { return m_isReloading; }
-    virtual void reload();
-
-    virtual void addUltCharge(float amount);
-    virtual bool canUseUltimate() const { return m_ultCharge >= m_maxUltCharge; }
-    virtual void useUltimate() {}
-    bool isUltActive() const { return m_isUltActive; }
-
-    virtual bool hasAutoAim() const { return false; }
 
 protected:
     bool checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map);
@@ -67,18 +59,21 @@ protected:
 
     sf::Vector2f m_lastMoveDirection{1.0f, 0.0f};
 
-    sf::Clock m_cooldownShift;
-    sf::Clock m_cooldownQ;
-    sf::Clock m_cooldownE;
+    float m_cooldownShift{0.0f};
+    float m_cooldownE{0.0f};
+    float m_cooldownRMB{0.0f};
+    float m_cooldownLMB{0.0f};
+    
+    float m_maxCooldownShift{1.0f};
+    float m_maxCooldownE{1.0f};
+    float m_maxCooldownRMB{1.0f};
+    float m_fireRate{0.15f};
 
     int m_ammo{30};
     int m_maxAmmo{30};
     bool m_isReloading{false};
     float m_reloadTimer{0.0f};
     float m_reloadTime{1.5f};
-
-    float m_fireCooldown{0.0f};
-    float m_fireRate{0.15f};
 
     float m_ultCharge{0.0f};
     float m_maxUltCharge{500.0f};
@@ -94,5 +89,5 @@ class ScoutPlayer : public Player {
 public:
     using Player::Player;
     
-    void onShift(const sf::Vector2f& mouseWorldPos) override;
+    void onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) override;
 };

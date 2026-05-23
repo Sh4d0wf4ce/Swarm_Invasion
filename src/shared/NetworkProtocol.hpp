@@ -16,7 +16,7 @@ enum class PacketType : std::uint8_t{
     CardSelected,
     EnemyShoots,
     EntityHit,
-    PlayerUsesSkillE,
+    HealFieldRequest,
     SpawnHealField,
     PlayerDealtDamage
 };

@@ -30,7 +30,7 @@ private:
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
     void handleCardSelected(sf::Packet& packet);
-    void handlePlayerUsesSkillE(sf::Packet& packet);
+    void handleHealFieldRequest(sf::Packet& packet);
 
     void proccessUpgradeMenuTimeout();
     void removeAFKPlayers();
@@ -51,7 +51,7 @@ private:
 
     std::map<std::uint32_t, ClientInfo> m_clients;
     std::map<std::uint32_t, EnergyCellInfo> m_energyCells;
-    std::vector<ServerHealField> m_activeHealFields;
+    std::map<std::uint32_t, HealFieldInfo> m_healFields;
 
     std::map<std::uint32_t, std::unique_ptr<ServerEnemy>> m_enemies;
 

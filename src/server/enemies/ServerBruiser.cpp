@@ -10,7 +10,7 @@ std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<st
     float minDistanceSq;
     std::uint32_t targetId = getClosestPlayerId(clients, minDistanceSq);
 
-    float chargeRange = 800.0f;
+    float chargeRange = 300.0f;
 
     switch(m_state){
         case BruiserState::Chasing:

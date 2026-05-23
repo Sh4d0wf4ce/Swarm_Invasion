@@ -7,10 +7,10 @@
 struct EnergyCellInfo {
     sf::Vector2f position;
     int expValue;
-    std::uint32_t targetPlayerId = 0;
+    std::uint32_t targetPlayerId{0};
 };
 
-struct ServerHealField{
+struct HealFieldInfo{
     sf::Vector2f position;
     float radius{100.0f};
     float duration{5.0f};

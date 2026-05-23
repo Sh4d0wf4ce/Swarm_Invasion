@@ -25,7 +25,10 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
         }
     }
 
-    if(m_fireCooldown > 0.0f) m_fireCooldown -= deltaTime.asSeconds();
+    if (m_cooldownShift > 0.0f) m_cooldownShift -= deltaTime.asSeconds();
+    if (m_cooldownE > 0.0f) m_cooldownE -= deltaTime.asSeconds();
+    if (m_cooldownRMB > 0.0f) m_cooldownRMB -= deltaTime.asSeconds();
+    if (m_cooldownLMB > 0.0f) m_cooldownLMB -= deltaTime.asSeconds();
     
     sf::Vector2f movement(0.0f, 0.0f);
 
@@ -89,16 +92,6 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
     return false;
 }
 
-bool Player::canUsePrimary() const{
-    return m_ammo > 0 && !m_isReloading && m_fireCooldown <= 0.0f;
-}
-
-void Player::usePrimary() {
-    if(m_ammo > 0){
-        m_ammo--;
-        m_fireCooldown = m_fireRate * m_fireRateMultiplier;
-    }
-}
 
 void Player::reload(){
     if(!m_isReloading){
@@ -118,7 +111,7 @@ std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos
         case PlayerClass::Scout:
             return std::make_unique<ScoutPlayer>(id, startPos, pClass); break;
         case PlayerClass::Soldier:
-            return std::make_unique<Soldier>(id, startPos, pClass); break;
+            return std::make_unique<Soldier>(id, startPos); break;
         default:
             return std::make_unique<Player>(id, startPos, pClass);
     }
@@ -175,13 +168,33 @@ void Player::renderLeftPanel() {
 }
 
 void Player::renderShiftSkill() {
-    ImGui::Text("SHIFT");
-    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "DASH");
+    ImGui::Text("LSHIFT");
+    
+    if (m_cooldownShift <= 0.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        float progress = 1.0f - (m_cooldownShift / m_maxCooldownShift);
+        char cdText[16];
+        sprintf(cdText, "%.1fs", m_cooldownShift);
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
+    }
 }
 
 void Player::renderESkill() {
     ImGui::Text("E");
-    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+    
+    if (m_cooldownE <= 0.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        float progress = 1.0f - (m_cooldownE / m_maxCooldownE);
+        char cdText[16];
+        sprintf(cdText, "%.1fs", m_cooldownE);
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
+    }
 }
 
 void Player::renderQSkill() {
@@ -203,12 +216,19 @@ void Player::renderQSkill() {
 
 void Player::renderRMBSkill() {
     ImGui::Text("RMB");
-    ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "ALT FIRE");
+    
+    if (m_cooldownRMB <= 0.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.5f, 0.0f, 1.0f)); // Pomarańczowy dla strzału
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        float progress = 1.0f - (m_cooldownRMB / m_maxCooldownRMB);
+        char cdText[16];
+        sprintf(cdText, "%.1fs", m_cooldownRMB);
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
+    }
 }
 
-void ScoutPlayer::onShift(const sf::Vector2f& mouseWorldPos){
-    if(m_cooldownShift.getElapsedTime().asSeconds() >= 0.1f){
-        m_position += m_lastMoveDirection * 100.0f;
-        m_cooldownShift.restart();
-    }
+void ScoutPlayer::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
+     m_position += m_lastMoveDirection * 100.0f;
 }

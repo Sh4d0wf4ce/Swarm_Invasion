@@ -55,7 +55,7 @@ void ServerEngine::processNetwork(){
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
                 case PacketType::CardSelected:      handleCardSelected(packet); break;
-                case PacketType::PlayerUsesSkillE:  handlePlayerUsesSkillE(packet); break;
+                case PacketType::HealFieldRequest:  handleHealFieldRequest(packet); break;
                 default: break;
             }
         }
@@ -236,14 +236,15 @@ void ServerEngine::handleCardSelected(sf::Packet& packet){
     }
 }
 
-void ServerEngine::handlePlayerUsesSkillE(sf::Packet& packet){
+void ServerEngine::handleHealFieldRequest(sf::Packet& packet){
     std::uint32_t playerId;
     sf::Vector2f pos;
     if (packet >> playerId >> pos) {
-        m_activeHealFields.push_back({pos, 100.0f, 5.0f, 10.0f});
+        std::uint32_t fieldId = m_globalEntityCounter++;
+        m_healFields[fieldId] = {pos, 100.0f, 5.0f, 10.0f};
 
         sf::Packet broadcastPacket;
-        broadcastPacket << PacketType::SpawnHealField << pos << 100.0f << 5.0f;
+        broadcastPacket << PacketType::SpawnHealField << fieldId << pos << 100.0f << 5.0f;
         for (const auto& [id, clientInfo] : m_clients) {
             (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
         }
@@ -328,21 +329,23 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
 }
 
 void ServerEngine::updateHealingFields(sf::Time deltaTime){
-    for (auto it = m_activeHealFields.begin(); it != m_activeHealFields.end(); ) {
+    for (auto it = m_healFields.begin(); it != m_healFields.end(); ) {
+        auto& field = it->second;
+
         for (auto& [id, clientInfo] : m_clients) {
-            float distSq = (clientInfo.position - it->position).lengthSquared();
-            if (distSq <= (it->radius * it->radius)) {
+            float distSq = (clientInfo.position - field.position).lengthSquared();
+            if (distSq <= (field.radius * field.radius)) {
                 float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
-                clientInfo.hp += it->healPerSecond * deltaTime.asSeconds();
+                clientInfo.hp += field.healPerSecond * deltaTime.asSeconds();
                 if (clientInfo.hp > maxHp) {
                     clientInfo.hp = maxHp;
                 }
             }
         }
 
-        it->duration -= deltaTime.asSeconds();
-        if (it->duration <= 0.0f) {
-            it = m_activeHealFields.erase(it);
+        field.duration -= deltaTime.asSeconds();
+        if (field.duration <= 0.0f) {
+            it = m_healFields.erase(it);
         } else {
             ++it;
         }
