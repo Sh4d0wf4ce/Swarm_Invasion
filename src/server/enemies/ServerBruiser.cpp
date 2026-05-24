@@ -1,7 +1,7 @@
 #include "ServerBruiser.hpp"
 #include "HeroRegistry.hpp"
 
-std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies) {
+std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     std::vector<std::uint32_t> deadPlayers;
     if(clients.empty()) return deadPlayers;
 
@@ -24,7 +24,7 @@ std::vector<std::uint32_t> ServerBruiser::update(sf::Time deltaTime, std::map<st
                     if(len > 0.0f) m_chargeDirection = dir / len;
                 }
             } else{
-                return performMeleeChase(deltaTime, clients, map, flowField, allEnemies);
+                return performMeleeChase(deltaTime, clients, map, flowField, allEnemies, grid);
             }
             break;
         

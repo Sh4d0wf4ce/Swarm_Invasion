@@ -3,6 +3,7 @@
 #include "ServerTypes.hpp"
 #include "../enemies/ServerEnemy.hpp"
 #include "MapGenerator.hpp"
+#include "SpatialGrid.hpp"
 
 #include <map>
 #include <memory>
@@ -37,4 +38,10 @@ private:
 	sf::Clock m_waveTimer;
 	sf::Clock m_spawnTimer;
 	float m_currentSpawnRate;
+
+    SpatialGrid m_grid{
+        Config::MAP_WIDTH_TILES * Config::TILE_SIZE,
+        Config::MAP_WIDTH_TILES * Config::TILE_SIZE,
+        100.0f
+    };
 };

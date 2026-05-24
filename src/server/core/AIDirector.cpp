@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cmath>
 
-AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(2.0f){
+AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(0.1f){ // 2.0f
     std::random_device rd;
     m_rng.seed(rd());
 }
@@ -37,10 +37,10 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int ty = distY(m_rng);
 
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 50},
-                {EnemyType::Bruiser, 20},
-                {EnemyType::Spitter, 20},
-                {EnemyType::Kamikaze, 10},
+                {EnemyType::Crawler, 1000}, //50
+                {EnemyType::Bruiser, 20}, //20
+                {EnemyType::Spitter, 20}, //20
+                {EnemyType::Kamikaze, 0}, //10
             };
 
             int totalWeight = 0;
@@ -94,6 +94,11 @@ std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std:
     std::vector<std::uint32_t> deadPlayers;
     if(clients.empty()) return deadPlayers;
 
+    m_grid.clear();
+    for(const auto& [id, enemy] : enemies){
+        m_grid.insert(enemy->getPosition(), id);
+    }
+
     if(m_pathFindingTimer.getElapsedTime().asSeconds() > 0.25f){
         buildFlowField(map, clients);
         m_pathFindingTimer.restart();
@@ -101,7 +106,7 @@ std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std:
 
 
     for(auto& [id, enemy] : enemies){
-        auto killedByThisEnemy = enemy->update(deltaTime, clients, map, m_flowField, outShootEvents, enemies);
+        auto killedByThisEnemy = enemy->update(deltaTime, clients, map, m_flowField, outShootEvents, enemies, m_grid);
         deadPlayers.insert(deadPlayers.end(), killedByThisEnemy.begin(), killedByThisEnemy.end());
     }
 
@@ -115,7 +120,13 @@ void AIDirector::buildFlowField(std::shared_ptr<MapGenerator> map, const std::ma
     int width = map->getWidth();
     int height = map->getHeight();
 
-    m_flowField.assign(width, std::vector<int>(height, MAXINT32));
+    if (m_flowField.empty() || m_flowField.size() != width) {
+        m_flowField.assign(width, std::vector<int>(height, MAXINT32));
+    } else {
+        for (int x = 0; x < width; ++x) {
+            std::fill(m_flowField[x].begin(), m_flowField[x].end(), MAXINT32);
+        }
+    }
     
     std::queue<sf::Vector2i> q;
 

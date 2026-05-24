@@ -13,7 +13,8 @@ public:
         std::shared_ptr<MapGenerator> map, 
         const std::vector<std::vector<int>>& flowField, 
         std::vector<EnemyShootEvent>& outShootEvents, 
-        const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies
+        const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, 
+        const SpatialGrid& grid
     ) override;
 
 private:

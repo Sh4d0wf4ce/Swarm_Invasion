@@ -24,21 +24,30 @@ bool ServerEnemy::hasLineOfSight(sf::Vector2f start, sf::Vector2f end, float rad
     return true;
 }
 
-sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, float myRadius){
+sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, float myRadius, const SpatialGrid& grid){
     sf::Vector2f separationVector(0.0f, 0.0f);
-    for(const auto& [otherId, otherEnemy]: allEnemies){
+    std::vector<std::uint32_t> nearby = grid.getNearby(m_position);
+
+    for(std::uint32_t otherId : nearby){
         if(m_id == otherId) continue;
-        sf::Vector2f diff = m_position - otherEnemy->getPosition();
-        float distSq = diff.lengthSquared();
-        float combinedRadius = myRadius + EnemyRegistry::getStats(otherEnemy->getType()).radius;
-        if(distSq > 0 && distSq < combinedRadius * combinedRadius){
-            separationVector += diff / std::sqrt(distSq);
+        auto it = allEnemies.find(otherId);
+        
+        if(it != allEnemies.end()){
+            const auto& otherEnemy = it->second;
+            
+            sf::Vector2f diff = m_position - otherEnemy->getPosition();
+            float distSq = diff.lengthSquared();
+            float combinedRadius = myRadius + EnemyRegistry::getStats(otherEnemy->getType()).radius;
+            
+            if(distSq > 0 && distSq < combinedRadius * combinedRadius){
+                separationVector += diff / std::sqrt(distSq);
+            }
         }
     }
     return separationVector;
 }
 
-std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies) {
+std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     std::vector<std::uint32_t> deadPlayers;
     const auto& eStats = EnemyRegistry::getStats(m_type);
 
@@ -86,7 +95,7 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
         }
     }
 
-    sf::Vector2f separationVector = calculateSeparation(allEnemies, eStats.radius);
+    sf::Vector2f separationVector = calculateSeparation(allEnemies, eStats.radius, grid);
     if(desiredDirection.lengthSquared() > 0) desiredDirection /= std::sqrt(desiredDirection.lengthSquared());
     
     sf::Vector2f finalDirection = desiredDirection + (separationVector * 1.5f);

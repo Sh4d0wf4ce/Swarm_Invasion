@@ -1,6 +1,6 @@
 #include "ServerSpitter.hpp"
 
-std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies) {
+std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     std::vector<std::uint32_t> deadPlayers;
     const auto& eStats = EnemyRegistry::getStats(m_type);
     float shootRange = 350.0f;
@@ -9,7 +9,7 @@ std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<st
     std::uint32_t targetId = getClosestPlayerId(clients, minDistanceSq);
 
     if (minDistanceSq > shootRange * shootRange || !hasLineOfSight(m_position, clients.at(targetId).position, eStats.radius, map)) {
-        return performMeleeChase(deltaTime, clients, map, flowField, allEnemies);
+        return performMeleeChase(deltaTime, clients, map, flowField, allEnemies, grid);
     }
 
     
@@ -18,7 +18,7 @@ std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<st
         m_lastAttackTime.restart();
     }
 
-    sf::Vector2f separationVector = calculateSeparation(allEnemies, eStats.radius);
+    sf::Vector2f separationVector = calculateSeparation(allEnemies, eStats.radius, grid);
     if (separationVector.lengthSquared() > 0) {
         sf::Vector2f velocity = separationVector * m_speed * 0.5f * deltaTime.asSeconds();
         sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);

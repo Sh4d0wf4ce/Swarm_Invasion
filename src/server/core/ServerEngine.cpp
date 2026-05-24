@@ -1,5 +1,24 @@
 #include "ServerEngine.hpp"
 #include <iostream>
+#include <chrono>
+
+struct SimpleProfiler {
+    std::string name;
+    std::chrono::high_resolution_clock::time_point start;
+
+    SimpleProfiler(std::string n) : name(n) {
+        start = std::chrono::high_resolution_clock::now();
+    }
+    ~SimpleProfiler() {
+        auto end = std::chrono::high_resolution_clock::now();
+        float ms = std::chrono::duration<float, std::milli>(end - start).count();
+        
+        if (ms > 1.0f) {
+            std::cout << "[PROFILER] " << name << " zajelo: " << ms << " ms\n";
+        }
+    }
+};
+#define PROFILE_BLOCK(name) SimpleProfiler profiler_##__LINE__(name)
 
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
@@ -84,6 +103,7 @@ void ServerEngine::update(sf::Time deltaTime){
 
     // ENEMIES DIRECTOR
     if(!m_clients.empty()){
+        PROFILE_BLOCK("AI_AND_MOVEMENT");
         m_aiDirector.updateWaves(deltaTime, m_enemies, m_clients, m_map, m_globalEntityCounter);
         
         std::vector<EnemyShootEvent> shootEvents;
@@ -127,7 +147,11 @@ void ServerEngine::update(sf::Time deltaTime){
     if(m_tickCounter % 60 == 0){
             std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
     }
-    sendWorldState();
+
+    {
+        PROFILE_BLOCK("NETWORK_SEND");
+        sendWorldState();
+    }
 }
 
 void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
