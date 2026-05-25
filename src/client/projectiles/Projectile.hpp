@@ -16,8 +16,8 @@ public:
     Projectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction, WeaponType weapon);
     virtual ~Projectile() = default;
 
-    virtual void update(sf::Time deltaTime) = 0;
-    virtual void render(sf::RenderTarget& target) = 0;
+    virtual void update(sf::Time deltaTime);
+    virtual void render(sf::RenderTarget& target);
 
     virtual std::vector<std::uint32_t> checkCollisions(const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map);
 
@@ -26,6 +26,7 @@ public:
     WeaponType getWeaponType() const { return m_weaponType; }
 
 protected:
+    sf::CircleShape m_shape;
     std::uint32_t m_ownerId;
     sf::Vector2f m_position;
     sf::Vector2f m_velocity;

@@ -7,6 +7,10 @@ Projectile::Projectile(std::uint32_t ownerId, const sf::Vector2f& startPos, cons
         m_radius = stats.radius;
         m_lifetime = stats.lifetime;
         m_active = true;
+
+        m_shape.setRadius(m_radius);
+        m_shape.setFillColor(stats.color);
+        m_shape.setOrigin({m_radius, m_radius});
 }
 
 
@@ -40,4 +44,16 @@ std::vector<std::uint32_t> Projectile::checkCollisions(const std::vector<Entity*
     }
 
     return hitlist;
+}
+
+void Projectile::update(sf::Time deltaTime){
+    m_position += m_velocity * deltaTime.asSeconds();
+    m_lifetime -= deltaTime.asSeconds();
+
+    if(m_lifetime <= 0.0f) m_active = false;
+}
+
+void Projectile::render(sf::RenderTarget& target){
+    m_shape.setPosition(m_position);
+    target.draw(m_shape);
 }

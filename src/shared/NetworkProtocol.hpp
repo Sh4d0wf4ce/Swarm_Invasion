@@ -24,7 +24,7 @@ enum class PacketType : std::uint8_t{
 enum class PlayerClass : std::uint8_t{
     Soldier,
     Scout,
-    Tank,
+    Juggernaut,
     Medic
 };
 
@@ -40,7 +40,8 @@ enum class WeaponType : std::uint8_t{
     Rifle,
     Laser,
     Rocket,
-    AcidSpit
+    AcidSpit,
+    Shotgun,
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const WeaponType& wType){

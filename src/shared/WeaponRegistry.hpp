@@ -14,6 +14,9 @@ struct WeaponStats{
     float damage;
     float lifetime;
     sf::Color color;
+    int pellets;
+    float spreadAngle;
+    float explosionRadius;
 };
 
 class WeaponRegistry{
@@ -34,6 +37,7 @@ public:
             {"Laser", WeaponType::Laser},
             {"Rocket", WeaponType::Rocket},
             {"AcidSpit", WeaponType::AcidSpit},
+            {"Shotgun", WeaponType::Shotgun},
         };
 
         for(auto& [key, val] : json.items()){
@@ -45,6 +49,10 @@ public:
                 stats.radius = val["radius"];
                 stats.damage = val["damage"];
                 stats.lifetime = val["lifetime"];
+
+                stats.pellets = val.value("pellets", 1);
+                stats.spreadAngle = val.value("spreadAngle", 0.0f);
+                stats.explosionRadius = val.value("explosionRadius", 0.0f);
 
                 auto c = val["color"];
                 stats.color = sf::Color(c[0], c[1], c[2], c[3]);

@@ -32,7 +32,7 @@ public:
         std::unordered_map<std::string, PlayerClass> classMap = {
             {"Soldier", PlayerClass::Soldier},
             {"Scout", PlayerClass::Scout},
-            {"Tank", PlayerClass::Tank},
+            {"Juggernaut", PlayerClass::Juggernaut},
             {"Medic", PlayerClass::Medic}
         };
 

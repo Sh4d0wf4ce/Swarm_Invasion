@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cmath>
 
-AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(0.1f){ // 2.0f
+AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(2.0f){
     std::random_device rd;
     m_rng.seed(rd());
 }
@@ -37,10 +37,10 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int ty = distY(m_rng);
 
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 1000}, //50
+                {EnemyType::Crawler, 50}, //50
                 {EnemyType::Bruiser, 20}, //20
                 {EnemyType::Spitter, 20}, //20
-                {EnemyType::Kamikaze, 0}, //10
+                {EnemyType::Kamikaze, 10}, //10
             };
 
             int totalWeight = 0;
