@@ -1,0 +1,228 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{titlesec}
+
+\geometry{margin=2.5cm}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    pdftitle={Swarm Invasion -- dokumentacja wstepna}
+}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.5em}{}
+
+\title{Swarm Invasion\\Dokumentacja wstępna}
+\author{}
+\date{\today}
+
+\begin{document}
+\sloppy
+
+\maketitle
+
+
+\section{Wstęp}
+Celem projektu \texttt{Swarm Invasion} jest stworzenie dwuosobowej lub wieloosobowej gry akcji typu \textit{top-down horde shooter}, w której gracze łączą się z serwerem, wybierają klasę postaci i wspólnie odpierają kolejne fale przeciwników. Główny nacisk w projekcie położono na architekturę klient--serwer, podstawowe systemy rozgrywki, synchronizację stanu świata oraz możliwość dalszego rozwijania klas, broni i zachowań AI.
+
+Program składa się z dwóch wykonywalnych części: klienta odpowiedzialnego za wejście użytkownika, renderowanie i interfejs oraz serwera odpowiedzialnego za obsługę połączeń sieciowych, aktualizację przeciwników, postęp fali i autorytatywny stan świata. Obie części współdzielą warstwę definicji protokołu, konfiguracji i generatora mapy. Parametry balansu rozgrywki przechowywane są w zewnętrznych plikach JSON.
+
+Niniejsza dokumentacja przedstawia zastosowane rozwiązania architektoniczne, zaimplementowane mechaniki rozgrywki oraz strukturę kodu na obecnym etapie rozwoju silnika.
+
+\section{Architektura programu}
+\subsection{Podział na warstwy}
+Projekt jest podzielony na trzy główne części:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{klient} (\texttt{src/client}) -- obsługuje okno SFML, UI w ImGui, wejście użytkownika, lokalną reprezentację gracza, renderowanie mapy, obiektów i przeciwników oraz część logiki pocisków,
+    \item \textbf{serwer} (\texttt{src/server}) -- utrzymuje listę połączonych graczy, stan przeciwników, fale, leczenie, doświadczenie drużyny i okresowo wysyła stan świata,
+    \item \textbf{warstwa współdzielona} (\texttt{src/shared}) -- zawiera definicje pakietów sieciowych, stałe konfiguracyjne, rejestry danych wczytywanych z JSON oraz generator mapy.
+\end{itemize}
+
+\subsection{Punkty wejścia}
+Uruchomienie klienta rozpoczyna się w pliku \texttt{src/client/core/main.cpp}. Program wczytuje konfiguracje broni, bohaterów i przeciwników z katalogu \texttt{assets}, tworzy obiekt \texttt{ClientEngine} i uruchamia główną pętlę klienta.
+
+Uruchomienie serwera realizowane jest przez \texttt{src/server/core/main.cpp}. Podobnie jak klient, serwer najpierw wczytuje konfigurację z plików JSON, następnie tworzy \texttt{ServerEngine} i przechodzi do pętli aktualizacji z krokiem równym $1/60$ sekundy.
+
+\subsection{Budowanie projektu}
+Projekt budowany jest przy pomocy CMake. W pliku \texttt{CMakeLists.txt} zdefiniowano standard C++20 i pobieranie bibliotek przez \texttt{FetchContent}. Tworzone są dwa programy:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{SwarmServer},
+    \item \texttt{SwarmClient}.
+\end{itemize}
+
+Użyte biblioteki zewnętrzne:
+\begin{itemize}[leftmargin=1.5cm]
+    \item SFML 3.1.0,
+    \item ImGui 1.91.5,
+    \item ImGui-SFML 3.0,
+    \item \texttt{nlohmann/json} 3.12.0.
+\end{itemize}
+
+Podczas konfiguracji budowy katalog \texttt{assets} kopiowany jest do katalogu \texttt{build}, dlatego programy uruchamiane z katalogu budowania korzystają z zasobów znajdujących się właśnie tam.
+
+\section{Jednostki kompilacji i moduły}
+\subsection{Część klienta}
+Najważniejsze moduły klienta są następujące:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{ClientEngine} w pliku \texttt{src/client/core/ClientEngine.cpp} -- główna pętla klienta, obsługa okna, zdarzeń, pakietów sieciowych oraz przełączania stanów,
+    \item \texttt{LobbyState} w \texttt{src/client/states/LobbyState.cpp} -- ekran wyboru adresu serwera i klasy postaci, wysyłający \texttt{JoinRequest},
+    \item \texttt{GameState} w \texttt{src/client/states/GameState.cpp} -- główny stan rozgrywki, odpowiedzialny za wejście, kamerę, lokalną symulację pocisków, odbiór stanu świata, UI oraz powrót do lobby po śmierci,
+    \item \texttt{MapRenderer} w \texttt{src/client/core/MapRenderer.cpp} -- przygotowuje sposób wyświetlania całej mapy, tak aby mogła być sprawnie rysowana na ekranie,
+    \item klasy entity w \texttt{src/client/entities} -- bazą jest \texttt{Entity}, a \texttt{Player} i \texttt{Enemy} są klasami pochodnymi reprezentującymi odpowiednio graczy i przeciwników,
+    \item system pocisków w \texttt{src/client/projectiles} -- lokalna reprezentacja pocisku, menedżer pocisków i podstawowe kolizje.
+\end{itemize}
+
+Klient działa w oparciu o maszynę stanów: po utworzeniu \texttt{ClientEngine} aktywowany jest \texttt{LobbyState}, a po dołączeniu do gry następuje przejście do \texttt{GameState}.
+
+\subsection{Część serwera}
+Najważniejsze elementy serwera to:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{ServerEngine} w \texttt{src/server/core/ServerEngine.cpp} -- obsługa połączeń UDP, klientów, trafień, doświadczenia drużyny, pól leczenia, stanu świata i stanu rozgrywki,
+    \item \texttt{AIDirector} w \texttt{src/server/core/AIDirector.cpp} -- generowanie fal, wybór typu przeciwnika, flow-field do nawigacji oraz lokalna siatka przestrzenna przeciwników,
+    \item klasy przeciwników w \texttt{src/server/enemies} -- wspólna baza \texttt{ServerEnemy} oraz poszczególne typy wrogów: \texttt{ServerCrawler}, \texttt{ServerBruiser}, \texttt{ServerSpitter} i \texttt{ServerKamikaze},
+    \item struktury pomocnicze w \texttt{src/server/core/ServerTypes.hpp} -- opis klienta, punktów doświadczenia i pola leczenia,
+    \item \texttt{SpatialGrid} w \texttt{src/server/core/SpatialGrid.hpp} -- uproszczony podział przestrzeni używany przez AI do lokalnego wyszukiwania sąsiadów.
+\end{itemize}
+
+Serwer działa jako \textit{headless server}, czyli program uruchamiany bez interfejsu graficznego. Jego zadaniem jest aktualizacja świata i rozsyłanie najważniejszych informacji do klientów.
+
+\subsection{Warstwa współdzielona}
+Współdzielona część projektu zawiera:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{NetworkProtocol.hpp} -- definicje typów pakietów, klas graczy, typów przeciwników i typów broni, a także serializację podstawowych typów do \texttt{sf::Packet},
+    \item \texttt{Config.hpp} -- stałe takie jak rozmiar okna, port serwera, rozmiar mapy, promienie kolizji i parametry systemu XP,
+    \item \texttt{HeroRegistry.hpp}, \texttt{WeaponRegistry.hpp}, \texttt{EnemyRegistry.hpp} -- rejestry statystyk wczytywanych z plików JSON,
+    \item \texttt{MapGenerator.cpp} -- generator mapy oparty na prostym automacie komórkowym z wygładzaniem i centralną strefą startową.
+\end{itemize}
+
+\section{Model rozgrywki}
+\subsection{Bohaterowie}
+Docelowo projekt zakłada cztery klasy bohaterów, natomiast obecnie zaimplementowane są dwie: \texttt{Soldier} i \texttt{Juggernaut}. W planach dalszego rozwoju znajdują się kolejne klasy, między innymi \texttt{Vangard} oraz \texttt{Engineer}.
+
+Ich podstawowe parametry, takie jak maksymalne punkty życia, szybkość poruszania, promień i domyślna broń, przechowywane są w pliku \texttt{assets/heroes.json}. Obecny stan projektu koncentruje się przede wszystkim na rozwijaniu i testowaniu dwóch dostępnych klas.
+
+\subsection{Umiejętności bohaterów}
+Aktualnie zaimplementowane klasy różnią się nie tylko statystykami, ale również dostępnym zestawem akcji specjalnych. \texttt{Soldier} pełni rolę bardziej uniwersalnej klasy dystansowej: korzysta z podstawowego ostrzału karabinem, posiada sprint oparty na pasku staminy, alternatywny atak rakietowy, umiejętność tworzenia pola leczenia oraz ultimate, dający mu zwiększoną szybkostrzelność, nieskończoną amunicję oraz auto-namierzanie przeciwników na pewien okres czasu.
+
+\texttt{Juggernaut} jest klasą cięższą i wolniejszą, opartą na walce z bliskiego dystansu. W obecnym stanie projektu korzysta z broni typu shotgun oraz z krótkiej szarży do przodu. Pozostałe sloty umiejętności tej klasy są już przewidziane w strukturze kodu i interfejsie, ale ich działanie jest jeszcze rozwijane.
+
+\subsection{Broń i pociski}
+Statystyki broni zapisane są w \texttt{assets/weapons.json}. Rejestr broni wczytuje m.in. prędkość pocisku, promień, obrażenia, czas życia pocisku, liczbę śrucin i kąt rozrzutu. Dzięki temu część balansu może być modyfikowana bez przebudowy kodu.
+
+Po stronie klienta pociski aktualizowane są lokalnie przez \texttt{ProjectileManager}. Kolizja z przeciwnikiem lub graczem skutkuje utworzeniem rekordu trafienia, który następnie wysyłany jest do serwera jako pakiet \texttt{EntityHit}.
+
+\subsection{Przeciwnicy i fale}
+W grze występują cztery typy przeciwników:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{Crawler} -- podstawowy przeciwnik walczący wręcz,
+    \item \texttt{Bruiser} -- wolniejszy i wytrzymalszy przeciwnik z szarżą,
+    \item \texttt{Spitter} -- przeciwnik dystansowy strzelający kwasem,
+    \item \texttt{Kamikaze} -- szybki przeciwnik eksplodujący po dotarciu do celu.
+\end{itemize}
+
+Fale obsługiwane są przez \texttt{AIDirector}. Co pewien czas zwiększany jest numer fali, a odstęp pomiędzy spawnami przeciwników jest skracany. Pozycje przeciwników losowane są na mapie, lecz odrzucane, jeśli znajdują się zbyt blisko gracza lub w ścianie.
+
+\subsection{Mapa i kolizje}
+Mapa generowana jest proceduralnie po stronie klienta i serwera, zawsze z tym samym seedem po obu stronach. Generator tworzy dwuwymiarową siatkę kafli typu podłoga/ściana, wykonuje kilka kroków wygładzania i czyści obszar wokół środka mapy, aby zapewnić bezpieczne miejsce startu. Dzięki temu obie strony symulacji odtwarzają identyczną geometrię bez potrzeby przesyłania całej mapy przez sieć.
+
+\subsection{Doświadczenie i rozwój drużyny}
+Po śmierci przeciwników pojawiają się punkty doświadczenia. Po zebraniu odpowiedniej liczby punktów poziom drużyny wzrasta, gra zostaje chwilowo zatrzymana, a klient wyświetla okno wyboru ulepszenia. Obecna implementacja obejmuje UI wyboru i obsługę timeoutu po stronie serwera, ale rzeczywiste efekty kart nie są jeszcze zaimplementowane.
+
+\section{Komunikacja sieciowa}
+\subsection{Model połączenia}
+Komunikacja sieciowa opiera się na bezpołączeniowych gniazdach UDP z biblioteki SFML. Zarówno klient, jak i serwer pracują w trybie nieblokującym. Serwer nasłuchuje na porcie \texttt{54000}, a klient regularnie wysyła swoją pozycję oraz pakiety akcji.
+
+\subsection{Najważniejsze pakiety}
+Warstwa protokołu definiuje m.in. następujące typy pakietów:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{JoinRequest}, \texttt{JoinAccept},
+    \item \texttt{PlayerPosition},
+    \item \texttt{PlayerShoots},
+    \item \texttt{EntityHit},
+    \item \texttt{WorldState},
+    \item \texttt{LevelUpTriggered},
+    \item \texttt{SpawnHealField},
+    \item \texttt{PlayerDealtDamage},
+    \item \texttt{PlayerDisconnect}.
+\end{itemize}
+
+\subsection{Stan świata}
+Serwer okresowo wysyła pakiet \texttt{WorldState}, zawierający:
+\begin{itemize}[leftmargin=1.5cm]
+    \item listę aktywnych graczy i ich pozycje oraz HP,
+    \item poziom drużyny i stan paska doświadczenia,
+    \item listę przeciwników i ich pozycje oraz HP,
+    \item pozycje punktów doświadczenia.
+\end{itemize}
+
+Klient wykorzystuje ten stan świata do synchronizacji położenia innych graczy i przeciwników. Lokalny gracz nadal porusza się jednak po stronie klienta na podstawie wejścia użytkownika.
+
+\subsection{Autorytatywność i ograniczenia modelu}
+Model synchronizacji jest hybrydowy:
+\begin{itemize}[leftmargin=1.5cm]
+    \item serwer jest autorytatywny dla przeciwników, HP, fal, doświadczenia i pól leczenia,
+    \item klient raportuje własną pozycję i zgłasza trafienia pociskami.
+\end{itemize}
+
+Oznacza to, że część informacji o działaniach gracza trafia do serwera z poziomu klienta, natomiast kluczowy stan rozgrywki pozostaje utrzymywany centralnie po stronie serwera. Mimo że UDP nie zapewnia niezawodności ani kolejności dostarczania pakietów, w obecnym modelu rozgrywki nie wpływa to znacząco na odbiór gry i pozwala zachować płynność komunikacji.
+
+\section{Obsługa programu}
+\subsection{Budowanie}
+Projekt można zbudować z katalogu głównego repozytorium za pomocą polecenia:
+\begin{verbatim}
+cmake --build build
+\end{verbatim}
+
+Po poprawnym zbudowaniu w katalogu \texttt{build} powinny znajdować się pliki wykonywalne:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{SwarmServer.exe},
+    \item \texttt{SwarmClient.exe}.
+\end{itemize}
+
+\subsection{Uruchamianie}
+Najpierw należy uruchomić serwer:
+\begin{verbatim}
+build\SwarmServer.exe
+\end{verbatim}
+
+Następnie uruchamiany jest klient:
+\begin{verbatim}
+build\SwarmClient.exe
+\end{verbatim}
+
+Po uruchomieniu klient wyświetla menu, w którym użytkownik podaje adres IP serwera i wybiera klasę bohatera. Po zaakceptowaniu serwer przydziela unikalny identyfikator gracza i rozpoczyna się właściwa rozgrywka.
+
+\subsection{Sterowanie}
+Sterowanie w aktualnej wersji klienta opiera się na standardowym układzie klawiatura plus mysz:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{W}, \texttt{A}, \texttt{S}, \texttt{D} -- poruszanie postacią,
+    \item lewy przycisk myszy -- atak podstawowy,
+    \item prawy przycisk myszy -- alternatywna umiejętność lub atak dodatkowy, jeśli dana klasa go obsługuje,
+    \item \texttt{Shift} -- umiejętność ruchowa,
+    \item \texttt{E} -- slot umiejętności klasowej,
+    \item \texttt{Q} -- ultimate,
+    \item \texttt{R} -- przeładowanie broni.
+\end{itemize}
+
+Celowanie odbywa się przy pomocy kursora myszy. Warto zaznaczyć, że nie wszystkie przyciski mają jeszcze pełną funkcjonalność dla każdej klasy, ponieważ część umiejętności pozostaje w trakcie implementacji.
+
+\subsection{Wymagane zasoby}
+Program wymaga obecności katalogu \texttt{assets} z plikami:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \texttt{heroes.json},
+    \item \texttt{weapons.json},
+    \item \texttt{enemies.json}.
+\end{itemize}
+
+Brak tych plików uniemożliwia poprawne zainicjowanie rejestrów i może skutkować wyjątkami przy próbie odczytu statystyk.
+
+\end{document}
