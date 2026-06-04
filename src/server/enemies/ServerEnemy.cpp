@@ -78,7 +78,9 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
         float touchDist = eStats.radius + HeroRegistry::getStats(playerInfo.pClass).radius;
         if(distSq < touchDist * touchDist){
             if(m_lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                playerInfo.hp -= eStats.damage;
+                float damageMultiplier = 1.0f;
+                if(playerInfo.pClass == PlayerClass::Juggernaut) damageMultiplier = 0.8f;
+                playerInfo.hp -= eStats.damage * damageMultiplier;
                 m_lastAttackTime.restart();
                 if(playerInfo.hp <= 0.0f) deadPlayers.push_back(playerId);
             }

@@ -144,15 +144,14 @@ void ServerEngine::update(sf::Time deltaTime){
     // HEALING FIELDS
     updateHealingFields(deltaTime);
 
+    updateBlackHoles(deltaTime);
+
     // SENDING CURRENT WORLD STATE TO CLiENTS
     if(m_tickCounter % 60 == 0){
-            std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
+        std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
     }
 
-    {
-        PROFILE_BLOCK("NETWORK_SEND");
-        sendWorldState();
-    }
+    sendWorldState();
 }
 
 void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
@@ -318,6 +317,15 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
+        }else if(ability == AbilityType::JuggernautBlackHole){
+            std::uint32_t bhId = m_globalEntityCounter++;
+            m_blackHoles[bhId] = {pos, 4.0f, playerId};
+
+            sf::Packet broadcastPacket;
+            broadcastPacket << PacketType::SpawnBlackHole << bhId << pos << 3.0f;
+            for (const auto& [id, clientInfo] : m_clients) {
+                (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+            }
         }
     }
 }
@@ -419,6 +427,59 @@ void ServerEngine::updateHealingFields(sf::Time deltaTime){
             it = m_healFields.erase(it);
         } else {
             ++it;
+        }
+    }
+}
+
+void ServerEngine::updateBlackHoles(sf::Time deltaTime){
+    std::vector<std::uint32_t> deadFromBlackHole;
+
+    for(auto it = m_blackHoles.begin(); it != m_blackHoles.end(); ){
+        it->second.duration -= deltaTime.asSeconds();
+        if(it->second.duration <= 0.0f){
+            it = m_blackHoles.erase(it);
+            continue;
+        }
+
+        float pullRadius = 300.0f;
+        float coreRadius = 30.0f;
+
+        for(auto& [enemyId, enemy] : m_enemies){
+            sf::Vector2f diff = it->second.position - enemy->getPosition();
+            float distSq = diff.lengthSquared();
+
+            if(distSq > 0.0f && distSq < pullRadius * pullRadius){
+                float dist = std::sqrt(distSq);
+
+                if(dist < coreRadius){
+                    float damageDealt = 50.0f * deltaTime.asSeconds();
+                    enemy->takeDamage(damageDealt);
+
+                    if (m_clients.count(it->second.ownerId)) {
+                        sf::Packet damagePacket;
+                        damagePacket << PacketType::PlayerDealtDamage << damageDealt;
+                        (void)m_socket.send(damagePacket, m_clients.at(it->second.ownerId).ip, m_clients.at(it->second.ownerId).port);
+                    }
+
+                    if(enemy->getHp() <= 0.0f) deadFromBlackHole.push_back(enemyId);
+                    
+                }else{
+                    sf::Vector2f pullStep = (diff / dist) * 170.0f * deltaTime.asSeconds();
+                    sf::Vector2f newPos = enemy->getPosition() + pullStep;
+
+                    if(!m_map->checkCollision(newPos, EnemyRegistry::getStats(enemy->getType()).radius)){
+                        enemy->setPosition(newPos);
+                    }
+                }
+            }
+        }
+        ++it;
+    }
+
+    for(auto id: deadFromBlackHole){
+        if(m_enemies.count(id)){
+            m_energyCells[m_globalEntityCounter++] = {m_enemies[id]->getPosition(), 1, 0};
+            m_enemies.erase(id);
         }
     }
 }

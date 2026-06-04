@@ -15,6 +15,8 @@ public:
     void onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) override;
     void onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) override;
 
+    bool isAutoFiring() const override { return m_isUltActive; }
+
     std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) override;
 private:
     bool m_isCharging{false};
@@ -26,6 +28,8 @@ private:
     sf::Vector2f m_repulsorAimDir{1.0f, 0.0f};
     float m_repulsorVfxTimer{0.0f};
     sf::VertexArray m_repulsorVfx{sf::PrimitiveType::TriangleFan};
+
+    sf::Vector2f m_recoilVelocity{0.0f, 0.0f};
 
     std::vector<std::uint32_t> m_dashedEnemies;
 };

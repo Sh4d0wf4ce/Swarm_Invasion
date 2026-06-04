@@ -99,6 +99,14 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
             m_healFields[id] = std::make_unique<HealField>(id, pos, duration, radius);
         }
     }
+    else if(type == PacketType::SpawnBlackHole){
+        std::uint32_t id;
+        sf::Vector2f pos;
+        float duration;
+        if(packet >> id >> pos >> duration){
+            m_blackHoles[id] = std::make_unique<BlackHole>(id, pos, duration);
+        }
+    }
     else if(type == PacketType::PlayerDealtDamage){
         float damage;
         if(packet >> damage && m_player){
@@ -291,8 +299,15 @@ void GameState::update(sf::Time deltaTime){
         else ++it;
     }
 
+    for (auto it = m_blackHoles.begin(); it != m_blackHoles.end(); ) {
+        auto& blackHole = it->second;
+        blackHole->update(deltaTime, m_map);
+        if (blackHole->getHp() <= 0.0f) it = m_blackHoles.erase(it);
+        else ++it;
+    }
+
     if (m_player && m_engine.getWindow().hasFocus()) {
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) || m_player->isAutoFiring()) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
             sf::Vector2f worldPos = m_engine.getWindow().mapPixelToCoords(pixelPos, m_camera);
 
@@ -310,6 +325,10 @@ void GameState::render() {
 
     for(const auto& [id, field] : m_healFields){
         field->render(window);
+    }
+
+    for(const auto& [id, blackHole] : m_blackHoles){
+        blackHole->render(window);
     }
     
     sf::CircleShape crystalShape(4.0f, 4);

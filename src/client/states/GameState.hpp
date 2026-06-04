@@ -3,6 +3,7 @@
 #include "../entities/Player.hpp"
 #include "../entities/Enemy.hpp"
 #include "../entities/HealField.hpp"
+#include "../entities/BlackHole.hpp"
 #include "../core/MapRenderer.hpp"
 #include "../core/ClientEngine.hpp"
 #include "../projectiles/ProjectileManager.hpp"
@@ -42,6 +43,7 @@ private:
     std::map<std::uint32_t, std::unique_ptr<Enemy>> m_enemies;
     std::map<std::uint32_t, sf::Vector2f> m_energyCells;
     std::map<std::uint32_t, std::unique_ptr<HealField>> m_healFields;
+    std::map<std::uint32_t, std::unique_ptr<BlackHole>> m_blackHoles;
     
     sf::Clock m_lastServerMessageTimer;
     sf::Clock m_heartbeatTimer;

@@ -17,6 +17,7 @@ enum class PacketType : std::uint8_t{
     EnemyShoots,
     EntityHit,
     SpawnHealField,
+    SpawnBlackHole,
     PlayerDealtDamage,
     AbilityUsed,
     AbilityHit

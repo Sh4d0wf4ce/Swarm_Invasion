@@ -41,6 +41,7 @@ public:
 
     virtual void reload();
     virtual void addUltCharge(float amount);
+    virtual bool isAutoFiring() const { return false; }
     bool isUltActive() const { return m_isUltActive; }
     
 

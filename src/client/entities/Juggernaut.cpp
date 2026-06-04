@@ -36,8 +36,6 @@ void Juggernaut::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>&
         } 
     }
 
-    Player::update(deltaTime, map);
-
     if(m_repulsorVfxTimer > 0.0f){
         m_repulsorVfxTimer -= deltaTime.asSeconds();
 
@@ -58,6 +56,28 @@ void Juggernaut::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>&
             m_repulsorVfx[i+1].color = sf::Color(100, 200, 255, 0);
         }
     }
+
+    if (m_recoilVelocity.lengthSquared() > 10.0f) {
+        sf::Vector2f velocity = m_recoilVelocity * deltaTime.asSeconds();
+        
+        sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);
+        if (!checkCollision(nextPosX, map)) m_position.x = nextPosX.x;
+
+        sf::Vector2f nextPosY = m_position + sf::Vector2f(0.0f, velocity.y);
+        if (!checkCollision(nextPosY, map)) m_position.y = nextPosY.y;
+
+        m_shape.setPosition(m_position);
+        m_recoilVelocity -= m_recoilVelocity * 12.0f * deltaTime.asSeconds();
+    }
+
+    if (m_isUltActive) {
+        m_ultTimer -= deltaTime.asSeconds();
+        if (m_ultTimer <= 0.0f) {
+            m_isUltActive = false;
+        }
+    }
+
+    Player::update(deltaTime, map);
 }
 
 void Juggernaut::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
@@ -80,11 +100,32 @@ void Juggernaut::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine
 }
 
 void Juggernaut::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
-
+    if (!m_isUltActive && m_ultCharge >= m_maxUltCharge) {
+        m_isUltActive = true;
+        m_ultTimer = 5.0f;
+        m_ultCharge = 0.0f; 
+    }
 }
 
 void Juggernaut::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
+    if(m_cooldownE <= 0.0f){
+        m_cooldownE = m_maxCooldownE;
 
+        float maxRange = 200.0f;
+        sf::Vector2f targetPos = mouseWorldPos;
+        sf::Vector2f dir = mouseWorldPos - m_position;
+        float distSq = dir.lengthSquared();
+
+        if(distSq > maxRange * maxRange){
+            targetPos = m_position + (dir / std::sqrt(distSq)) * maxRange;
+        }
+
+        if(engine.getServerAddress()){
+            sf::Packet packet;
+            packet << PacketType::AbilityUsed << m_id << AbilityType::JuggernautBlackHole << targetPos;
+            (void)engine.getSocket().send(packet, engine.getServerAddress().value(), Config::SERVER_PORT);
+        }
+    }
 }
 
 void Juggernaut::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
@@ -102,23 +143,40 @@ void Juggernaut::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
 }
 
 void Juggernaut::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies){
-    if(m_ammo > 0 && !m_isReloading && m_cooldownLMB <= 0.0f){
-        m_cooldownLMB = m_fireRate * m_fireRateMultiplier;
+    if (m_cooldownLMB > 0.0f || m_isReloading) return; 
 
-        if(!m_isUltActive) m_ammo--;
-
-        WeaponType weapon = WeaponType::Shotgun;
-
-        projMgr.spawnProjectile(m_id, m_position, mouseWorldPos, weapon, Faction::Players);
-        
-        if (engine.getServerAddress()) {
-            sf::Packet shootPacket;
-            shootPacket << PacketType::PlayerShoots << m_id << weapon << m_position << mouseWorldPos;
-            (void)engine.getSocket().send(shootPacket, engine.getServerAddress().value(), Config::SERVER_PORT);
-        }
-    } else if (m_ammo == 0 && !m_isReloading){
+    if (m_ammo == 0 && !m_isUltActive) {
         reload();
+        return;
     }
+
+    if (m_isUltActive) {
+        m_cooldownLMB = (m_fireRate * m_fireRateMultiplier) * 0.25f;
+    } else {
+        m_cooldownLMB = m_fireRate * m_fireRateMultiplier;
+        m_ammo--;
+    }
+
+    
+    WeaponType weapon = WeaponType::Shotgun;
+    projMgr.spawnProjectile(m_id, m_position, mouseWorldPos, weapon, Faction::Players);
+    
+    if (engine.getServerAddress()) {
+        sf::Packet shootPacket;
+        shootPacket << PacketType::PlayerShoots << m_id << weapon << m_position << mouseWorldPos;
+        (void)engine.getSocket().send(shootPacket, engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
+
+    if (m_isUltActive) {
+        sf::Vector2f dir = mouseWorldPos - m_position;
+        float lenSq = dir.lengthSquared();
+        if (lenSq > 0) {
+            sf::Vector2f dirNormalized = dir / std::sqrt(lenSq);
+            
+            m_recoilVelocity += -dirNormalized * 300.0f; 
+        }
+    }
+    
 }
 
 std::vector<AbilityHitRecord> Juggernaut::checkAbilityHits(const std::vector<Entity*>& entities){

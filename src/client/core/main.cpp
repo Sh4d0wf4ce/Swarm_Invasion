@@ -6,6 +6,7 @@
 
 int main(){
     try{
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
         std::cout<<"Starting Swarm Invasion Client...\n";
 
         WeaponRegistry::loadConfig("assets/weapons.json");

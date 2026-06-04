@@ -37,6 +37,7 @@ private:
     void removeAFKPlayers();
     void updateEnergyCells(sf::Time deltaTime);
     void updateHealingFields(sf::Time deltaTime);
+    void updateBlackHoles(sf::Time deltaTime);
     void sendWorldState();
 
     std::shared_ptr<MapGenerator> m_map;
@@ -53,6 +54,7 @@ private:
     std::map<std::uint32_t, ClientInfo> m_clients;
     std::map<std::uint32_t, EnergyCellInfo> m_energyCells;
     std::map<std::uint32_t, HealFieldInfo> m_healFields;
+    std::map<std::uint32_t, BlackHoleData> m_blackHoles;
 
     std::map<std::uint32_t, std::unique_ptr<ServerEnemy>> m_enemies;
 

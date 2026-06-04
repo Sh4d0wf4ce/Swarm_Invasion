@@ -202,18 +202,27 @@ void Player::renderESkill() {
 
 void Player::renderQSkill() {
     ImGui::Text("Q");
-    float progress = m_ultCharge / m_maxUltCharge;
-    
-    if (progress >= 1.0f) {
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.7f, 0.1f, 0.8f, 1.0f)); 
-        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+    if (m_isUltActive) {
+        char timerText[16];
+        sprintf(timerText, "%.1fs", std::max(0.0f, m_ultTimer));
+        
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.8f, 0.0f, 1.0f)); 
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), timerText);
         ImGui::PopStyleColor();
     } else {
-        char percText[16];
-        sprintf(percText, "%.0f%%", progress * 100.0f);
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.4f, 0.4f, 0.4f, 1.0f)); 
-        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), percText);
-        ImGui::PopStyleColor();
+        float progress = m_ultCharge / m_maxUltCharge;
+        
+        if (progress >= 1.0f) {
+            ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.7f, 0.1f, 0.8f, 1.0f)); 
+            ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+            ImGui::PopStyleColor();
+        } else {
+            char percText[16];
+            sprintf(percText, "%.0f%%", progress * 100.0f);
+            ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.4f, 0.4f, 0.4f, 1.0f)); 
+            ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), percText);
+            ImGui::PopStyleColor();
+        }
     }
 }
 

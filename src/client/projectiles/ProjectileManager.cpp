@@ -6,14 +6,20 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
     const auto& stats = WeaponRegistry::getStats(weapon);
     
     sf::Vector2f direction = targetPos - startPos;
-    float baseAngle = std::atan2(direction.y, direction.x);
+    float lenSq = direction.lengthSquared();
+    if(lenSq <= 0.0f) return;
 
-    float spreadRad = stats.spreadAngle * (M_PI / 180.0f); 
-    float startAngle = baseAngle - (spreadRad * (stats.pellets - 1) / 2.0f);
+    float baseAngle = std::atan2(direction.y, direction.x);
+    float spreadRad = stats.spreadAngle * (M_PI / 180.0f);
 
     for (int i = 0; i < stats.pellets; ++i) {
-        float currentAngle = startAngle + (i * spreadRad);
+        float currentAngle = baseAngle;
         
+        if(stats.pellets > 1){
+            float randomOffset = ((static_cast<float>(std::rand()) / RAND_MAX) - 0.5f) * spreadRad;
+            currentAngle += randomOffset;
+        }
+
         sf::Vector2f velocity(std::cos(currentAngle) * stats.speed, std::sin(currentAngle) * stats.speed);
         
         if(weapon == WeaponType::Rocket){
