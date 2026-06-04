@@ -37,7 +37,10 @@ public:
     EnemyType getType() const { return m_type; }
     float getHp() const { return m_hp; }
 
+    void setPosition(sf::Vector2f newPos) { m_position = newPos; }
     void takeDamage(float damage) { m_hp -= damage; }
+
+    void applyKnockback(sf::Vector2f direction, float force);
 
 protected:
 	bool hasLineOfSight(sf::Vector2f start, sf::Vector2f end, float radius, std::shared_ptr<MapGenerator> map);
@@ -52,4 +55,6 @@ protected:
     float m_speed;
     EnemyType m_type;
     sf::Clock m_lastAttackTime;
+
+    sf::Vector2f m_knockbackVelocity{0.0f, 0.0f};
 };

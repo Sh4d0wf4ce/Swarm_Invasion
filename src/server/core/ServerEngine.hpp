@@ -30,7 +30,8 @@ private:
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
     void handleCardSelected(sf::Packet& packet);
-    void handleHealFieldRequest(sf::Packet& packet);
+    void handleAbilityHit(sf::Packet& packet);
+    void handleAbilityUsed(sf::Packet& packet);
 
     void proccessUpgradeMenuTimeout();
     void removeAFKPlayers();

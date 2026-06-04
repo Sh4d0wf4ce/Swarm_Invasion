@@ -3,8 +3,14 @@
 #include "Entity.hpp"
 #include "HeroRegistry.hpp"
 #include "WeaponRegistry.hpp"
+#include "NetworkProtocol.hpp"
 
 #include <algorithm>
+
+struct AbilityHitRecord{
+    std::uint32_t targetId;
+    AbilityType ability;
+};
 
 class ClientEngine;
 class ProjectileManager;
@@ -40,6 +46,8 @@ public:
 
     int getAmmo() const { return m_ammo; }
     bool isReloading() const { return m_isReloading; }
+
+    virtual std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) { return {}; }
 
 protected:
     bool checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map);

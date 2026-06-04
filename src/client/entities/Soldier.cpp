@@ -74,7 +74,7 @@ void Soldier::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
         
         if (engine.getServerAddress()) {
             sf::Packet skillPacket;
-            skillPacket << PacketType::HealFieldRequest << m_id << m_position;
+            skillPacket << PacketType::AbilityUsed << m_id << AbilityType::SoldierHealField << m_position;
             (void)engine.getSocket().send(skillPacket, engine.getServerAddress().value(), Config::SERVER_PORT);
         }
     }

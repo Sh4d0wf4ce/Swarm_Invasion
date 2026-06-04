@@ -19,7 +19,7 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
         m_currentWave++;
         m_waveTimer.restart();
 
-        m_currentSpawnRate = std::max(0.1f, m_currentSpawnRate * 0.75f);
+        m_currentSpawnRate = std::min(0.1f, m_currentSpawnRate * 0.75f);
         std::cout << "[AI DIRECTOR] WAVE " << m_currentWave << " STARTED! Spawn rate: " << m_currentSpawnRate << "s\n";
     }
 
@@ -37,7 +37,7 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int ty = distY(m_rng);
 
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 50}, //50
+                {EnemyType::Crawler, 50000}, //50
                 {EnemyType::Bruiser, 20}, //20
                 {EnemyType::Spitter, 20}, //20
                 {EnemyType::Kamikaze, 10}, //10

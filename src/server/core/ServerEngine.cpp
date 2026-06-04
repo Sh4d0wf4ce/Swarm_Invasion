@@ -74,7 +74,8 @@ void ServerEngine::processNetwork(){
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
                 case PacketType::CardSelected:      handleCardSelected(packet); break;
-                case PacketType::HealFieldRequest:  handleHealFieldRequest(packet); break;
+                case PacketType::AbilityHit:        handleAbilityHit(packet); break;
+                case PacketType::AbilityUsed:       handleAbilityUsed(packet); break;
                 default: break;
             }
         }
@@ -260,17 +261,63 @@ void ServerEngine::handleCardSelected(sf::Packet& packet){
     }
 }
 
-void ServerEngine::handleHealFieldRequest(sf::Packet& packet){
-    std::uint32_t playerId;
-    sf::Vector2f pos;
-    if (packet >> playerId >> pos) {
-        std::uint32_t fieldId = m_globalEntityCounter++;
-        m_healFields[fieldId] = {pos, 100.0f, 5.0f, 10.0f};
+void ServerEngine::handleAbilityHit(sf::Packet& packet){
+    std::uint32_t shooterId, targetId;
+    AbilityType ability;
+    if(packet >> shooterId >> targetId >> ability){
+        if(ability == AbilityType::JuggernautDash){
+            float damage = 20.0f;
 
-        sf::Packet broadcastPacket;
-        broadcastPacket << PacketType::SpawnHealField << fieldId << pos << 100.0f << 5.0f;
-        for (const auto& [id, clientInfo] : m_clients) {
-            (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+            if(!m_enemies.count(targetId)) return;
+            m_enemies[targetId]->takeDamage(damage);
+
+            if(m_clients.count(shooterId)){
+                sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
+                float lenSq = pushDir.lengthSquared();
+
+                if(lenSq > 0.0f){
+                    pushDir /= std::sqrt(lenSq);
+                    m_enemies[targetId]->applyKnockback(pushDir, 1200.0f);
+                }
+
+                sf::Packet damagePacket;
+                damagePacket << PacketType::PlayerDealtDamage << damage;
+                (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
+            }
+        }else if(ability == AbilityType::JuggernautRepulsor){
+            float damage = 10.0f;
+            
+            if(m_enemies.count(targetId)){
+                m_enemies[targetId]->takeDamage(damage);
+
+                if (m_clients.count(shooterId)) {
+                    sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
+                    m_enemies[targetId]->applyKnockback(pushDir, 1000.0f);
+
+                    sf::Packet damagePacket;
+                    damagePacket << PacketType::PlayerDealtDamage << damage;
+                    (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
+                }
+            }
+        }
+    }
+}
+
+void ServerEngine::handleAbilityUsed(sf::Packet& packet){
+    std::uint32_t playerId;
+    AbilityType ability;
+    sf::Vector2f pos;
+    if (packet >> playerId >> ability >> pos) {
+
+        if(ability == AbilityType::SoldierHealField){
+            std::uint32_t fieldId = m_globalEntityCounter++;
+            m_healFields[fieldId] = {pos, 100.0f, 5.0f, 10.0f};
+
+            sf::Packet broadcastPacket;
+            broadcastPacket << PacketType::SpawnHealField << fieldId << pos << 100.0f << 5.0f;
+            for (const auto& [id, clientInfo] : m_clients) {
+                (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+            }
         }
     }
 }

@@ -48,6 +48,20 @@ sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std:
 }
 
 std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
+    if(m_knockbackVelocity.lengthSquared() > 10.0f){
+        sf::Vector2f velocity = m_knockbackVelocity * deltaTime.asSeconds();
+        
+        sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);
+        if(!map->checkCollision(nextPosX, EnemyRegistry::getStats(m_type).radius)) m_position.x = nextPosX.x;
+        
+        sf::Vector2f nextPosY = m_position + sf::Vector2f(0.0f, velocity.y);
+        if(!map->checkCollision(nextPosY, EnemyRegistry::getStats(m_type).radius)) m_position.y = nextPosY.y;
+
+        m_knockbackVelocity -= m_knockbackVelocity * 6.0f * deltaTime.asSeconds(); 
+        
+        return {};
+    }
+    
     std::vector<std::uint32_t> deadPlayers;
     const auto& eStats = EnemyRegistry::getStats(m_type);
 
@@ -124,4 +138,11 @@ std::uint32_t ServerEnemy::getClosestPlayerId(const std::map<std::uint32_t, Clie
         }
     }
     return targetId;
+}
+
+void ServerEnemy::applyKnockback(sf::Vector2f direction, float force){
+    float lenSq = direction.lengthSquared();
+    if(lenSq > 0.0f){
+        m_knockbackVelocity = (direction / std::sqrt(lenSq)) * force;
+    }
 }

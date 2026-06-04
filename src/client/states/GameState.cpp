@@ -101,7 +101,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
     }
     else if(type == PacketType::PlayerDealtDamage){
         float damage;
-        if(packet >> damage){
+        if(packet >> damage && m_player){
             m_player->addUltCharge(damage);
         }
     }
@@ -268,6 +268,18 @@ void GameState::update(sf::Time deltaTime){
                 sf::Packet hitPacket;
                 hitPacket << PacketType::EntityHit << hit.shooterId << hit.targetId << hit.weapon;
                 (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+            }
+
+            if(m_player){
+                auto abilityHits = m_player->checkAbilityHits(collisionTargets);
+
+                for(const auto& hit : abilityHits){
+                    if(!m_engine.getServerAddress()) break;
+
+                    sf::Packet hitPacket;
+                    hitPacket << PacketType::AbilityHit << m_player->getId() << hit.targetId << hit.ability;
+                    (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+                }
             }
         }
     }

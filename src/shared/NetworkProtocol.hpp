@@ -16,9 +16,10 @@ enum class PacketType : std::uint8_t{
     CardSelected,
     EnemyShoots,
     EntityHit,
-    HealFieldRequest,
     SpawnHealField,
-    PlayerDealtDamage
+    PlayerDealtDamage,
+    AbilityUsed,
+    AbilityHit
 };
 
 enum class PlayerClass : std::uint8_t{
@@ -43,6 +44,24 @@ enum class WeaponType : std::uint8_t{
     AcidSpit,
     Shotgun,
 };
+
+enum class AbilityType : std::uint8_t{
+    JuggernautDash,
+    JuggernautBlackHole,
+    JuggernautRepulsor,
+    SoldierHealField,
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const AbilityType& aType){
+    return packet << static_cast<std::uint8_t>(aType);
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, AbilityType& aType){
+    std::uint8_t value;
+    packet >> value;
+    aType = static_cast<AbilityType>(value);
+    return packet;
+}
 
 inline sf::Packet& operator<<(sf::Packet& packet, const WeaponType& wType){
     return packet << static_cast<std::uint8_t>(wType);
