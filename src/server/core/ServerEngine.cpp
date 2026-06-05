@@ -237,6 +237,16 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
     if(packet >> shooterId >> targetId >> weaponUsed){
         float baseDamage = WeaponRegistry::getStats(weaponUsed).damage;
 
+        if(m_decoys.count(targetId)){
+            auto& decoy = m_decoys.at(targetId);
+            decoy.hp -= baseDamage;
+            if(decoy.hp <= 0.0f){
+                DecoyData copy = decoy;
+                explodeDecoy(targetId, copy);
+                m_decoys.erase(targetId);
+            }
+            return;
+        }
 
         // Player hit
         if(m_clients.count(targetId)){

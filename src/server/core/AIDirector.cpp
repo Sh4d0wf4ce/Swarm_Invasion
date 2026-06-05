@@ -37,9 +37,9 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int ty = distY(m_rng);
 
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 50000}, //50
+                {EnemyType::Crawler, 50}, //50
                 {EnemyType::Bruiser, 20}, //20
-                {EnemyType::Spitter, 20}, //20
+                {EnemyType::Spitter, 200000}, //20
                 {EnemyType::Kamikaze, 10}, //10
             };
 

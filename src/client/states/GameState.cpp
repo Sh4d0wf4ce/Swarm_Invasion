@@ -318,6 +318,9 @@ void GameState::update(sf::Time deltaTime){
             if(m_player) collisionTargets.push_back(m_player.get());
             for(auto& [id, otherPlayer] : m_otherPlayers) collisionTargets.push_back(otherPlayer.get());
             for(auto& [id, enemy] : m_enemies) collisionTargets.push_back(enemy.get());
+            for(auto& [id, decoy] : m_decoys){
+                if(!decoy->isExploding()) collisionTargets.push_back(decoy.get());
+            }
 
             auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map);
 
