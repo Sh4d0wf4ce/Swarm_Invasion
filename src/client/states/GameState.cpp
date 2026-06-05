@@ -107,6 +107,22 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
             m_blackHoles[id] = std::make_unique<BlackHole>(id, pos, duration);
         }
     }
+    else if(type == PacketType::SpawnDecoy){
+        std::uint32_t id;
+        sf::Vector2f pos;
+        float maxHp;
+        if(packet >> id >> pos >> maxHp){
+            m_decoys[id] = std::make_unique<Decoy>(id, pos, maxHp);
+        }
+    }
+    else if(type == PacketType::DecoyExplode){
+        std::uint32_t id;
+        if(packet >> id){
+            if (m_decoys.count(id)) {
+                m_decoys.at(id)->triggerExplosion();
+            }
+        }
+    }
     else if(type == PacketType::PlayerDealtDamage){
         float damage;
         if(packet >> damage && m_player){
@@ -126,12 +142,14 @@ void GameState::handleWorldState(sf::Packet& packet){
         PlayerClass pClass;
         sf::Vector2f pos;
         float hp;
-        packet >> id >> pClass >> pos >> hp;
+        float stealthTimer;
+        packet >> id >> pClass >> pos >> hp >> stealthTimer;
 
         activeServerIds.push_back(id);
 
         if(m_player && id == m_player->getId()){
             m_player->setHp(hp);
+            m_player->setStealthTimer(stealthTimer);
             continue;
         }
 
@@ -141,6 +159,7 @@ void GameState::handleWorldState(sf::Packet& packet){
 
         m_otherPlayers[id]->setHp(hp);
         m_otherPlayers[id]->setPosition(pos);
+        m_otherPlayers[id]->setStealthTimer(stealthTimer);
     }
 
     bool serverIsPaused;
@@ -204,6 +223,37 @@ void GameState::handleWorldState(sf::Packet& packet){
         sf::Vector2f cPos;
         packet >> cId >> cPos;
         m_energyCells[cId] = cPos;
+    }
+
+    std::uint32_t decoyCount;
+    if(!(packet >> decoyCount)) return;
+
+    std::vector<std::uint32_t> activeDecoyIds;
+    for(std::uint32_t i = 0; i < decoyCount; i++){
+        std::uint32_t dId;
+        sf::Vector2f dPos;
+        float dHp;
+        float dMaxHp;
+        packet >> dId >> dPos >> dHp >> dMaxHp;
+
+        activeDecoyIds.push_back(dId);
+
+        if(m_decoys.find(dId) == m_decoys.end()){
+            m_decoys[dId] = std::make_unique<Decoy>(dId, dPos, dMaxHp);
+        }
+
+        m_decoys[dId]->setPosition(dPos);
+        m_decoys[dId]->setHp(dHp);
+        m_decoys[dId]->setMaxHp(dMaxHp);
+    }
+
+    for(auto it = m_decoys.begin(); it != m_decoys.end();){
+        bool isActive = std::find(activeDecoyIds.begin(), activeDecoyIds.end(), it->first) != activeDecoyIds.end();
+        if(!isActive && !it->second->isExploding()){
+            it = m_decoys.erase(it);
+        }else{
+            ++it;
+        }
     }
 }
 
@@ -306,6 +356,15 @@ void GameState::update(sf::Time deltaTime){
         else ++it;
     }
 
+    for (auto it = m_decoys.begin(); it != m_decoys.end(); ) {
+        if (it->second->isFinished()) {
+            it = m_decoys.erase(it);
+        } else {
+            it->second->update(deltaTime, m_map);
+            ++it;
+        }
+    }
+
     if (m_player && m_engine.getWindow().hasFocus()) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) || m_player->isAutoFiring()) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
@@ -329,6 +388,10 @@ void GameState::render() {
 
     for(const auto& [id, blackHole] : m_blackHoles){
         blackHole->render(window);
+    }
+
+    for(const auto& [id, decoy] : m_decoys){
+        decoy->render(window);
     }
     
     sf::CircleShape crystalShape(4.0f, 4);

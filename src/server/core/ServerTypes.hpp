@@ -23,6 +23,13 @@ struct BlackHoleData{
     std::uint32_t ownerId;
 };
 
+struct DecoyData{
+    sf::Vector2f pos;
+    float hp;
+    std::uint32_t ownerId;
+    float lifetime;
+};
+
 
 struct ClientInfo {
     sf::IpAddress ip;
@@ -33,4 +40,5 @@ struct ClientInfo {
     float speed;
     PlayerClass pClass;
     float invTimer{0.0f};
+    float stealthTimer{0.0f};
 };

@@ -9,12 +9,21 @@ Vanguard::Vanguard(std::uint32_t id, const sf::Vector2f& startPos)
     m_maxAmmo = 0;
     m_ammo = 0;
     m_fireRate = 0.2f;
-    m_speed = 220.0f; 
+    m_speed = 220.0f;
+    m_maxCooldownE = 8.0f;
 }
 
 void Vanguard::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     Player::update(deltaTime, map);
     float dt = deltaTime.asSeconds();
+
+    if (getStealthTimer() > 0.0f) {
+        m_shape.setFillColor(sf::Color(0, 255, 255, 80));
+        m_shape.setOutlineColor(sf::Color(0, 255, 255, 120));
+    } else {
+        m_shape.setFillColor(HeroRegistry::getStats(m_class).color);
+        m_shape.setOutlineColor(HeroRegistry::getStats(m_class).color);
+    }
 
     if (m_isUltActive) {
         m_ultTimer -= dt;
@@ -327,7 +336,20 @@ void Vanguard::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proj
     }
 }
 
-void Vanguard::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+void Vanguard::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
+    (void)mouseWorldPos; (void)projMgr;
+
+    if (m_cooldownE > 0.0f || getStealthTimer() > 0.0f) return;
+
+    m_cooldownE = m_maxCooldownE;
+    setStealthTimer(Config::VANGUARD_STEALTH_DURATION);
+
+    if (engine.getServerAddress()) {
+        sf::Packet packet;
+        packet << PacketType::AbilityUsed << m_id << AbilityType::VanguardDecoy << m_position;
+        (void)engine.getSocket().send(packet, engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
+}
 
 void Vanguard::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownRMB <= 0.0f && m_shurikensToFire == 0) {
@@ -401,6 +423,26 @@ void Vanguard::renderShiftSkill() {
         
         ImGui::PopStyleColor();
         ImGui::PopID();
+    }
+}
+
+void Vanguard::renderESkill() {
+    ImGui::Text("E");
+
+    if (getStealthTimer() > 0.0f) {
+        float progress = getStealthTimer() / Config::VANGUARD_STEALTH_DURATION;
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.0f, 0.8f, 1.0f, 1.0f));
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), "STEALTH");
+        ImGui::PopStyleColor();
+    } else if (m_cooldownE <= 0.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        float progress = 1.0f - (m_cooldownE / m_maxCooldownE);
+        char cdText[16];
+        sprintf(cdText, "%.1fs", m_cooldownE);
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
     }
 }
 

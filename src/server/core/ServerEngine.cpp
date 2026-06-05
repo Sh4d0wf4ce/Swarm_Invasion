@@ -96,8 +96,17 @@ void ServerEngine::update(sf::Time deltaTime){
     removeAFKPlayers();
 
     for(auto& [id, info] : m_clients) {
-        if (info.invTimer > 0.0f) {
-            info.invTimer -= deltaTime.asSeconds();
+        if (info.invTimer > 0.0f) info.invTimer -= deltaTime.asSeconds();
+        if (info.stealthTimer > 0.0f) info.stealthTimer -= deltaTime.asSeconds();
+    }
+
+    for (auto it = m_decoys.begin(); it != m_decoys.end(); ) {
+        it->second.lifetime -= deltaTime.asSeconds();
+        if (it->second.lifetime <= 0.0f) {
+            explodeDecoy(it->first, it->second);
+            it = m_decoys.erase(it);
+        } else {
+            ++it;
         }
     }
 
@@ -110,13 +119,53 @@ void ServerEngine::update(sf::Time deltaTime){
     // ENEMIES DIRECTOR
     if(!m_clients.empty()){
         PROFILE_BLOCK("AI_AND_MOVEMENT");
-        m_aiDirector.updateWaves(deltaTime, m_enemies, m_clients, m_map, m_globalEntityCounter);
+
+        std::map<std::uint32_t, ClientInfo> visibleTargets;
+        
+        // Dodajemy tylko widocznych graczy
+        for(const auto& [id, info] : m_clients) {
+            if (info.stealthTimer <= 0.0f) {
+                visibleTargets.insert({id, info});
+            }
+        }
+        
+        for(const auto& [id, decoy] : m_decoys) {
+            if (m_clients.count(decoy.ownerId)) {
+                ClientInfo fakePlayer = m_clients.at(decoy.ownerId);
+                
+                fakePlayer.position = decoy.pos;
+                fakePlayer.hp = decoy.hp; 
+                fakePlayer.invTimer = 0.0f;
+                fakePlayer.stealthTimer = 0.0f;
+                fakePlayer.pClass = PlayerClass::Vanguard;
+                
+                visibleTargets.insert({id + 100000, fakePlayer});
+            }
+        }
+
+        m_aiDirector.updateWaves(deltaTime, m_enemies, visibleTargets, m_map, m_globalEntityCounter);
         
         std::vector<EnemyShootEvent> shootEvents;
-        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, m_clients, m_map, shootEvents);
+        
+        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, visibleTargets, m_map, shootEvents);
+
+        for(auto& [id, info] : m_clients){
+            if(visibleTargets.count(id)) info.hp = visibleTargets.at(id).hp;
+        }
+        for(auto& [id, decoy] : m_decoys){
+            if(visibleTargets.count(id + 100000)) decoy.hp = visibleTargets.at(id + 100000).hp;
+        }
 
         for(std::uint32_t deadId : deadPlayers){
-            if(m_clients.count(deadId)){
+            if (deadId >= 100000) {
+                std::uint32_t actualDecoyId = deadId - 100000;
+                if (m_decoys.count(actualDecoyId)) {
+                    DecoyData decoy = m_decoys.at(actualDecoyId);
+                    explodeDecoy(actualDecoyId, decoy);
+                    m_decoys.erase(actualDecoyId);
+                }
+            } 
+            else if (m_clients.count(deadId)) {
                 auto& targetInfo = m_clients.at(deadId);
                 std::cout << "[SERVER] Player " << deadId << " died!\n";
 
@@ -404,6 +453,27 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             if (m_clients.count(playerId)) {
                 m_clients.at(playerId).invTimer = 0.3f;
             }
+        }else if(ability == AbilityType::VanguardDecoy){
+            if (!m_clients.count(playerId)) return;
+
+            auto& client = m_clients.at(playerId);
+            if (client.stealthTimer > 0.0f || playerHasActiveDecoy(playerId)) return;
+
+            client.stealthTimer = Config::VANGUARD_STEALTH_DURATION;
+
+            std::uint32_t decoyId = m_globalEntityCounter++;
+            m_decoys[decoyId] = {
+                pos,
+                Config::VANGUARD_DECOY_HP,
+                playerId,
+                Config::VANGUARD_STEALTH_DURATION
+            };
+
+            sf::Packet broadcastPacket;
+            broadcastPacket << PacketType::SpawnDecoy << decoyId << pos << Config::VANGUARD_DECOY_HP;
+            for (const auto& [id, clientInfo] : m_clients) {
+                (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+            }
         }
     }
 }
@@ -562,6 +632,28 @@ void ServerEngine::updateBlackHoles(sf::Time deltaTime){
     }
 }
 
+void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
+    const float radiusSq = Config::VANGUARD_DECOY_EXPLOSION_RADIUS * Config::VANGUARD_DECOY_EXPLOSION_RADIUS;
+    for (auto& [eId, targetEnemy] : m_enemies) {
+        if ((targetEnemy->getPosition() - decoy.pos).lengthSquared() < radiusSq) {
+            targetEnemy->takeDamage(Config::VANGUARD_DECOY_EXPLOSION_DAMAGE);
+        }
+    }
+
+    sf::Packet expPacket;
+    expPacket << PacketType::DecoyExplode << decoyId;
+    for (const auto& [cId, cInfo] : m_clients) {
+        (void)m_socket.send(expPacket, cInfo.ip, cInfo.port);
+    }
+}
+
+bool ServerEngine::playerHasActiveDecoy(std::uint32_t playerId) const{
+    for (const auto& [id, decoy] : m_decoys) {
+        if (decoy.ownerId == playerId) return true;
+    }
+    return false;
+}
+
 void ServerEngine::sendWorldState(){
     if(m_clients.empty()) return;
 
@@ -571,7 +663,7 @@ void ServerEngine::sendWorldState(){
     worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
     
     for(const auto& [clientId, info] : m_clients){
-        worldPacket << clientId << info.pClass << info.position << info.hp;
+        worldPacket << clientId << info.pClass << info.position << info.hp << info.stealthTimer;
     }
 
     // Exp info
@@ -587,6 +679,11 @@ void ServerEngine::sendWorldState(){
     worldPacket << static_cast<std::uint32_t>(m_energyCells.size());
     for(const auto& [cellId, cell] : m_energyCells){
         worldPacket << cellId << cell.position;
+    }
+
+    worldPacket << static_cast<std::uint32_t>(m_decoys.size());
+    for(const auto& [decoyId, decoy] : m_decoys){
+        worldPacket << decoyId << decoy.pos << decoy.hp << Config::VANGUARD_DECOY_HP;
     }
 
     // Sending

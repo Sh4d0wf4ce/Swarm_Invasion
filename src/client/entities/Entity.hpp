@@ -8,7 +8,8 @@
 
 enum class Faction{
     Players,
-    Enemies
+    Enemies,
+    None,
 };
 
 class Entity{
@@ -26,6 +27,7 @@ public:
 
     void setPosition(const sf::Vector2f&  pos) { m_position = pos; } 
     void setHp(float hp){ m_hp = hp; }
+    void setMaxHp(float maxHp){ m_maxHp = maxHp; }
 
     virtual Faction getFaction() const = 0;
     virtual float getRadius() const = 0;

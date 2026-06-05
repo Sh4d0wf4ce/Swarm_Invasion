@@ -25,6 +25,7 @@ public:
 
 private:
     void renderShiftSkill() override;
+    void renderESkill() override;
 
     struct SlashTrailFrame {
         float angle{0.0f};

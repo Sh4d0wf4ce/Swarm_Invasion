@@ -18,6 +18,8 @@ enum class PacketType : std::uint8_t{
     EntityHit,
     SpawnHealField,
     SpawnBlackHole,
+    SpawnDecoy,
+    DecoyExplode,
     PlayerDealtDamage,
     AbilityUsed,
     AbilityHit
@@ -54,7 +56,9 @@ enum class AbilityType : std::uint8_t{
     JuggernautRepulsor,
     SoldierHealField,
     VanguardKatanaSlash,
-    VanguardDash
+    VanguardDash,
+    VanguardDecoy,
+    VanguardDecoyExplode
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const AbilityType& aType){

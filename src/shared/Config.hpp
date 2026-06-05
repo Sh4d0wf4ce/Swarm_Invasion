@@ -32,4 +32,10 @@ namespace Config{
 
     // --- LEVEL UP WINDOW ---
     constexpr float LEVEL_UP_TIMEOUT = 15.0f;
+
+    // --- VANGUARD DECOY (E) ---
+    constexpr float VANGUARD_STEALTH_DURATION = 4.0f;
+    constexpr float VANGUARD_DECOY_HP = 150.0f;
+    constexpr float VANGUARD_DECOY_EXPLOSION_RADIUS = 120.0f;
+    constexpr float VANGUARD_DECOY_EXPLOSION_DAMAGE = 200.0f;
 }

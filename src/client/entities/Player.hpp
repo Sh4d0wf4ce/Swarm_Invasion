@@ -50,6 +50,9 @@ public:
 
     virtual std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) { return {}; }
 
+    void setStealthTimer(float timer){ m_stealthTimer = timer; }
+    float getStealthTimer() const { return m_stealthTimer; }
+
 protected:
     bool checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map);
 
@@ -91,6 +94,7 @@ protected:
 
     float m_fireRateMultiplier{1.0f};
     float m_speedMultiplier{1.0f};
+    float m_stealthTimer{0.0f};
 };
 
 
