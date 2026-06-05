@@ -80,6 +80,8 @@ add_executable(SwarmClient
     src/client/projectiles/ProjectileManager.cpp
     src/client/projectiles/Projectile.cpp
     src/client/projectiles/RocketProjectile.cpp
+    src/client/projectiles/ShurikenProjectile.cpp
+    src/client/projectiles/WaveProjectile.cpp
 )
 target_link_libraries(SwarmClient PRIVATE
     SharedStatic

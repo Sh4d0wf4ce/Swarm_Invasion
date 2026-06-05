@@ -133,7 +133,7 @@ void Player::renderRightPanel() {
     ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);
     
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
-    ImGui::Begin("HeroStatsLeft", nullptr, flags);
+    ImGui::Begin("HeroStatsRight", nullptr, flags);
 
     // HP
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "HP: %.0f / %.0f", m_hp, m_maxHp);
@@ -160,7 +160,7 @@ void Player::renderLeftPanel() {
     ImGui::SetNextWindowSize(ImVec2(400.0f, 100.0f), ImGuiCond_Always);
     
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
-    ImGui::Begin("HeroSkillsRight", nullptr, flags);
+    ImGui::Begin("HeroSkillsLeft", nullptr, flags);
 
     ImGui::Columns(4, "Skills", false);
 

@@ -16,6 +16,43 @@ void Vanguard::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& m
     Player::update(deltaTime, map);
     float dt = deltaTime.asSeconds();
 
+    if (m_isUltActive) {
+        m_ultTimer -= dt;
+        if (m_ultTimer <= 0.0f) {
+            m_isUltActive = false;
+            m_speed /= 2.0f;
+        }
+    }
+
+    if (m_shurikensToFire > 0 && m_engineRef && m_projMgrRef) {
+        m_shurikenBurstTimer -= dt;
+        
+        if (m_shurikenBurstTimer <= 0.0f) {
+            m_shurikenBurstTimer = 0.08f;
+
+            float baseAngle = std::atan2(m_shurikenAimDir.y, m_shurikenAimDir.x);
+
+            int index = 5 - m_shurikensToFire; 
+            
+            float angleOffset = (index - 2) * 5.0f * (M_PI / 180.0f);
+            float finalAngle = baseAngle + angleOffset;
+
+            sf::Vector2f targetOffset(std::cos(finalAngle), std::sin(finalAngle));
+            sf::Vector2f finalTarget = m_position + targetOffset * 1000.0f; 
+
+            WeaponType weapon = WeaponType::Shuriken;
+            m_projMgrRef->spawnProjectile(m_id, m_position, finalTarget, weapon, Faction::Players);
+
+            if (m_engineRef->getServerAddress()) {
+                sf::Packet shootPacket;
+                shootPacket << PacketType::PlayerShoots << m_id << weapon << m_position << finalTarget;
+                (void)m_engineRef->getSocket().send(shootPacket, m_engineRef->getServerAddress().value(), Config::SERVER_PORT);
+            }
+
+            m_shurikensToFire--;
+        }
+    }
+
     if(m_dashCharges < m_maxDashCharges){
         m_dashRechargeTimer += dt;
         if(m_dashRechargeTimer >= m_dashRechargeTime){
@@ -280,9 +317,37 @@ void Vanguard::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
     }
 }
 
-void Vanguard::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+void Vanguard::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
+    if (!m_isUltActive && m_ultCharge >= m_maxUltCharge) {
+        m_isUltActive = true;
+        m_ultTimer = 8.0f;
+        m_ultCharge = 0.0f; 
+        
+        m_speed *= 2.0f;
+    }
+}
+
 void Vanguard::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
-void Vanguard::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {}
+
+void Vanguard::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
+    if (m_cooldownRMB <= 0.0f && m_shurikensToFire == 0) {
+        m_cooldownRMB = m_maxCooldownRMB;
+        
+        m_shurikensToFire = 5;
+        m_shurikenBurstTimer = 0.0f;
+        
+        sf::Vector2f dir = mouseWorldPos - m_position;
+        float lenSq = dir.lengthSquared();
+        if (lenSq > 0.0001f) {
+            m_shurikenAimDir = dir / std::sqrt(lenSq);
+        } else {
+            m_shurikenAimDir = sf::Vector2f(1.0f, 0.0f);
+        }
+        
+        m_engineRef = &engine;
+        m_projMgrRef = &projMgr;
+    }
+}
 
 void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) {
     if (m_attackActive || m_cooldownLMB > 0.0f) return;
@@ -299,6 +364,17 @@ void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
     m_bladeAngle = getBladeAngleAt(0.0f);
     m_prevBladeAngle = m_bladeAngle;
     m_attackActive = true;
+
+    if (m_isUltActive && engine.getServerAddress()) {
+        WeaponType weapon = WeaponType::VanguardWave;
+        
+        sf::Vector2f waveTarget = m_position + m_aimDir * 1000.0f;
+        projMgr.spawnProjectile(m_id, m_position, waveTarget, weapon, Faction::Players);
+        
+        sf::Packet shootPacket;
+        shootPacket << PacketType::PlayerShoots << m_id << weapon << m_position << waveTarget;
+        (void)engine.getSocket().send(shootPacket, engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
 }
 
 void Vanguard::renderShiftSkill() {
@@ -326,4 +402,20 @@ void Vanguard::renderShiftSkill() {
         ImGui::PopStyleColor();
         ImGui::PopID();
     }
+}
+
+void Vanguard::renderRightPanel() {
+    ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH - 320.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);
+    
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
+    ImGui::Begin("HeroStatsRight", nullptr, flags);
+
+    // HP
+    ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "HP: %.0f / %.0f", m_hp, m_maxHp);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+    ImGui::ProgressBar(m_hp / m_maxHp, ImVec2(-1, 15.0f), "");
+    ImGui::PopStyleColor();
+
+    ImGui::End();
 }

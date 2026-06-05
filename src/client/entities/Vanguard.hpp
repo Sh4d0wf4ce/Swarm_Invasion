@@ -20,6 +20,9 @@ public:
 
     std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) override;
 
+    void reload() override {} 
+    void renderRightPanel() override;
+
 private:
     void renderShiftSkill() override;
 
@@ -51,6 +54,13 @@ private:
     const int m_maxDashCharges{3};
     float m_dashRechargeTimer{0.0f};
     const float m_dashRechargeTime{2.5f};
+
+    int m_shurikensToFire{0};
+    float m_shurikenBurstTimer{0.0f};
+    sf::Vector2f m_shurikenAimDir{1.0f, 0.0f};
+    
+    ClientEngine* m_engineRef{nullptr};
+    ProjectileManager* m_projMgrRef{nullptr};
 
     void updateTrail(float dt);
     void drawDashTrails(sf::RenderTarget& target) const;

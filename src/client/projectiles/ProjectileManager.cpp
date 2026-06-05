@@ -1,5 +1,7 @@
 #include "ProjectileManager.hpp"
 #include "RocketProjectile.hpp"
+#include "ShurikenProjectile.hpp"
+#include "WaveProjectile.hpp"
 
 
 void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction){
@@ -24,7 +26,14 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
         
         if(weapon == WeaponType::Rocket){
             m_projectiles.push_back(std::make_unique<RocketProjectile>(ownerId, startPos, velocity, faction));
-        } else {
+        } 
+        else if (weapon == WeaponType::Shuriken) {
+            m_projectiles.push_back(std::make_unique<ShurikenProjectile>(ownerId, startPos, velocity, faction));
+        } 
+        else if (weapon == WeaponType::VanguardWave) {
+            m_projectiles.push_back(std::make_unique<WaveProjectile>(ownerId, startPos, velocity, faction));
+        } 
+        else {
             m_projectiles.push_back(std::make_unique<Projectile>(ownerId, startPos, velocity, faction, weapon));
         }
     }

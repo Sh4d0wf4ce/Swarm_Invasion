@@ -216,13 +216,19 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
 
             m_enemies[targetId]->takeDamage(damageDealt);
 
-            if(m_clients.count(shooterId)){
+            if(m_clients.count(shooterId) && weaponUsed != WeaponType::VanguardWave){
                 sf::Packet damagePacket;
                 damagePacket << PacketType::PlayerDealtDamage << damageDealt;
                 (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
             }
 
             if(m_enemies[targetId]->getHp() <= 0.0f){
+                if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
+                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
+                    m_clients.at(shooterId).hp += 5.0f;
+                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                }
+
                 m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
                 m_enemies.erase(targetId);
             }
@@ -333,11 +339,14 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                 }
 
                 if (m_enemies[targetId]->getHp() <= 0.0f) {
+                    if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
+                        float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
+                        m_clients.at(shooterId).hp += 5.0f;
+                        if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                    }
+
                     m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
                     m_enemies.erase(targetId);
-                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
-                    m_clients.at(shooterId).hp += 5.0f;
-                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
                 }
             }
         }else if(ability == AbilityType:: VanguardDash){
@@ -353,12 +362,14 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                 }
 
                 if (m_enemies[targetId]->getHp() <= 0.0f) {
+                    if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
+                        float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
+                        m_clients.at(shooterId).hp += 5.0f;
+                        if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                    }
+
                     m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
                     m_enemies.erase(targetId);
-                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
-                    m_clients.at(shooterId).hp += 5.0f;
-                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
-
                 }
             }
         }

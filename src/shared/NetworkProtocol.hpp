@@ -44,6 +44,8 @@ enum class WeaponType : std::uint8_t{
     Rocket,
     AcidSpit,
     Shotgun,
+    Shuriken,
+    VanguardWave,
 };
 
 enum class AbilityType : std::uint8_t{
