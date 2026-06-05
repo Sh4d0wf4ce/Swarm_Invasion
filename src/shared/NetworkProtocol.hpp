@@ -27,7 +27,7 @@ enum class PlayerClass : std::uint8_t{
     Soldier,
     Scout,
     Juggernaut,
-    Medic
+    Vanguard
 };
 
 enum class EnemyType : std::uint8_t{
@@ -51,6 +51,8 @@ enum class AbilityType : std::uint8_t{
     JuggernautBlackHole,
     JuggernautRepulsor,
     SoldierHealField,
+    VanguardKatanaSlash,
+    VanguardDash
 };
 
 inline sf::Packet& operator<<(sf::Packet& packet, const AbilityType& aType){

@@ -2,5 +2,5 @@
     "Soldier": { "maxHp": 100.0, "speed": 300.0, "radius": 20.0, "color": [255, 255, 255, 255], "defaultWeapon": "Rifle" },
     "Scout": { "maxHp": 75.0, "speed": 450.0, "radius": 15.0, "color": [255, 255, 0, 255], "defaultWeapon": "Laser" },
     "Juggernaut": { "maxHp": 250.0, "speed": 200.0, "radius": 30.0, "color": [0, 0, 255, 255], "defaultWeapon": "Shotgun" },
-    "Medic": { "maxHp": 100.0, "speed": 320.0, "radius": 20.0, "color": [0, 255, 0, 255], "defaultWeapon": "Rifle" }
+    "Vanguard": { "maxHp": 100.0, "speed": 450.0, "radius": 20.0, "color": [255, 120, 40, 255], "defaultWeapon": "None" }
 }

@@ -32,4 +32,5 @@ struct ClientInfo {
     float hp;
     float speed;
     PlayerClass pClass;
+    float invTimer{0.0f};
 };

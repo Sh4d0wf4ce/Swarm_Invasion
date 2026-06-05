@@ -69,6 +69,7 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
     float minDistanceSq  = (clients.begin()->second.position - m_position).lengthSquared();
 
     for(auto& [playerId, playerInfo] : clients){
+        if(playerInfo.invTimer > 0.0f) continue;
         float distSq = (playerInfo.position - m_position).lengthSquared();
         if(distSq < minDistanceSq){
             minDistanceSq = distSq;
@@ -78,9 +79,7 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
         float touchDist = eStats.radius + HeroRegistry::getStats(playerInfo.pClass).radius;
         if(distSq < touchDist * touchDist){
             if(m_lastAttackTime.getElapsedTime().asSeconds() > eStats.attackCooldown){
-                float damageMultiplier = 1.0f;
-                if(playerInfo.pClass == PlayerClass::Juggernaut) damageMultiplier = 0.8f;
-                playerInfo.hp -= eStats.damage * damageMultiplier;
+                playerInfo.hp -= eStats.damage;
                 m_lastAttackTime.restart();
                 if(playerInfo.hp <= 0.0f) deadPlayers.push_back(playerId);
             }

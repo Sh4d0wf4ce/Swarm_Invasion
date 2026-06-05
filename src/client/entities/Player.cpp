@@ -1,6 +1,7 @@
 #include "Player.hpp"
 #include "Soldier.hpp"
 #include "Juggernaut.hpp"
+#include "Vanguard.hpp"
 #include "imgui.h"
 
 
@@ -115,6 +116,8 @@ std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos
             return std::make_unique<Soldier>(id, startPos); break;
         case PlayerClass::Juggernaut:
             return std::make_unique<Juggernaut>(id, startPos); break;
+        case PlayerClass::Vanguard:
+            return std::make_unique<Vanguard>(id, startPos); break;
         default:
             return std::make_unique<Player>(id, startPos, pClass);
     }

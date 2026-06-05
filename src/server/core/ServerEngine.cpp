@@ -95,6 +95,11 @@ void ServerEngine::update(sf::Time deltaTime){
     // REMOVING UNACTIVE PLAYERS
     removeAFKPlayers();
 
+    for(auto& [id, info] : m_clients) {
+        if (info.invTimer > 0.0f) {
+            info.invTimer -= deltaTime.asSeconds();
+        }
+    }
 
     // SERVER RESET
     if(m_clients.empty() && !m_enemies.empty()){
@@ -181,11 +186,17 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
     WeaponType weaponUsed;
 
     if(packet >> shooterId >> targetId >> weaponUsed){
-        float damage = WeaponRegistry::getStats(weaponUsed).damage;
+        float baseDamage = WeaponRegistry::getStats(weaponUsed).damage;
+
 
         // Player hit
         if(m_clients.count(targetId)){
-            m_clients.at(targetId).hp -= damage;
+            if(m_clients.at(targetId).invTimer > 0.0f) return;
+            float damageTaken = baseDamage;
+
+            if(m_clients.at(targetId).pClass == PlayerClass::Juggernaut) damageTaken *= 0.8f;
+
+            m_clients.at(targetId).hp -= damageTaken;
 
             if(m_clients.at(targetId).hp <= 0.0f){
                 sf::Packet deathPacket;
@@ -194,12 +205,20 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
             }
         }
         // Enemy hit
-        else if(m_enemies.count(targetId)){
-            m_enemies[targetId]->takeDamage(damage);
+        if(m_enemies.count(targetId)){
+            float damageDealt = baseDamage;
+
+            if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Soldier) {
+                if ((std::rand() % 100) < 20) {
+                    damageDealt *= 2.0f;
+                }
+            }
+
+            m_enemies[targetId]->takeDamage(damageDealt);
 
             if(m_clients.count(shooterId)){
                 sf::Packet damagePacket;
-                damagePacket << PacketType::PlayerDealtDamage << damage;
+                damagePacket << PacketType::PlayerDealtDamage << damageDealt;
                 (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
             }
 
@@ -298,6 +317,50 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                     (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
                 }
             }
+        }else if(ability == AbilityType::VanguardKatanaSlash){
+            const float damage = 35.0f;
+
+            if (m_enemies.count(targetId)) {
+                m_enemies[targetId]->takeDamage(damage);
+
+                if (m_clients.count(shooterId)) {
+                    sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
+                    m_enemies[targetId]->applyKnockback(pushDir, 300.0f);
+
+                    sf::Packet damagePacket;
+                    damagePacket << PacketType::PlayerDealtDamage << damage;
+                    (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
+                }
+
+                if (m_enemies[targetId]->getHp() <= 0.0f) {
+                    m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
+                    m_enemies.erase(targetId);
+                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
+                    m_clients.at(shooterId).hp += 5.0f;
+                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                }
+            }
+        }else if(ability == AbilityType:: VanguardDash){
+            float damage = 25.0f;
+
+            if (m_enemies.count(targetId)) {
+                m_enemies[targetId]->takeDamage(damage);
+
+                if (m_clients.count(shooterId)) {
+                    sf::Packet damagePacket;
+                    damagePacket << PacketType::PlayerDealtDamage << damage;
+                    (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
+                }
+
+                if (m_enemies[targetId]->getHp() <= 0.0f) {
+                    m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
+                    m_enemies.erase(targetId);
+                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
+                    m_clients.at(shooterId).hp += 5.0f;
+                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+
+                }
+            }
         }
     }
 }
@@ -325,6 +388,10 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             broadcastPacket << PacketType::SpawnBlackHole << bhId << pos << 3.0f;
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
+            }
+        }else if(ability == AbilityType::VanguardDash){
+            if (m_clients.count(playerId)) {
+                m_clients.at(playerId).invTimer = 0.3f;
             }
         }
     }

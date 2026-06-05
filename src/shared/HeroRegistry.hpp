@@ -33,14 +33,15 @@ public:
             {"Soldier", PlayerClass::Soldier},
             {"Scout", PlayerClass::Scout},
             {"Juggernaut", PlayerClass::Juggernaut},
-            {"Medic", PlayerClass::Medic}
+            {"Vanguard", PlayerClass::Vanguard}
         };
 
         std::unordered_map<std::string, WeaponType> weaponMap = {
             {"Rifle", WeaponType::Rifle},
             {"Laser", WeaponType::Laser},
             {"Rocket", WeaponType::Rocket},
-            {"AcidSpit", WeaponType::AcidSpit}
+            {"AcidSpit", WeaponType::AcidSpit},
+            {"Shotgun", WeaponType::Shotgun}
         };
 
         for (auto& [key, val] : j.items()) {

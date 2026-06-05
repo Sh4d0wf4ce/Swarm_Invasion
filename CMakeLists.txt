@@ -74,6 +74,7 @@ add_executable(SwarmClient
     src/client/entities/Enemy.cpp
     src/client/entities/Soldier.cpp
     src/client/entities/Juggernaut.cpp
+    src/client/entities/Vanguard.cpp
     src/client/states/GameState.cpp
     src/client/states/LobbyState.cpp
     src/client/projectiles/ProjectileManager.cpp
@@ -91,4 +92,16 @@ target_link_libraries(SwarmClient PRIVATE
     ImGui-SFML::ImGui-SFML
 )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+set(ASSETS_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+set(ASSETS_DEST_DIR "${CMAKE_CURRENT_BINARY_DIR}/assets")
+
+add_custom_target(copy_assets ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${ASSETS_SOURCE_DIR}"
+            "${ASSETS_DEST_DIR}"
+    COMMENT "Syncing assets/ to build directory"
+    VERBATIM
+)
+
+add_dependencies(SwarmClient copy_assets)
+add_dependencies(SwarmServer copy_assets)
