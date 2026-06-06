@@ -13,6 +13,7 @@
 #include "../projectiles/ProjectileManager.hpp"
 #include "MapGenerator.hpp"
 #include "HeroRegistry.hpp"
+#include "UpgradeRegistry.hpp"
 #include "Config.hpp"
 #include "State.hpp"
 
@@ -22,6 +23,8 @@
 #include <optional>
 #include <memory>
 #include <map>
+#include <array>
+#include <string>
 
 
 class GameState : public State {
@@ -36,6 +39,12 @@ public:
     void renderUI() override;
 
 private:
+    enum class SessionEndReason {
+        None,
+        Death,
+        Disconnected
+    };
+
     void handleWorldState(sf::Packet& packet);
 
     sf::View m_camera;
@@ -67,8 +76,12 @@ private:
     int m_teamExpMax = 10;
 
     bool m_isChoosingUpgrade = false;
-    int m_myChoice = 01;
+    bool m_upgradeRevealPhase = false;
+    std::array<std::string, 3> m_upgradeOffers{};
+    std::string m_chosenUpgradeId;
     sf::Clock m_clientUpgradeTimer;
+
+    SessionEndReason m_sessionEndReason = SessionEndReason::None;
 
     struct ClientHealField {
         sf::Vector2f position;

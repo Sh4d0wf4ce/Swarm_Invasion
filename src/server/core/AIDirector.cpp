@@ -14,6 +14,16 @@ AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(2.0f){
     m_rng.seed(rd());
 }
 
+void AIDirector::reset(){
+    m_currentWave = 1;
+    m_currentSpawnRate = 2.0f;
+    m_waveTimer.restart();
+    m_spawnTimer.restart();
+    m_pathFindingTimer.restart();
+    m_flowField.clear();
+    m_grid.clear();
+}
+
 void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies, const std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, std::uint32_t& entityCounter){
     if(m_waveTimer.getElapsedTime().asSeconds() >= 30.0f){
         m_currentWave++;
@@ -37,9 +47,9 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             int ty = distY(m_rng);
 
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 50}, //50
+                {EnemyType::Crawler, 50000}, //50
                 {EnemyType::Bruiser, 20}, //20
-                {EnemyType::Spitter, 200000}, //20
+                {EnemyType::Spitter, 20}, //20
                 {EnemyType::Kamikaze, 10}, //10
             };
 

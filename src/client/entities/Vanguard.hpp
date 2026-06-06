@@ -19,6 +19,8 @@ public:
     void onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) override;
 
     std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) override;
+    void updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override;
+    void playRemoteAbility(AbilityType ability, const sf::Vector2f& data) override;
 
     void reload() override {} 
     void renderRightPanel() override;

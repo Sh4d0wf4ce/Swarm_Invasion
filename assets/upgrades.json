@@ -1,0 +1,74 @@
+{
+    "hp_boost": {
+        "name": "+10% Max HP",
+        "description": "Increases maximum health by 10%.",
+        "weight": 10,
+        "isAugment": false,
+        "targetClass": null,
+        "statToModify": "MaxHP",
+        "modifierValue": 0.1
+    },
+    "speed_boost": {
+        "name": "+5% Speed",
+        "description": "Move 5% faster.",
+        "weight": 8,
+        "isAugment": false,
+        "targetClass": null,
+        "statToModify": "Speed",
+        "modifierValue": 0.05
+    },
+    "cooldown_trim": {
+        "name": "-5% Cooldowns",
+        "description": "Ability cooldowns recover 5% faster.",
+        "weight": 6,
+        "isAugment": false,
+        "targetClass": null,
+        "statToModify": "Cooldown",
+        "modifierValue": -0.05
+    },
+    "damage_boost": {
+        "name": "+8% Damage",
+        "description": "Deal 8% more weapon damage.",
+        "weight": 4,
+        "isAugment": false,
+        "targetClass": null,
+        "statToModify": "Damage",
+        "modifierValue": 0.08
+    },
+    "vanguard_milestone": {
+        "name": "Vanguard: Blade Surge",
+        "description": "Milestone augment. +15% damage for Vanguard.",
+        "weight": 1,
+        "isAugment": true,
+        "targetClass": "Vanguard",
+        "statToModify": "Damage",
+        "modifierValue": 0.15
+    },
+    "medic_milestone": {
+        "name": "Medic: Vital Flow",
+        "description": "Milestone augment. +10% max HP for Medic.",
+        "weight": 1,
+        "isAugment": true,
+        "targetClass": "Medic",
+        "statToModify": "MaxHP",
+        "modifierValue": 0.1
+    },
+    "soldier_milestone": {
+        "name": "Soldier: Field Medic",
+        "description": "Milestone augment. +8% max HP for Soldier.",
+        "weight": 1,
+        "isAugment": true,
+        "targetClass": "Soldier",
+        "statToModify": "MaxHP",
+        "modifierValue": 0.08
+    },
+    "juggernaut_milestone": {
+        "name": "Juggernaut: Iron Will",
+        "description": "Milestone augment. +12% max HP for Juggernaut.",
+        "weight": 1,
+        "isAugment": true,
+        "targetClass": "Juggernaut",
+        "statToModify": "MaxHP",
+        "modifierValue": 0.12
+    }
+}

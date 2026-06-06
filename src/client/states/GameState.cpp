@@ -72,16 +72,61 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
                 m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, weaponUsed, Faction::Players);
         }
     }
+    else if(type == PacketType::AbilityUsed){
+        std::uint32_t playerId;
+        AbilityType ability;
+        sf::Vector2f data;
+        if(packet >> playerId >> ability >> data){
+            if(m_player && playerId == m_player->getId()) return;
+            auto it = m_otherPlayers.find(playerId);
+            if(it != m_otherPlayers.end()){
+                it->second->playRemoteAbility(ability, data);
+            }
+        }
+    }
     else if(type == PacketType::PlayerDied){
         std::cout<< "[CLIENT] You died! Leaving the game... \n";
+        m_sessionEndReason = SessionEndReason::Death;
         m_player.reset();
         m_otherPlayers.clear();
         m_enemies.clear();
     }
+    else if(type == PacketType::LevelUpOffer){
+        std::uint32_t offerCount = 0;
+        if(packet >> offerCount){
+            m_upgradeOffers.fill("");
+            for(std::uint32_t i = 0; i < offerCount && i < 3; ++i){
+                packet >> m_upgradeOffers[i];
+            }
+            m_isChoosingUpgrade = true;
+            m_upgradeRevealPhase = false;
+            m_chosenUpgradeId.clear();
+            m_clientUpgradeTimer.restart();
+        }
+    }
     else if(type == PacketType::LevelUpTriggered){
         m_isChoosingUpgrade = true;
-        m_myChoice = -1;
+        m_upgradeRevealPhase = false;
+        m_chosenUpgradeId.clear();
         m_clientUpgradeTimer.restart();
+    }
+    else if(type == PacketType::UpgradeResolved){
+        std::string upgradeId;
+        bool wasRandom = false;
+        if(packet >> upgradeId >> wasRandom){
+            (void)wasRandom;
+            m_chosenUpgradeId = upgradeId;
+            m_upgradeRevealPhase = true;
+        }
+    }
+    else if(type == PacketType::PlayerUpgradeMultipliers){
+        std::uint32_t playerId;
+        float hpMult, speedMult, damageMult, cooldownMult;
+        if(packet >> playerId >> hpMult >> speedMult >> damageMult >> cooldownMult){
+            if(m_player && m_player->getId() == playerId){
+                m_player->setUpgradeMultipliers(hpMult, speedMult, damageMult, cooldownMult);
+            }
+        }
     }
     else if(type == PacketType::EnemyShoots){
         WeaponType weapon;
@@ -193,7 +238,10 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
 
         m_otherPlayers[id]->setHp(hp);
-        m_otherPlayers[id]->setPosition(pos);
+        auto* medic = dynamic_cast<Medic*>(m_otherPlayers[id].get());
+        if (!medic || !medic->isTeleportAnimating()) {
+            m_otherPlayers[id]->setPosition(pos);
+        }
         m_otherPlayers[id]->setStealthTimer(stealthTimer);
     }
 
@@ -202,7 +250,9 @@ void GameState::handleWorldState(sf::Packet& packet){
 
     if(!serverIsPaused && m_isChoosingUpgrade){
         m_isChoosingUpgrade = false;
-        m_myChoice = -1;
+        m_upgradeRevealPhase = false;
+        m_chosenUpgradeId.clear();
+        m_upgradeOffers.fill("");
     }
 
     if(serverIsPaused && !m_isChoosingUpgrade){
@@ -365,6 +415,7 @@ void GameState::update(sf::Time deltaTime){
     if(m_player){
         if(m_lastServerMessageTimer.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
             std::cout << "[CLIENT] Lost connection to the server (Timeout)!\n";
+            m_sessionEndReason = SessionEndReason::Disconnected;
             m_player.reset();
             m_otherPlayers.clear();
             m_enemies.clear();
@@ -375,6 +426,13 @@ void GameState::update(sf::Time deltaTime){
 
         if(!m_isChoosingUpgrade){
             m_player->update(deltaTime, m_map);
+        }
+
+        for(auto& [id, otherPlayer] : m_otherPlayers){
+            (void)id;
+            if(!m_isChoosingUpgrade){
+                otherPlayer->updateRemoteVisuals(deltaTime, m_map);
+            }
         }
 
         sf::Vector2f targetCenter = m_player->getPosition();
@@ -440,11 +498,12 @@ void GameState::update(sf::Time deltaTime){
                 });
             }
 
-            auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map, barrierSnapshots);
+            auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map, barrierSnapshots, m_player ? m_player->getId() : 0u);
 
             for(const auto& hit : hits){
                 if(!m_engine.getServerAddress()) break;
                 if (hit.weapon == WeaponType::MedicNeedle || hit.weapon == WeaponType::DroneBlaster) continue;
+                if (!m_player || hit.shooterId != m_player->getId()) continue;
                 sf::Packet hitPacket;
                 hitPacket << PacketType::EntityHit << hit.shooterId << hit.targetId << hit.weapon;
                 (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
@@ -582,13 +641,18 @@ void GameState::render() {
 }
 
 void GameState::renderUI(){
-    // --- DEATH SCREEN ---
     if(!m_player){
-        ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 150.0f, Config::WINDOW_HEIGHT / 2.0f - 100.0f), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(300.0f, 200.0f), ImGuiCond_Always);
-        ImGui::Begin("YOU DIED", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        const bool disconnected = (m_sessionEndReason == SessionEndReason::Disconnected);
+        ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 180.0f, Config::WINDOW_HEIGHT / 2.0f - 100.0f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(360.0f, 200.0f), ImGuiCond_Always);
+        ImGui::Begin(disconnected ? "CONNECTION LOST" : "YOU DIED", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
-        ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "The swarm consumed you...");
+        if(disconnected){
+            ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.1f, 1.0f), "Lost connection to the server.");
+            ImGui::TextWrapped("The server may have shut down or the network timed out.");
+        }else{
+            ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "The swarm consumed you...");
+        }
         ImGui::Dummy(ImVec2(0.0f, 40.0f));
 
         if(ImGui::Button("Return to Lobby", ImVec2(-1, 50))){
@@ -598,39 +662,84 @@ void GameState::renderUI(){
         return;
     }
 
+    ImGui::SetNextWindowPos(
+        ImVec2(Config::WINDOW_WIDTH - Config::EXP_BAR_WIDTH - 12.0f, 12.0f),
+        ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(Config::EXP_BAR_WIDTH, 44.0f), ImGuiCond_Always);
+    ImGui::Begin("TeamExpBar", nullptr,
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground);
+
+    float expProgress = static_cast<float>(m_teamExp) / static_cast<float>(m_teamExpMax);
+    char expOverlay[64];
+    sprintf(expOverlay, "LEVEL %d (%d/%d)", m_teamLevel, m_teamExp, m_teamExpMax);
+
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
+    ImGui::ProgressBar(expProgress, ImVec2(Config::EXP_BAR_WIDTH, Config::EXP_BAR_HEIGHT), expOverlay);
+    ImGui::PopStyleColor();
+    ImGui::End();
+
     if(m_isChoosingUpgrade){
+        bool hasAugment = false;
+        for(const auto& offerId : m_upgradeOffers){
+            if(offerId.empty()) continue;
+            const UpgradeDefinition* def = UpgradeRegistry::getById(offerId);
+            if(def && def->isAugment) hasAugment = true;
+        }
+
         ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH/2.0f - 300.0f, Config::WINDOW_HEIGHT/2.0f - 200.0f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(600, 400));
-        ImGui::Begin("CHOOSE YOUR AUGMENT", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        const char* windowTitle = hasAugment ? "CHOOSE YOUR UPGRADE (Milestone Augment)" : "CHOOSE YOUR UPGRADE";
+        ImGui::Begin(windowTitle, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
-        float timePassed = m_clientUpgradeTimer.getElapsedTime().asSeconds();
-        float progress = 1.0f - (timePassed / Config::LEVEL_UP_TIMEOUT);
-        ImGui::ProgressBar(progress, ImVec2(-1, 20), "Time Remaining");
+        if(!m_upgradeRevealPhase){
+            float timePassed = m_clientUpgradeTimer.getElapsedTime().asSeconds();
+            float progress = 1.0f - (timePassed / Config::LEVEL_UP_TIMEOUT);
+            ImGui::ProgressBar(progress, ImVec2(-1, 20), "Time Remaining");
+        }else{
+            ImGui::ProgressBar(1.0f, ImVec2(-1, 20), "Finalizing...");
+        }
 
-        ImGui::Columns(3, "Cards", true);
+        ImGui::Columns(3, "Upgrades", true);
         for(int i = 0; i < 3; i++){
-            bool isSelected = (m_myChoice == i);
+            ImGui::PushID(i);
+
+            const std::string& offerId = m_upgradeOffers[static_cast<std::size_t>(i)];
+            const UpgradeDefinition* def = offerId.empty() ? nullptr : UpgradeRegistry::getById(offerId);
+
+            if(def){
+                ImGui::TextWrapped("%s", def->name.c_str());
+                ImGui::Spacing();
+                ImGui::TextWrapped("%s", def->description.c_str());
+            }else{
+                ImGui::TextWrapped("Unknown Upgrade");
+            }
+
+            ImGui::Spacing();
+
+            bool isSelected = !m_chosenUpgradeId.empty() && m_chosenUpgradeId == offerId;
+            bool canChoose = !offerId.empty() && !m_upgradeRevealPhase;
             bool pushedColor = false;
 
             if(isSelected){
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
                 pushedColor = true;
-            }else if(m_myChoice != -1){
+            }else if(m_upgradeRevealPhase){
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
                 pushedColor = true;
-            } 
-                
+            }
 
-            char label[32];
-            sprintf(label, "CARD %d", i + 1);
-            if(ImGui::Button(label, ImVec2(-1, 200))){
-                m_myChoice = i;
+            char chooseLabel[32];
+            sprintf(chooseLabel, isSelected ? "SELECTED##%d" : "CHOOSE##%d", i);
+            if(ImGui::Button(chooseLabel, ImVec2(-1, 40)) && canChoose){
+                m_chosenUpgradeId = offerId;
                 sf::Packet packet;
-                packet << PacketType::CardSelected << m_player->getId() << m_myChoice;
+                packet << PacketType::UpgradeChosen << m_player->getId() << m_chosenUpgradeId;
                 (void)m_engine.getSocket().send(packet, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
 
             if(pushedColor) ImGui::PopStyleColor();
+            ImGui::PopID();
             ImGui::NextColumn();
         }
         ImGui::Columns(1);
@@ -638,15 +747,6 @@ void GameState::renderUI(){
     }
 
 
-    float expProgress = static_cast<float>(m_teamExp) / m_teamExpMax;
-    char expOverlay[64];
-    sprintf(expOverlay, "LEVEL %d (%d/%d)", m_teamLevel, m_teamExp, m_teamExpMax);
-
-    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
-    ImGui::ProgressBar(expProgress, ImVec2(-1.0f, 24.0f), expOverlay);
-    ImGui::PopStyleColor();
-    ImGui::Separator();
-    
     if(m_player) m_player->renderUI();
 
     ImGui::Begin("Swarm Invasion - Debug Panel");

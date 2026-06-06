@@ -8,12 +8,20 @@
 #include "ServerTypes.hpp"
 #include "AIDirector.hpp"
 #include "Config.hpp"
+#include "UpgradeRegistry.hpp"
 
 #include <SFML/System.hpp>
 #include <memory>
 #include <random>
 #include <map>
 #include <vector>
+#include <string>
+
+enum class UpgradeMenuPhase {
+    None,
+    Selecting,
+    Reveal
+};
 
 class ServerEngine{
 public:
@@ -30,7 +38,7 @@ private:
     void handleJoinRequest(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port);
     void handlePlayerShoots(sf::Packet& packet);
     void handlePlayerDisconnect(sf::Packet& packet);
-    void handleCardSelected(sf::Packet& packet);
+    void handleUpgradeChosen(sf::Packet& packet);
     void handleAbilityHit(sf::Packet& packet);
     void handleAbilityUsed(sf::Packet& packet);
 
@@ -53,6 +61,16 @@ private:
     bool playerHasActiveDecoy(std::uint32_t playerId) const;
     bool playerHasActiveOrb(std::uint32_t playerId) const;
     void sendWorldState();
+
+    float getEffectiveMaxHp(const ClientInfo& client) const;
+    std::vector<const UpgradeDefinition*> buildUpgradePool(PlayerClass pClass, bool wantAugment) const;
+    std::vector<std::string> rollUpgradeOffer(const ClientInfo& client) const;
+    void applyUpgrade(ClientInfo& client, const UpgradeDefinition& upgrade);
+    void sendLevelUpOffers();
+    void sendUpgradeMultipliers(std::uint32_t playerId);
+    void finalizeUpgradeSelections();
+    bool needsWorldReset() const;
+    void resetWorld();
 
     std::shared_ptr<MapGenerator> m_map;
 
@@ -85,5 +103,8 @@ private:
 
     bool m_isPaused = false;
     sf::Clock m_upgradeTimer;
-    std::map<std::uint32_t, int> m_playerChoices;
+    sf::Clock m_upgradeRevealTimer;
+    UpgradeMenuPhase m_upgradeMenuPhase = UpgradeMenuPhase::None;
+    std::map<std::uint32_t, std::string> m_playerChosenUpgrades;
+    std::map<std::uint32_t, std::vector<std::string>> m_pendingOffers;
 };

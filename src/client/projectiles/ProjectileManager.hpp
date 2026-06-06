@@ -30,7 +30,7 @@ public:
 
     void spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction);
 
-    std::vector<HitRecord> update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers = {});
+    std::vector<HitRecord> update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers = {}, std::uint32_t localPlayerId = 0);
     void render(sf::RenderTarget& target);
 
 private:

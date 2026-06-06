@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.hpp"
+#include <SFML/Graphics/VertexArray.hpp>
 
 class Juggernaut : public Player{
 public:
@@ -18,6 +19,9 @@ public:
     bool isAutoFiring() const override { return m_isUltActive; }
 
     std::vector<AbilityHitRecord> checkAbilityHits(const std::vector<Entity*>& entities) override;
+    void updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override;
+    void playRemoteAbility(AbilityType ability, const sf::Vector2f& data) override;
+
 private:
     bool m_isCharging{false};
     float m_chargeDistanceRemaining{0.0f};

@@ -1,27 +1,9 @@
 #include "ServerEngine.hpp"
 #include "SectorMath.hpp"
+#include "UpgradeRegistry.hpp"
 #include <iostream>
-#include <chrono>
 #include <cmath>
 #include <algorithm>
-
-struct SimpleProfiler {
-    std::string name;
-    std::chrono::high_resolution_clock::time_point start;
-
-    SimpleProfiler(std::string n) : name(n) {
-        start = std::chrono::high_resolution_clock::now();
-    }
-    ~SimpleProfiler() {
-        auto end = std::chrono::high_resolution_clock::now();
-        float ms = std::chrono::duration<float, std::milli>(end - start).count();
-        
-        if (ms > 1.0f) {
-            std::cout << "[PROFILER] " << name << " zajelo: " << ms << " ms\n";
-        }
-    }
-};
-#define PROFILE_BLOCK(name) SimpleProfiler profiler_##__LINE__(name)
 
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
@@ -76,7 +58,7 @@ void ServerEngine::processNetwork(){
                 case PacketType::JoinRequest:       handleJoinRequest(packet, sender.value(), port); break;
                 case PacketType::PlayerShoots:      handlePlayerShoots(packet); break;
                 case PacketType::PlayerDisconnect:  handlePlayerDisconnect(packet); break;
-                case PacketType::CardSelected:      handleCardSelected(packet); break;
+                case PacketType::UpgradeChosen:     handleUpgradeChosen(packet); break;
                 case PacketType::AbilityHit:        handleAbilityHit(packet); break;
                 case PacketType::AbilityUsed:       handleAbilityUsed(packet); break;
                 default: break;
@@ -91,12 +73,22 @@ void ServerEngine::update(sf::Time deltaTime){
     // CARD SELECTION SCREEN
     if(m_isPaused){
         proccessUpgradeMenuTimeout();
+        if(m_clients.empty() && needsWorldReset()){
+            resetWorld();
+        }
         sendWorldState();
         return;
     }
 
     // REMOVING UNACTIVE PLAYERS
     removeAFKPlayers();
+
+    if(m_clients.empty()){
+        if(needsWorldReset()){
+            resetWorld();
+        }
+        return;
+    }
 
     for(auto& [id, info] : m_clients) {
         if (info.invTimer > 0.0f) info.invTimer -= deltaTime.asSeconds();
@@ -113,16 +105,8 @@ void ServerEngine::update(sf::Time deltaTime){
         }
     }
 
-    // SERVER RESET
-    if(m_clients.empty() && !m_enemies.empty()){
-        m_enemies.clear();
-        std::cout << "[SERVER] All players left. Resetting world...\n";
-    }
-
     // ENEMIES DIRECTOR
-    if(!m_clients.empty()){
-        PROFILE_BLOCK("AI_AND_MOVEMENT");
-
+    {
         std::map<std::uint32_t, ClientInfo> visibleTargets;
         
         // Dodajemy tylko widocznych graczy
@@ -206,6 +190,13 @@ void ServerEngine::update(sf::Time deltaTime){
                 (void)m_socket.send(shootPacket, info.ip, info.port);
             }
         }
+    }
+
+    if(m_clients.empty()){
+        if(needsWorldReset()){
+            resetWorld();
+        }
+        return;
     }
 
     for(auto it = m_enemies.begin(); it != m_enemies.end(); ){
@@ -300,6 +291,10 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
         if(m_enemies.count(targetId)){
             float damageDealt = baseDamage;
 
+            if (m_clients.count(shooterId)) {
+                damageDealt *= m_clients.at(shooterId).damageMultiplier;
+            }
+
             if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Soldier) {
                 if ((std::rand() % 100) < 20) {
                     damageDealt *= 2.0f;
@@ -316,9 +311,10 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
 
             if(m_enemies[targetId]->getHp() <= 0.0f){
                 if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
-                    float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
-                    m_clients.at(shooterId).hp += 5.0f;
-                    if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                    auto& shooter = m_clients.at(shooterId);
+                    float maxHp = getEffectiveMaxHp(shooter);
+                    shooter.hp += 5.0f;
+                    if (shooter.hp > maxHp) shooter.hp = maxHp;
                 }
 
                 m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
@@ -377,12 +373,18 @@ void ServerEngine::handlePlayerDisconnect(sf::Packet& packet){
     }
 }
 
-void ServerEngine::handleCardSelected(sf::Packet& packet){
+void ServerEngine::handleUpgradeChosen(sf::Packet& packet){
     std::uint32_t playerId;
-    int choice;
-    if(packet >> playerId >> choice){
-        m_playerChoices[playerId] = choice;
-    }
+    std::string upgradeId;
+    if (!(packet >> playerId >> upgradeId)) return;
+    if (!m_clients.count(playerId)) return;
+    if (!m_pendingOffers.count(playerId)) return;
+
+    const auto& offers = m_pendingOffers.at(playerId);
+    if (std::find(offers.begin(), offers.end(), upgradeId) == offers.end()) return;
+    if (m_upgradeMenuPhase != UpgradeMenuPhase::Selecting) return;
+
+    m_playerChosenUpgrades[playerId] = upgradeId;
 }
 
 void ServerEngine::handleAbilityHit(sf::Packet& packet){
@@ -440,16 +442,17 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
 
                 if (m_enemies[targetId]->getHp() <= 0.0f) {
                     if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
-                        float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
-                        m_clients.at(shooterId).hp += 5.0f;
-                        if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                        auto& shooter = m_clients.at(shooterId);
+                        float maxHp = getEffectiveMaxHp(shooter);
+                        shooter.hp += 5.0f;
+                        if (shooter.hp > maxHp) shooter.hp = maxHp;
                     }
 
                     m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
                     m_enemies.erase(targetId);
                 }
             }
-        }else if(ability == AbilityType:: VanguardDash){
+        }else if(ability == AbilityType::VanguardDash){
             float damage = 25.0f;
 
             if (m_enemies.count(targetId)) {
@@ -463,9 +466,10 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
 
                 if (m_enemies[targetId]->getHp() <= 0.0f) {
                     if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
-                        float maxHp = HeroRegistry::getStats(PlayerClass::Vanguard).maxHp;
-                        m_clients.at(shooterId).hp += 5.0f;
-                        if (m_clients.at(shooterId).hp > maxHp) m_clients.at(shooterId).hp = maxHp;
+                        auto& shooter = m_clients.at(shooterId);
+                        float maxHp = getEffectiveMaxHp(shooter);
+                        shooter.hp += 5.0f;
+                        if (shooter.hp > maxHp) shooter.hp = maxHp;
                     }
 
                     m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
@@ -613,19 +617,199 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             if (m_clients.at(playerId).pClass != PlayerClass::Medic) return;
             handleMedicDroneCommand(playerId, pos);
         }
+
+        if (ability == AbilityType::VanguardDash ||
+            ability == AbilityType::VanguardKatanaSlash ||
+            ability == AbilityType::JuggernautDash ||
+            ability == AbilityType::JuggernautRepulsor ||
+            ability == AbilityType::MedicTeleport) {
+            sf::Packet relay;
+            relay << PacketType::AbilityUsed << playerId << ability << pos;
+            for (const auto& [id, clientInfo] : m_clients) {
+                if (id == playerId) continue;
+                (void)m_socket.send(relay, clientInfo.ip, clientInfo.port);
+            }
+        }
     }
 }
 
 
-void ServerEngine::proccessUpgradeMenuTimeout(){
-    bool allSelected = true;
-    for(auto& [id, info] : m_clients){
-        if(m_playerChoices[id] == -1) allSelected = false;
+float ServerEngine::getEffectiveMaxHp(const ClientInfo& client) const {
+    return HeroRegistry::getStats(client.pClass).maxHp * client.hpMultiplier;
+}
+
+std::vector<const UpgradeDefinition*> ServerEngine::buildUpgradePool(PlayerClass pClass, bool wantAugment) const {
+    return UpgradeRegistry::buildPool(pClass, wantAugment);
+}
+
+std::vector<std::string> ServerEngine::rollUpgradeOffer(const ClientInfo& client) const {
+    bool wantAugment = (m_teamLevel >= 4 && m_teamLevel % 4 == 0);
+    auto pool = buildUpgradePool(client.pClass, wantAugment);
+    if (pool.empty() && wantAugment) {
+        pool = buildUpgradePool(client.pClass, false);
+    }
+    return UpgradeRegistry::pickWeightedRandom(pool, 3);
+}
+
+void ServerEngine::applyUpgrade(ClientInfo& client, const UpgradeDefinition& upgrade) {
+    if (upgrade.isAugment) {
+        client.ownedAugments.push_back(upgrade.id);
     }
 
-    if(allSelected || m_upgradeTimer.getElapsedTime().asSeconds() > Config::LEVEL_UP_TIMEOUT){
-        m_isPaused = false;
-        std::cout << "[SERVER] Resuming game after upgrades. \n";
+    switch (upgrade.stat) {
+        case UpgradeStat::MaxHP: {
+            float oldMax = getEffectiveMaxHp(client);
+            client.hpMultiplier += upgrade.modifierValue;
+            float newMax = getEffectiveMaxHp(client);
+            if (oldMax > 0.0f) {
+                client.hp = newMax * (client.hp / oldMax);
+            }
+            if (client.hp > newMax) client.hp = newMax;
+            break;
+        }
+        case UpgradeStat::Speed:
+            client.speedMultiplier += upgrade.modifierValue;
+            break;
+        case UpgradeStat::Damage:
+            client.damageMultiplier += upgrade.modifierValue;
+            break;
+        case UpgradeStat::Cooldown:
+            client.cooldownMultiplier += upgrade.modifierValue;
+            break;
+    }
+}
+
+void ServerEngine::sendLevelUpOffers() {
+    m_pendingOffers.clear();
+    for (const auto& [id, info] : m_clients) {
+        (void)info;
+        auto offers = rollUpgradeOffer(m_clients.at(id));
+        m_pendingOffers[id] = offers;
+
+        sf::Packet offerPacket;
+        offerPacket << PacketType::LevelUpOffer;
+        offerPacket << static_cast<std::uint32_t>(offers.size());
+        for (const auto& offerId : offers) {
+            offerPacket << offerId;
+        }
+        (void)m_socket.send(offerPacket, m_clients.at(id).ip, m_clients.at(id).port);
+    }
+}
+
+
+void ServerEngine::finalizeUpgradeSelections() {
+    for (const auto& [playerId, info] : m_clients) {
+        (void)info;
+        bool wasRandom = false;
+        std::string chosenId;
+
+        auto chosenIt = m_playerChosenUpgrades.find(playerId);
+        if (chosenIt != m_playerChosenUpgrades.end() && !chosenIt->second.empty()) {
+            chosenId = chosenIt->second;
+        } else if (m_pendingOffers.count(playerId) && !m_pendingOffers.at(playerId).empty()) {
+            const auto& offers = m_pendingOffers.at(playerId);
+            chosenId = offers[static_cast<std::size_t>(std::rand()) % offers.size()];
+            wasRandom = true;
+            m_playerChosenUpgrades[playerId] = chosenId;
+        }
+
+        if (chosenId.empty()) continue;
+
+        const UpgradeDefinition* def = UpgradeRegistry::getById(chosenId);
+        if (def) {
+            applyUpgrade(m_clients.at(playerId), *def);
+            sendUpgradeMultipliers(playerId);
+        }
+
+        sf::Packet resolvedPacket;
+        resolvedPacket << PacketType::UpgradeResolved << chosenId << wasRandom;
+        (void)m_socket.send(resolvedPacket, m_clients.at(playerId).ip, m_clients.at(playerId).port);
+    }
+}
+
+void ServerEngine::sendUpgradeMultipliers(std::uint32_t playerId) {
+    if (!m_clients.count(playerId)) return;
+
+    const ClientInfo& info = m_clients.at(playerId);
+    sf::Packet packet;
+    packet << PacketType::PlayerUpgradeMultipliers << playerId
+           << info.hpMultiplier << info.speedMultiplier
+           << info.damageMultiplier << info.cooldownMultiplier;
+    (void)m_socket.send(packet, info.ip, info.port);
+}
+
+bool ServerEngine::needsWorldReset() const {
+    return !m_enemies.empty()
+        || !m_energyCells.empty()
+        || !m_healFields.empty()
+        || !m_blackHoles.empty()
+        || !m_decoys.empty()
+        || !m_medicOrbs.empty()
+        || !m_medicBarriers.empty()
+        || !m_medicDrones.empty()
+        || !m_serverProjectiles.empty()
+        || !m_pendingOffers.empty()
+        || !m_playerChosenUpgrades.empty()
+        || m_upgradeMenuPhase != UpgradeMenuPhase::None
+        || m_isPaused
+        || m_teamLevel > 1
+        || m_teamExp > 0
+        || m_globalEntityCounter > 1;
+}
+
+void ServerEngine::resetWorld() {
+    m_enemies.clear();
+    m_energyCells.clear();
+    m_healFields.clear();
+    m_blackHoles.clear();
+    m_decoys.clear();
+    m_medicOrbs.clear();
+    m_medicBarriers.clear();
+    m_medicDrones.clear();
+    m_serverProjectiles.clear();
+
+    m_globalEntityCounter = 1;
+    m_teamLevel = 1;
+    m_teamExp = 0;
+    m_teamExpMax = 10;
+    m_isPaused = false;
+    m_playerChosenUpgrades.clear();
+    m_pendingOffers.clear();
+    m_upgradeMenuPhase = UpgradeMenuPhase::None;
+    m_tickCounter = 0;
+
+    m_aiDirector.reset();
+
+    std::cout << "[SERVER] All players left. Resetting world to initial state...\n";
+}
+
+void ServerEngine::proccessUpgradeMenuTimeout(){
+    if (m_upgradeMenuPhase == UpgradeMenuPhase::Selecting) {
+        bool allSelected = true;
+        for (const auto& [id, info] : m_clients) {
+            (void)info;
+            if (!m_playerChosenUpgrades.count(id) || m_playerChosenUpgrades.at(id).empty()) {
+                allSelected = false;
+            }
+        }
+
+        if (allSelected || m_upgradeTimer.getElapsedTime().asSeconds() > Config::LEVEL_UP_TIMEOUT) {
+            finalizeUpgradeSelections();
+            m_upgradeMenuPhase = UpgradeMenuPhase::Reveal;
+            m_upgradeRevealTimer.restart();
+            std::cout << "[SERVER] Upgrade selections locked. Revealing choices...\n";
+        }
+        return;
+    }
+
+    if (m_upgradeMenuPhase == UpgradeMenuPhase::Reveal) {
+        if (m_upgradeRevealTimer.getElapsedTime().asSeconds() >= Config::LEVEL_UP_REVEAL_DELAY) {
+            m_isPaused = false;
+            m_pendingOffers.clear();
+            m_playerChosenUpgrades.clear();
+            m_upgradeMenuPhase = UpgradeMenuPhase::None;
+            std::cout << "[SERVER] Resuming game after upgrades.\n";
+        }
     }
 }
 
@@ -672,8 +856,10 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
 
                     m_isPaused = true;
                     m_upgradeTimer.restart();
-                    m_playerChoices.clear();
-                    for(auto& [id, info] : m_clients) m_playerChoices[id] = -1;
+                    m_playerChosenUpgrades.clear();
+                    m_upgradeMenuPhase = UpgradeMenuPhase::Selecting;
+
+                    sendLevelUpOffers();
 
                     sf::Packet pausePacket;
                     pausePacket << PacketType::LevelUpTriggered;
@@ -700,7 +886,7 @@ void ServerEngine::updateHealingFields(sf::Time deltaTime){
         for (auto& [id, clientInfo] : m_clients) {
             float distSq = (clientInfo.position - field.position).lengthSquared();
             if (distSq <= (field.radius * field.radius)) {
-                float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
+                float maxHp = getEffectiveMaxHp(clientInfo);
                 clientInfo.hp += field.healPerSecond * deltaTime.asSeconds();
                 if (clientInfo.hp > maxHp) {
                     clientInfo.hp = maxHp;
@@ -724,7 +910,7 @@ void ServerEngine::updateMedicPassives(sf::Time deltaTime) {
         (void)id;
         if (clientInfo.pClass != PlayerClass::Medic) continue;
 
-        float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
+        float maxHp = getEffectiveMaxHp(clientInfo);
         if (clientInfo.hp >= maxHp) continue;
 
         clientInfo.hp += Config::MEDIC_PASSIVE_HEAL_PER_SECOND * dt;
@@ -787,9 +973,21 @@ void ServerEngine::updateBlackHoles(sf::Time deltaTime){
 
 void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
     const float radiusSq = Config::VANGUARD_DECOY_EXPLOSION_RADIUS * Config::VANGUARD_DECOY_EXPLOSION_RADIUS;
+    std::vector<std::uint32_t> deadFromExplosion;
+
     for (auto& [eId, targetEnemy] : m_enemies) {
         if ((targetEnemy->getPosition() - decoy.pos).lengthSquared() < radiusSq) {
             targetEnemy->takeDamage(Config::VANGUARD_DECOY_EXPLOSION_DAMAGE);
+            if (targetEnemy->getHp() <= 0.0f) {
+                deadFromExplosion.push_back(eId);
+            }
+        }
+    }
+
+    for (std::uint32_t enemyId : deadFromExplosion) {
+        if (m_enemies.count(enemyId)) {
+            m_energyCells[m_globalEntityCounter++] = {m_enemies[enemyId]->getPosition(), 1, 0};
+            m_enemies.erase(enemyId);
         }
     }
 
@@ -845,7 +1043,7 @@ void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
             for (auto& [id, clientInfo] : m_clients) {
                 float distSq = (clientInfo.position - orb.position).lengthSquared();
                 if (distSq <= effectRadiusSq) {
-                    float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
+                    float maxHp = getEffectiveMaxHp(clientInfo);
                     clientInfo.hp += Config::MEDIC_ORB_HEAL_PER_TICK;
                     if (clientInfo.hp > maxHp) clientInfo.hp = maxHp;
                 }
@@ -1052,7 +1250,7 @@ void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
                 drone.healTimer = Config::MEDIC_DRONE_SYM_HEAL_INTERVAL;
                 if (m_clients.count(drone.orbitTargetId)) {
                     auto& target = m_clients.at(drone.orbitTargetId);
-                    float maxHp = HeroRegistry::getStats(target.pClass).maxHp;
+                    float maxHp = getEffectiveMaxHp(target);
                     if (target.hp < maxHp) {
                         target.hp += Config::MEDIC_DRONE_SYM_HEAL_AMOUNT;
                         if (target.hp > maxHp) target.hp = maxHp;
@@ -1152,7 +1350,7 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
                 float collDist = heroRadius + proj.radius;
 
                 if (diff.lengthSquared() < collDist * collDist) {
-                    float maxHp = HeroRegistry::getStats(clientInfo.pClass).maxHp;
+                    float maxHp = getEffectiveMaxHp(clientInfo);
                     clientInfo.hp += Config::MEDIC_NEEDLE_HEAL;
                     if (clientInfo.hp > maxHp) clientInfo.hp = maxHp;
                     destroyed = true;

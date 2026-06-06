@@ -32,6 +32,15 @@ namespace Config{
 
     // --- LEVEL UP WINDOW ---
     constexpr float LEVEL_UP_TIMEOUT = 15.0f;
+    constexpr float LEVEL_UP_REVEAL_DELAY = 1.0f;
+
+    // --- LOBBY ---
+    constexpr float LOBBY_CONNECT_TIMEOUT = 8.0f;
+    constexpr float LOBBY_JOIN_RETRY_INTERVAL = 1.0f;
+
+    // --- HUD ---
+    constexpr float EXP_BAR_WIDTH = 420.0f;
+    constexpr float EXP_BAR_HEIGHT = 28.0f;
 
     // --- VANGUARD DECOY (E) ---
     constexpr float VANGUARD_STEALTH_DURATION = 4.0f;
@@ -81,7 +90,7 @@ namespace Config{
     constexpr float MEDIC_DRONE_SYM_HEAL_INTERVAL = 1.0f;
     constexpr float MEDIC_DRONE_SYM_HEAL_AMOUNT = 10.0f;
     constexpr float MEDIC_DRONE_SYM_SHOOT_INTERVAL = 0.8f;
-    constexpr float MEDIC_DRONE_SENTRY_SHOOT_INTERVAL = 0.3f;
+    constexpr float MEDIC_DRONE_SENTRY_SHOOT_INTERVAL = 0.1f;
     constexpr float MEDIC_DRONE_MOVE_SPEED = 280.0f;
     constexpr float MEDIC_DRONE_ATTACK_RANGE = 420.0f;
     constexpr float MEDIC_DRONE_SENTRY_ARRIVE_DIST = 8.0f;

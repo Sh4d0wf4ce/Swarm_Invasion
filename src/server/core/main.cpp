@@ -2,6 +2,7 @@
 #include "WeaponRegistry.hpp"
 #include "HeroRegistry.hpp"
 #include "EnemyRegistry.hpp"
+#include "UpgradeRegistry.hpp"
 #include <iostream>
 
 int main(){
@@ -10,6 +11,7 @@ int main(){
         WeaponRegistry::loadConfig("assets/weapons.json");
         HeroRegistry::loadConfig("assets/heroes.json");
         EnemyRegistry::loadConfig("assets/enemies.json");
+        UpgradeRegistry::loadConfig("assets/upgrades.json");
         ServerEngine engine;
         engine.run();
     }

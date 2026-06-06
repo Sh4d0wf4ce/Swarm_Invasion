@@ -273,33 +273,37 @@ void Vanguard::drawDashTrails(sf::RenderTarget& target) const {
     sf::RenderStates addBlend;
     addBlend.blendMode = sf::BlendAdd;
 
-    for (const auto& trail : m_dashTrails) {
-        float progress = trail.age / 0.35f;
-        float fade = std::max(0.0f, 1.0f - progress);
-        
+    auto drawTrail = [&](const sf::Vector2f& start, const sf::Vector2f& end, float fade) {
         std::uint8_t alpha = static_cast<std::uint8_t>(255.0f * fade);
         sf::Color edgeColor(0, 255, 255, alpha);
         sf::Color coreColor(255, 255, 255, alpha);
 
-        sf::Vector2f dir = trail.end - trail.start;
+        sf::Vector2f dir = end - start;
         float lenSq = dir.lengthSquared();
-        if (lenSq < 1.0f) continue;
+        if (lenSq < 1.0f) return;
         sf::Vector2f dirNorm = dir / std::sqrt(lenSq);
 
-        float currentWidth = 14.0f * fade; 
+        float currentWidth = 14.0f * fade;
         sf::Vector2f n(-dirNorm.y * currentWidth, dirNorm.x * currentWidth);
 
         sf::VertexArray wedge(sf::PrimitiveType::Triangles, 6);
-        
-        wedge[0] = sf::Vertex(trail.start, sf::Color(0, 255, 255, 0));
-        wedge[1] = sf::Vertex(trail.end - n, edgeColor);              
-        wedge[2] = sf::Vertex(trail.end, coreColor);                   
-
-        wedge[3] = sf::Vertex(trail.start, sf::Color(0, 255, 255, 0)); 
-        wedge[4] = sf::Vertex(trail.end, coreColor);
-        wedge[5] = sf::Vertex(trail.end + n, edgeColor);
-
+        wedge[0] = sf::Vertex(start, sf::Color(0, 255, 255, 0));
+        wedge[1] = sf::Vertex(end - n, edgeColor);
+        wedge[2] = sf::Vertex(end, coreColor);
+        wedge[3] = sf::Vertex(start, sf::Color(0, 255, 255, 0));
+        wedge[4] = sf::Vertex(end, coreColor);
+        wedge[5] = sf::Vertex(end + n, edgeColor);
         target.draw(wedge, addBlend);
+    };
+
+    if (m_isDashing) {
+        drawTrail(m_dashStartPos, m_position, 1.0f);
+    }
+
+    for (const auto& trail : m_dashTrails) {
+        float progress = trail.age / 0.35f;
+        float fade = std::max(0.0f, 1.0f - progress);
+        drawTrail(trail.start, trail.end, fade);
     }
 }
 
@@ -387,6 +391,12 @@ void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
     m_prevBladeAngle = m_bladeAngle;
     m_attackActive = true;
 
+    if (engine.getServerAddress()) {
+        sf::Packet packet;
+        packet << PacketType::AbilityUsed << m_id << AbilityType::VanguardKatanaSlash << m_aimDir;
+        (void)engine.getSocket().send(packet, engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
+
     if (m_isUltActive && engine.getServerAddress()) {
         WeaponType weapon = WeaponType::VanguardWave;
         
@@ -396,6 +406,79 @@ void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
         sf::Packet shootPacket;
         shootPacket << PacketType::PlayerShoots << m_id << weapon << m_position << waveTarget;
         (void)engine.getSocket().send(shootPacket, engine.getServerAddress().value(), Config::SERVER_PORT);
+    }
+}
+
+void Vanguard::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
+    (void)map;
+    float dt = deltaTime.asSeconds();
+
+    if (getStealthTimer() > 0.0f) {
+        m_shape.setFillColor(sf::Color(0, 255, 255, 80));
+        m_shape.setOutlineColor(sf::Color(0, 255, 255, 120));
+    } else {
+        m_shape.setFillColor(HeroRegistry::getStats(m_class).color);
+        m_shape.setOutlineColor(HeroRegistry::getStats(m_class).color);
+    }
+
+    if (m_isDashing) {
+        float moveDist = 2500.0f * dt;
+        if (moveDist > m_dashDistanceRemaining) moveDist = m_dashDistanceRemaining;
+        m_dashDistanceRemaining -= moveDist;
+
+        if (m_dashDistanceRemaining <= 0.0f) {
+            m_isDashing = false;
+            m_dashTrails.push_back({m_dashStartPos, m_position, 0.0f});
+        }
+    }
+
+    for (auto& trail : m_dashTrails) trail.age += dt;
+    m_dashTrails.erase(std::remove_if(m_dashTrails.begin(), m_dashTrails.end(),
+        [](const DashTrail& t) { return t.age > 0.35f; }), m_dashTrails.end());
+
+    updateTrail(dt);
+
+    if (!m_attackActive) return;
+
+    m_attackTime += dt;
+    if (m_attackTime >= m_swingDuration) {
+        m_attackActive = false;
+        m_attackTime = 0.0f;
+        return;
+    }
+
+    float progress = std::clamp(m_attackTime / m_swingDuration, 0.0f, 1.0f);
+    float t = progress * progress * (3.0f - 2.0f * progress);
+
+    m_prevBladeAngle = m_bladeAngle;
+    m_bladeAngle = getBladeAngleAt(t);
+    m_trail.push_back({m_bladeAngle, 0.0f});
+}
+
+void Vanguard::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
+    if (ability == AbilityType::VanguardDash) {
+        m_dashDir = data;
+        float len = m_dashDir.length();
+        if (len > 0.0001f) m_dashDir /= len;
+        else m_dashDir = sf::Vector2f(1.0f, 0.0f);
+
+        m_isDashing = true;
+        m_dashDistanceRemaining = 220.0f;
+        m_hitDuringDash.clear();
+        m_dashStartPos = m_position;
+    } else if (ability == AbilityType::VanguardKatanaSlash) {
+        m_aimDir = data;
+        float len = m_aimDir.length();
+        if (len > 0.0001f) m_aimDir /= len;
+        else m_aimDir = sf::Vector2f(1.0f, 0.0f);
+
+        m_swingRight = !m_swingRight;
+        m_trail.clear();
+        m_hitThisSwing.clear();
+        m_attackTime = 0.0f;
+        m_bladeAngle = getBladeAngleAt(0.0f);
+        m_prevBladeAngle = m_bladeAngle;
+        m_attackActive = true;
     }
 }
 

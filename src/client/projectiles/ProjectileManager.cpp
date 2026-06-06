@@ -47,7 +47,7 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
     }
 }
 
-std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers){
+std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers, std::uint32_t localPlayerId){
     std::vector<HitRecord> allHits;
 
     for(auto& proj: m_projectiles){
@@ -71,7 +71,14 @@ std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::
             if (!proj->isActive()) continue;
         }
 
-        auto hitIds = proj->checkCollisions(entities, map);
+        const bool ownsProjectile = localPlayerId == 0 || proj->getOwnerId() == localPlayerId;
+        const WeaponType weapon = proj->getWeaponType();
+        const bool visualHealCollision = weapon == WeaponType::MedicNeedle || weapon == WeaponType::DroneBlaster;
+        const bool checkEntities = ownsProjectile || visualHealCollision;
+
+        auto hitIds = proj->checkCollisions(checkEntities ? entities : std::vector<Entity*>{}, map);
+        if (!ownsProjectile) continue;
+
         for(std::uint32_t id: hitIds){
             allHits.push_back({proj->getOwnerId(), id, proj->getWeaponType()});
         }

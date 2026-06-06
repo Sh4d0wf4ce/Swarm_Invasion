@@ -21,6 +21,8 @@ public:
                      std::shared_ptr<MapGenerator> map,
                      std::uint32_t& entityCounter);
 
+    void reset();
+
     std::vector<std::uint32_t> updateBehaviours(sf::Time deltaTime,
                                                 std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies,
                                                 std::map<std::uint32_t, ClientInfo>& clients,

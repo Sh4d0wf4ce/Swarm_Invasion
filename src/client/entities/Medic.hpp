@@ -16,6 +16,10 @@ public:
 
     void setDroneState(bool active, float lifetime);
     bool hasActiveDrone() const { return m_droneActive; }
+    bool isTeleportAnimating() const { return m_teleportPhase != TeleportPhase::None; }
+
+    void updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override;
+    void playRemoteAbility(AbilityType ability, const sf::Vector2f& data) override;
 
     void renderQSkill() override;
 
@@ -27,6 +31,7 @@ private:
 
     bool computeTeleportTarget(const sf::Vector2f& mouseWorldPos, const std::shared_ptr<MapGenerator>& map, sf::Vector2f& outTarget);
     void tryStartTeleport(const std::shared_ptr<MapGenerator>& map);
+    void advanceTeleportAnimation(float dt);
 
     TeleportPhase m_teleportPhase{TeleportPhase::None};
     float m_teleportAnimTime{0.0f};

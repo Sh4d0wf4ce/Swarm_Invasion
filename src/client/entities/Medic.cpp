@@ -50,6 +50,38 @@ void Medic::tryStartTeleport(const std::shared_ptr<MapGenerator>& map) {
     }
 }
 
+void Medic::advanceTeleportAnimation(float dt) {
+    m_teleportAnimTime += dt;
+    const float half = Config::MEDIC_TELEPORT_FADE_TOTAL / 2.0f;
+
+    if (m_teleportPhase == TeleportPhase::FadeOut) {
+        const float t = std::min(m_teleportAnimTime, half);
+        const std::uint8_t alpha = static_cast<std::uint8_t>(255.0f * (1.0f - t / half));
+        m_shape.setFillColor(sf::Color(m_baseFillColor.r, m_baseFillColor.g, m_baseFillColor.b, alpha));
+        m_shape.setOutlineColor(sf::Color(m_baseOutlineColor.r, m_baseOutlineColor.g, m_baseOutlineColor.b, alpha));
+
+        if (m_teleportAnimTime >= half) {
+            setPosition(m_teleportTarget);
+            m_shape.setPosition(m_position);
+            m_teleportPhase = TeleportPhase::FadeIn;
+            m_teleportAnimTime = 0.0f;
+        }
+    } else {
+        const float t = std::min(m_teleportAnimTime, half);
+        const std::uint8_t alpha = static_cast<std::uint8_t>(255.0f * (t / half));
+        m_shape.setFillColor(sf::Color(m_baseFillColor.r, m_baseFillColor.g, m_baseFillColor.b, alpha));
+        m_shape.setOutlineColor(sf::Color(m_baseOutlineColor.r, m_baseOutlineColor.g, m_baseOutlineColor.b, alpha));
+
+        if (m_teleportAnimTime >= half) {
+            m_shape.setFillColor(m_baseFillColor);
+            m_shape.setOutlineColor(m_baseOutlineColor);
+            m_teleportPhase = TeleportPhase::None;
+        }
+    }
+
+    m_shape.setPosition(m_position);
+}
+
 void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     float dt = deltaTime.asSeconds();
 
@@ -60,40 +92,13 @@ void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map)
     }
 
     if (m_teleportPhase != TeleportPhase::None) {
+        float dt = deltaTime.asSeconds();
         if (m_cooldownShift > 0.0f) m_cooldownShift -= dt;
         if (m_cooldownE > 0.0f) m_cooldownE -= dt;
         if (m_cooldownRMB > 0.0f) m_cooldownRMB -= dt;
         if (m_cooldownLMB > 0.0f) m_cooldownLMB -= dt;
 
-        m_teleportAnimTime += dt;
-        const float half = Config::MEDIC_TELEPORT_FADE_TOTAL / 2.0f;
-
-        if (m_teleportPhase == TeleportPhase::FadeOut) {
-            const float t = std::min(m_teleportAnimTime, half);
-            const std::uint8_t alpha = static_cast<std::uint8_t>(255.0f * (1.0f - t / half));
-            m_shape.setFillColor(sf::Color(m_baseFillColor.r, m_baseFillColor.g, m_baseFillColor.b, alpha));
-            m_shape.setOutlineColor(sf::Color(m_baseOutlineColor.r, m_baseOutlineColor.g, m_baseOutlineColor.b, alpha));
-
-            if (m_teleportAnimTime >= half) {
-                setPosition(m_teleportTarget);
-                m_shape.setPosition(m_position);
-                m_teleportPhase = TeleportPhase::FadeIn;
-                m_teleportAnimTime = 0.0f;
-            }
-        } else {
-            const float t = std::min(m_teleportAnimTime, half);
-            const std::uint8_t alpha = static_cast<std::uint8_t>(255.0f * (t / half));
-            m_shape.setFillColor(sf::Color(m_baseFillColor.r, m_baseFillColor.g, m_baseFillColor.b, alpha));
-            m_shape.setOutlineColor(sf::Color(m_baseOutlineColor.r, m_baseOutlineColor.g, m_baseOutlineColor.b, alpha));
-
-            if (m_teleportAnimTime >= half) {
-                m_shape.setFillColor(m_baseFillColor);
-                m_shape.setOutlineColor(m_baseOutlineColor);
-                m_teleportPhase = TeleportPhase::None;
-            }
-        }
-
-        m_shape.setPosition(m_position);
+        advanceTeleportAnimation(dt);
         return;
     }
 
@@ -188,20 +193,52 @@ void Medic::setDroneState(bool active, float lifetime) {
 }
 
 void Medic::renderQSkill() {
+    ImGui::Text("Q");
+
     if (m_droneActive) {
         char timerText[16];
         sprintf(timerText, "%.1fs", std::max(0.0f, m_droneLifetime));
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.1f, 0.9f, 0.7f, 1.0f));
         float progress = m_droneLifetime / Config::MEDIC_DRONE_LIFETIME;
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.1f, 0.9f, 0.7f, 1.0f));
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), timerText);
         ImGui::PopStyleColor();
         return;
     }
 
-    Player::renderQSkill();
+    float progress = m_ultCharge / m_maxUltCharge;
+
+    if (progress >= 1.0f) {
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.1f, 0.9f, 0.7f, 1.0f));
+        ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
+        ImGui::PopStyleColor();
+    } else {
+        char percText[16];
+        sprintf(percText, "%.0f%%", progress * 100.0f);
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
+        ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), percText);
+        ImGui::PopStyleColor();
+    }
 }
 
 std::vector<AbilityHitRecord> Medic::checkAbilityHits(const std::vector<Entity*>& entities) {
     
     return {};
+}
+
+void Medic::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
+    if (ability != AbilityType::MedicTeleport) return;
+
+    m_teleportTarget = data;
+    const auto& stats = HeroRegistry::getStats(m_class);
+    m_baseFillColor = stats.color;
+    m_baseOutlineColor = stats.color;
+    m_teleportPhase = TeleportPhase::FadeOut;
+    m_teleportAnimTime = 0.0f;
+}
+
+void Medic::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
+    (void)map;
+    if (m_teleportPhase != TeleportPhase::None) {
+        advanceTeleportAnimation(deltaTime.asSeconds());
+    }
 }

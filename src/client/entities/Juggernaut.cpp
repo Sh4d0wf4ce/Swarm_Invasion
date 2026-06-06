@@ -96,6 +96,12 @@ void Juggernaut::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine
         } else {
             m_chargeDirection = sf::Vector2f(1.0f, 0.0f);
         }
+
+        if (engine.getServerAddress()) {
+            sf::Packet packet;
+            packet << PacketType::AbilityUsed << m_id << AbilityType::JuggernautDash << m_chargeDirection;
+            (void)engine.getSocket().send(packet, engine.getServerAddress().value(), Config::SERVER_PORT);
+        }
     }
 }
 
@@ -139,6 +145,12 @@ void Juggernaut::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
         if (lenSq > 0.0f) m_repulsorAimDir = dir / std::sqrt(lenSq);
 
         m_repulsorVfxTimer = 0.2f;
+
+        if (engine.getServerAddress()) {
+            sf::Packet packet;
+            packet << PacketType::AbilityUsed << m_id << AbilityType::JuggernautRepulsor << m_repulsorAimDir;
+            (void)engine.getSocket().send(packet, engine.getServerAddress().value(), Config::SERVER_PORT);
+        }
     }
 }
 
@@ -177,6 +189,52 @@ void Juggernaut::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
         }
     }
     
+}
+
+void Juggernaut::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
+    if (ability == AbilityType::JuggernautDash && !m_isCharging) {
+        m_isCharging = true;
+        m_chargeDistanceRemaining = m_maxChargeDistance;
+        m_isFocused = false;
+        m_dashedEnemies.clear();
+
+        m_chargeDirection = data;
+        float len = m_chargeDirection.length();
+        if (len > 0.0001f) m_chargeDirection /= len;
+        else m_chargeDirection = sf::Vector2f(1.0f, 0.0f);
+    } else if (ability == AbilityType::JuggernautRepulsor) {
+        m_repulsorAimDir = data;
+        float len = m_repulsorAimDir.length();
+        if (len > 0.0001f) m_repulsorAimDir /= len;
+        else m_repulsorAimDir = sf::Vector2f(1.0f, 0.0f);
+        m_repulsorVfxTimer = 0.2f;
+    }
+}
+
+void Juggernaut::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
+    (void)map;
+    float dt = deltaTime.asSeconds();
+
+    if (m_repulsorVfxTimer > 0.0f) {
+        m_repulsorVfxTimer -= dt;
+
+        int points = 10;
+        float angleSpan = 70.0f * (M_PI / 180.0f);
+        float baseAngle = std::atan2(m_repulsorAimDir.y, m_repulsorAimDir.x);
+
+        m_repulsorVfx.resize(points + 2);
+
+        std::uint8_t alpha = static_cast<std::uint8_t>(150.0f * (std::max(0.0f, m_repulsorVfxTimer) / 0.2f));
+
+        m_repulsorVfx[0].position = m_position;
+        m_repulsorVfx[0].color = sf::Color(100, 200, 255, alpha);
+
+        for (int i = 0; i <= points; ++i) {
+            float currentAngle = baseAngle - (angleSpan / 2.0f) + (angleSpan * static_cast<float>(i) / points);
+            m_repulsorVfx[i + 1].position = m_position + sf::Vector2f(std::cos(currentAngle) * 250.0f, std::sin(currentAngle) * 250.0f);
+            m_repulsorVfx[i + 1].color = sf::Color(100, 200, 255, 0);
+        }
+    }
 }
 
 std::vector<AbilityHitRecord> Juggernaut::checkAbilityHits(const std::vector<Entity*>& entities){

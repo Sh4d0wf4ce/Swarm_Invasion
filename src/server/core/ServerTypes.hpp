@@ -80,4 +80,9 @@ struct ClientInfo {
     PlayerClass pClass;
     float invTimer{0.0f};
     float stealthTimer{0.0f};
+    float hpMultiplier{1.0f};
+    float speedMultiplier{1.0f};
+    float damageMultiplier{1.0f};
+    float cooldownMultiplier{1.0f};
+    std::vector<std::string> ownedAugments;
 };

@@ -10,6 +10,7 @@ Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClas
     const auto& stats = HeroRegistry::getStats(pClass);
 
     m_maxHp = stats.maxHp;
+    m_baseMaxHp = stats.maxHp;
     m_hp = stats.maxHp;
     m_speed = stats.speed;
     
@@ -28,10 +29,12 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
         }
     }
 
-    if (m_cooldownShift > 0.0f) m_cooldownShift -= deltaTime.asSeconds();
-    if (m_cooldownE > 0.0f) m_cooldownE -= deltaTime.asSeconds();
-    if (m_cooldownRMB > 0.0f) m_cooldownRMB -= deltaTime.asSeconds();
-    if (m_cooldownLMB > 0.0f) m_cooldownLMB -= deltaTime.asSeconds();
+    const float cdRate = 1.0f / getUpgradeCooldownScale();
+
+    if (m_cooldownShift > 0.0f) m_cooldownShift -= deltaTime.asSeconds() * cdRate;
+    if (m_cooldownE > 0.0f) m_cooldownE -= deltaTime.asSeconds() * cdRate;
+    if (m_cooldownRMB > 0.0f) m_cooldownRMB -= deltaTime.asSeconds() * cdRate;
+    if (m_cooldownLMB > 0.0f) m_cooldownLMB -= deltaTime.asSeconds() * cdRate;
     
     sf::Vector2f movement(0.0f, 0.0f);
 
@@ -46,7 +49,7 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
     if(len > 0.0f) movement /= len;
     m_lastMoveDirection = movement;
 
-    float actualSpeed = m_speed * m_speedMultiplier;
+    float actualSpeed = m_speed * m_speedMultiplier * m_upgradeSpeedMultiplier;
     sf::Vector2f velocity = movement * actualSpeed * deltaTime.asSeconds();
 
     sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);
@@ -68,8 +71,18 @@ void Player::render(sf::RenderTarget& target){
     drawHealthBar(target, 30.0f);
 }
 
-void Player::setFocused(bool focuesd){
-    m_isFocused = focuesd;
+void Player::setFocused(bool focused){
+    m_isFocused = focused;
+}
+
+void Player::playRemoteAbility(AbilityType ability, const sf::Vector2f& data){
+    (void)ability;
+    (void)data;
+}
+
+void Player::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
+    (void)deltaTime;
+    (void)map;
 }
 
 bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map){
@@ -182,7 +195,7 @@ void Player::renderShiftSkill() {
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
         ImGui::PopStyleColor();
     } else {
-        float progress = 1.0f - (m_cooldownShift / m_maxCooldownShift);
+        float progress = 1.0f - (m_cooldownShift / getEffectiveMaxCooldown(m_maxCooldownShift));
         char cdText[16];
         sprintf(cdText, "%.1fs", m_cooldownShift);
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
@@ -197,7 +210,7 @@ void Player::renderESkill() {
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
         ImGui::PopStyleColor();
     } else {
-        float progress = 1.0f - (m_cooldownE / m_maxCooldownE);
+        float progress = 1.0f - (m_cooldownE / getEffectiveMaxCooldown(m_maxCooldownE));
         char cdText[16];
         sprintf(cdText, "%.1fs", m_cooldownE);
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
@@ -238,9 +251,24 @@ void Player::renderRMBSkill() {
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
         ImGui::PopStyleColor();
     } else {
-        float progress = 1.0f - (m_cooldownRMB / m_maxCooldownRMB);
+        float progress = 1.0f - (m_cooldownRMB / getEffectiveMaxCooldown(m_maxCooldownRMB));
         char cdText[16];
         sprintf(cdText, "%.1fs", m_cooldownRMB);
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
     }
+}
+
+float Player::getUpgradeCooldownScale() const {
+    return std::max(0.1f, m_upgradeCooldownMultiplier);
+}
+
+float Player::getEffectiveMaxCooldown(float baseCooldown) const {
+    return baseCooldown * getUpgradeCooldownScale();
+}
+
+void Player::setUpgradeMultipliers(float hpMult, float speedMult, float damageMult, float cooldownMult) {
+    m_upgradeHpMultiplier = hpMult;
+    m_upgradeSpeedMultiplier = speedMult;
+    m_upgradeCooldownMultiplier = cooldownMult;
+    m_maxHp = m_baseMaxHp * hpMult;
 }

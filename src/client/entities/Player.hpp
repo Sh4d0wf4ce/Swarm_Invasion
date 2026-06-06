@@ -27,7 +27,10 @@ public:
     void render(sf::RenderTarget& target) override;
     virtual void renderUI();
 
-    void setFocused(bool focuesd);
+    virtual void updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map);
+    virtual void playRemoteAbility(AbilityType ability, const sf::Vector2f& data);
+
+    void setFocused(bool focused);
     PlayerClass getClass() const { return m_class; }
     Faction getFaction()  const override { return Faction::Players; }
     float getRadius() const override { return HeroRegistry::getStats(m_class).radius; }
@@ -52,6 +55,10 @@ public:
 
     void setStealthTimer(float timer){ m_stealthTimer = timer; }
     float getStealthTimer() const { return m_stealthTimer; }
+
+    void setUpgradeMultipliers(float hpMult, float speedMult, float damageMult, float cooldownMult);
+    float getUpgradeCooldownScale() const;
+    float getEffectiveMaxCooldown(float baseCooldown) const;
 
 protected:
     bool checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map);
@@ -95,4 +102,9 @@ protected:
     float m_fireRateMultiplier{1.0f};
     float m_speedMultiplier{1.0f};
     float m_stealthTimer{0.0f};
+
+    float m_baseMaxHp{100.0f};
+    float m_upgradeHpMultiplier{1.0f};
+    float m_upgradeSpeedMultiplier{1.0f};
+    float m_upgradeCooldownMultiplier{1.0f};
 };

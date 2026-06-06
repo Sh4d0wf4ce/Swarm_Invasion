@@ -11,9 +11,49 @@ void LobbyState::handlePacket(PacketType type, sf::Packet& packet){
     if(type == PacketType::JoinAccept){
         std::uint32_t myId;
         if(packet >> myId){
+            m_isConnecting = false;
+            m_connectFailed = false;
             std::cout << "[CLIENT] Connected to the server! Joining game as ID: " << myId << "\n";
             m_engine.changeState(std::make_unique<GameState>(m_engine, myId, m_selectedClass));
         }
+    }
+}
+
+void LobbyState::trySendJoinRequest(){
+    auto resolvedIps = sf::Dns::resolve(m_ipBuffer);
+    if(!resolvedIps.has_value() || resolvedIps->empty()){
+        m_isConnecting = false;
+        m_connectFailed = true;
+        m_connectErrorMessage = "Invalid IP address.";
+        return;
+    }
+
+    m_engine.getServerAddress() = resolvedIps->front();
+
+    sf::Packet joinPacket;
+    joinPacket << PacketType::JoinRequest << m_selectedClass;
+    (void)m_engine.getSocket().send(joinPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
+}
+
+void LobbyState::cancelConnecting(){
+    m_isConnecting = false;
+    m_connectFailed = false;
+    m_connectErrorMessage.clear();
+}
+
+void LobbyState::update(sf::Time deltaTime){
+    (void)deltaTime;
+    if(!m_isConnecting) return;
+
+    if(m_retryTimer.getElapsedTime().asSeconds() >= Config::LOBBY_JOIN_RETRY_INTERVAL){
+        m_retryTimer.restart();
+        trySendJoinRequest();
+    }
+
+    if(m_connectTimer.getElapsedTime().asSeconds() >= Config::LOBBY_CONNECT_TIMEOUT){
+        m_isConnecting = false;
+        m_connectFailed = true;
+        m_connectErrorMessage = "Could not connect to server. Check the IP and make sure the server is running.";
     }
 }
 
@@ -38,21 +78,24 @@ void LobbyState::renderUI() {
 
     if(m_isConnecting) {
         ImGui::TextColored(ImVec4(1, 1, 0, 1), "Connecting to server...");
+        ImGui::TextWrapped("Retrying every %.0fs. You can cancel and try again.",
+            Config::LOBBY_JOIN_RETRY_INTERVAL);
+        if(ImGui::Button("CANCEL", ImVec2(-1, 40))){
+            cancelConnecting();
+        }
     } else {
+        if(m_connectFailed){
+            ImGui::TextColored(ImVec4(1.0f, 0.35f, 0.35f, 1.0f), "%s", m_connectErrorMessage.c_str());
+            ImGui::Spacing();
+        }
+
         if(ImGui::Button("JOIN GAME", ImVec2(-1, 50))){
+            m_connectFailed = false;
+            m_connectErrorMessage.clear();
             m_isConnecting = true;
-
-            auto resolvedIps = sf::Dns::resolve(m_ipBuffer);
-            if(resolvedIps.has_value() && !resolvedIps->empty()){
-                m_engine.getServerAddress() = resolvedIps->front();
-
-                sf::Packet joinPacket;
-                joinPacket << PacketType::JoinRequest << m_selectedClass;
-                (void)m_engine.getSocket().send(joinPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
-            } else {
-                std::cerr << "Invalid IP Address!\n";
-                m_isConnecting = false;
-            }
+            m_connectTimer.restart();
+            m_retryTimer.restart();
+            trySendJoinRequest();
         }
     }
 
