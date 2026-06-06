@@ -75,6 +75,7 @@ add_executable(SwarmClient
     src/client/entities/Soldier.cpp
     src/client/entities/Juggernaut.cpp
     src/client/entities/Vanguard.cpp
+    src/client/entities/Medic.cpp
     src/client/states/GameState.cpp
     src/client/states/LobbyState.cpp
     src/client/projectiles/ProjectileManager.cpp
@@ -82,6 +83,8 @@ add_executable(SwarmClient
     src/client/projectiles/RocketProjectile.cpp
     src/client/projectiles/ShurikenProjectile.cpp
     src/client/projectiles/WaveProjectile.cpp
+    src/client/projectiles/NeedleProjectile.cpp
+    src/client/projectiles/DroneBlasterProjectile.cpp
 )
 target_link_libraries(SwarmClient PRIVATE
     SharedStatic

@@ -96,11 +96,3 @@ protected:
     float m_speedMultiplier{1.0f};
     float m_stealthTimer{0.0f};
 };
-
-
-class ScoutPlayer : public Player {
-public:
-    using Player::Player;
-    
-    void onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) override;
-};

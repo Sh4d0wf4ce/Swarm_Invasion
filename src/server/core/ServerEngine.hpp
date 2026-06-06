@@ -13,6 +13,7 @@
 #include <memory>
 #include <random>
 #include <map>
+#include <vector>
 
 class ServerEngine{
 public:
@@ -37,9 +38,20 @@ private:
     void removeAFKPlayers();
     void updateEnergyCells(sf::Time deltaTime);
     void updateHealingFields(sf::Time deltaTime);
+    void updateMedicPassives(sf::Time deltaTime);
     void updateBlackHoles(sf::Time deltaTime);
+    void updateMedicOrbs(sf::Time deltaTime);
+    void updateMedicBarriers(sf::Time deltaTime);
+    void updateMedicDrones(sf::Time deltaTime);
+    void updateServerProjectiles(sf::Time deltaTime);
+    void handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f targetPos);
+    void spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos);
+    std::uint32_t findNearestEnemyId(const sf::Vector2f& from, float maxRange) const;
+    MedicDroneData* findDroneByOwner(std::uint32_t ownerId);
+    void spawnMedicNeedle(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos);
     void explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy);
     bool playerHasActiveDecoy(std::uint32_t playerId) const;
+    bool playerHasActiveOrb(std::uint32_t playerId) const;
     void sendWorldState();
 
     std::shared_ptr<MapGenerator> m_map;
@@ -58,6 +70,10 @@ private:
     std::map<std::uint32_t, HealFieldInfo> m_healFields;
     std::map<std::uint32_t, BlackHoleData> m_blackHoles;
     std::map<std::uint32_t, DecoyData> m_decoys;
+    std::map<std::uint32_t, MedicOrbData> m_medicOrbs;
+    std::map<std::uint32_t, MedicBarrierData> m_medicBarriers;
+    std::map<std::uint32_t, MedicDroneData> m_medicDrones;
+    std::vector<ServerProjectileData> m_serverProjectiles;
 
     std::map<std::uint32_t, std::unique_ptr<ServerEnemy>> m_enemies;
 

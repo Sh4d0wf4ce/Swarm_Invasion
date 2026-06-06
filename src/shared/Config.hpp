@@ -38,4 +38,51 @@ namespace Config{
     constexpr float VANGUARD_DECOY_HP = 150.0f;
     constexpr float VANGUARD_DECOY_EXPLOSION_RADIUS = 120.0f;
     constexpr float VANGUARD_DECOY_EXPLOSION_DAMAGE = 200.0f;
+
+    // --- MEDIC TELEPORT (SHIFT) ---
+    constexpr float MEDIC_TELEPORT_RANGE = 600.0f;
+    constexpr float MEDIC_TELEPORT_RANGE_TOLERANCE = 10.0f;
+    constexpr float MEDIC_TELEPORT_COOLDOWN = 6.0f;
+    constexpr float MEDIC_TELEPORT_FADE_TOTAL = 0.4f;
+    constexpr float MEDIC_TELEPORT_IFRAMES = 0.5f;
+
+    // --- MEDIC BIO-SPHERE (RMB) ---
+    constexpr float MEDIC_ORB_COOLDOWN = 8.0f;
+    constexpr float MEDIC_ORB_LIFETIME = 6.0f;
+    constexpr float MEDIC_ORB_SPEED = 175.0f;
+    constexpr float MEDIC_ORB_RADIUS = 15.0f;
+    constexpr float MEDIC_ORB_EFFECT_RADIUS = 120.0f;
+    constexpr float MEDIC_ORB_TICK_INTERVAL = 0.2f;
+    constexpr float MEDIC_ORB_HEAL_PER_TICK = 8.0f;
+    constexpr float MEDIC_ORB_DAMAGE_PER_TICK = 12.0f;
+
+    // --- MEDIC NEEDLE (LMB) ---
+    constexpr float MEDIC_NEEDLE_HEAL = 15.0f;
+    constexpr float MEDIC_NEEDLE_POISON_DURATION = 3.0f;
+    constexpr float MEDIC_NEEDLE_POISON_DPS = 5.0f;
+
+    // --- MEDIC BARRIER (E) ---
+    constexpr float MEDIC_BARRIER_COOLDOWN = 12.0f;
+    constexpr float MEDIC_BARRIER_LIFETIME = 5.0f;
+    constexpr float MEDIC_BARRIER_ARC_RADIUS = 280.0f;
+    constexpr float MEDIC_BARRIER_STANDOFF = 80.0f;
+    constexpr float MEDIC_BARRIER_SPAN = 0.80f;
+    constexpr float MEDIC_BARRIER_WALL_THICKNESS = 18.0f;
+    constexpr float MEDIC_BARRIER_KNOCKBACK = 900.0f;
+
+    // --- MEDIC PASSIVE ---
+    constexpr float MEDIC_PASSIVE_HEAL_PER_SECOND = 2.0f;
+
+    // --- MEDIC DRONE (Q ULTIMATE) ---
+    constexpr float MEDIC_DRONE_LIFETIME = 20.0f;
+    constexpr float MEDIC_DRONE_ORBIT_RADIUS = 45.0f;
+    constexpr float MEDIC_DRONE_ORBIT_SPEED = 2.5f;
+    constexpr float MEDIC_DRONE_PLAYER_DETECT_RADIUS = 50.0f;
+    constexpr float MEDIC_DRONE_SYM_HEAL_INTERVAL = 1.0f;
+    constexpr float MEDIC_DRONE_SYM_HEAL_AMOUNT = 10.0f;
+    constexpr float MEDIC_DRONE_SYM_SHOOT_INTERVAL = 0.8f;
+    constexpr float MEDIC_DRONE_SENTRY_SHOOT_INTERVAL = 0.3f;
+    constexpr float MEDIC_DRONE_MOVE_SPEED = 280.0f;
+    constexpr float MEDIC_DRONE_ATTACK_RANGE = 420.0f;
+    constexpr float MEDIC_DRONE_SENTRY_ARRIVE_DIST = 8.0f;
 }

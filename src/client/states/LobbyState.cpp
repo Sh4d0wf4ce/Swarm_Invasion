@@ -30,7 +30,7 @@ void LobbyState::renderUI() {
     ImGui::Text("Choose your class:");
     int classChoice = static_cast<int>(m_selectedClass);
     ImGui::RadioButton("Soldier", &classChoice, 0);
-    ImGui::RadioButton("Scout (Laser)", &classChoice, 1);
+    ImGui::RadioButton("Medic", &classChoice, 1);
     ImGui::RadioButton("Juggernaut", &classChoice, 2);
     ImGui::RadioButton("Vanguard", &classChoice, 3);
     m_selectedClass = static_cast<PlayerClass>(classChoice);

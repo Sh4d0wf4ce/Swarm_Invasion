@@ -2,6 +2,8 @@
 #include "RocketProjectile.hpp"
 #include "ShurikenProjectile.hpp"
 #include "WaveProjectile.hpp"
+#include "NeedleProjectile.hpp"
+#include "DroneBlasterProjectile.hpp"
 
 
 void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction){
@@ -32,19 +34,42 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
         } 
         else if (weapon == WeaponType::VanguardWave) {
             m_projectiles.push_back(std::make_unique<WaveProjectile>(ownerId, startPos, velocity, faction));
-        } 
+        }
+        else if (weapon == WeaponType::MedicNeedle) {
+            m_projectiles.push_back(std::make_unique<NeedleProjectile>(ownerId, startPos, velocity, faction));
+        }
+        else if (weapon == WeaponType::DroneBlaster) {
+            m_projectiles.push_back(std::make_unique<DroneBlasterProjectile>(ownerId, startPos, velocity, faction));
+        }
         else {
             m_projectiles.push_back(std::make_unique<Projectile>(ownerId, startPos, velocity, faction, weapon));
         }
     }
 }
 
-std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map){
+std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers){
     std::vector<HitRecord> allHits;
 
     for(auto& proj: m_projectiles){
         if(!proj->isActive()) continue;
         proj->update(deltaTime);
+
+        if (proj->getFaction() == Faction::Enemies) {
+            for (const auto& barrier : barriers) {
+                if (SectorMath::isInArcWall(
+                        barrier.center,
+                        barrier.facingAngle,
+                        barrier.arcRadius,
+                        barrier.halfSpan,
+                        barrier.wallThickness,
+                        proj->getPosition(),
+                        proj->getRadius())) {
+                    proj->deactivate();
+                    break;
+                }
+            }
+            if (!proj->isActive()) continue;
+        }
 
         auto hitIds = proj->checkCollisions(entities, map);
         for(std::uint32_t id: hitIds){

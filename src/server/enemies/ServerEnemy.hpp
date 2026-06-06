@@ -11,6 +11,11 @@
 #include <memory>
 #include <map>
 
+struct PoisonEffect {
+    float remainingTime;
+    float damagePerSecond;
+};
+
 struct EnemyShootEvent{
     sf::Vector2f startPos;
     sf::Vector2f targetPos;
@@ -40,6 +45,9 @@ public:
     void setPosition(sf::Vector2f newPos) { m_position = newPos; }
     void takeDamage(float damage) { m_hp -= damage; }
 
+    void applyPoison(float duration, float damagePerSecond);
+    void tickStatusEffects(float dt);
+
     void applyKnockback(sf::Vector2f direction, float force);
 
 protected:
@@ -57,4 +65,5 @@ protected:
     sf::Clock m_lastAttackTime;
 
     sf::Vector2f m_knockbackVelocity{0.0f, 0.0f};
+    std::vector<PoisonEffect> m_poisonEffects;
 };

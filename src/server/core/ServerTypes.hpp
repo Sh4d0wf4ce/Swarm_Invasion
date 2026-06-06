@@ -3,6 +3,7 @@
 #include <SFML/Network.hpp>
 #include <SFML/System.hpp>
 #include "NetworkProtocol.hpp"
+#include <vector>
 
 struct EnergyCellInfo {
     sf::Vector2f position;
@@ -28,6 +29,44 @@ struct DecoyData{
     float hp;
     std::uint32_t ownerId;
     float lifetime;
+};
+
+struct MedicOrbData {
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    float lifetime;
+    float tickAccumulator{0.0f};
+    std::uint32_t ownerId;
+};
+
+struct ServerProjectileData {
+    std::uint32_t ownerId;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    WeaponType weapon;
+    float lifetime;
+    float radius;
+    std::vector<std::uint32_t> hitEnemies;
+};
+
+struct MedicBarrierData {
+    sf::Vector2f center;
+    float facingAngle;
+    float lifetime;
+    std::uint32_t ownerId;
+};
+
+struct MedicDroneData {
+    sf::Vector2f position;
+    float lifetime;
+    std::uint32_t ownerId;
+    MedicDroneState state{MedicDroneState::Orbit};
+    std::uint32_t orbitTargetId{0};
+    sf::Vector2f sentryPos;
+    float orbitAngle{0.0f};
+    float healTimer{0.0f};
+    float shootTimer{0.0f};
+    bool atSentry{false};
 };
 
 

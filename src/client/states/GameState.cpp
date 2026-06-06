@@ -1,5 +1,6 @@
 #include "GameState.hpp"
 #include "LobbyState.hpp"
+#include "../entities/Medic.hpp"
 #include <iostream>
 
 GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass) : State(engine){
@@ -113,6 +114,40 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         float maxHp;
         if(packet >> id >> pos >> maxHp){
             m_decoys[id] = std::make_unique<Decoy>(id, pos, maxHp);
+        }
+    }
+    else if(type == PacketType::SpawnMedicOrb){
+        std::uint32_t id;
+        sf::Vector2f pos;
+        sf::Vector2f direction;
+        if(packet >> id >> pos >> direction){
+            m_medicOrbs[id] = std::make_unique<MedicOrb>(id, pos, direction);
+        }
+    }
+    else if(type == PacketType::SpawnMedicBarrier){
+        std::uint32_t id;
+        sf::Vector2f center;
+        float facingAngle;
+        float duration;
+        if(packet >> id >> center >> facingAngle >> duration){
+            m_medicBarriers[id] = std::make_unique<MedicBarrier>(id, center, facingAngle, duration);
+        }
+    }
+    else if(type == PacketType::SpawnMedicDrone){
+        std::uint32_t id;
+        std::uint32_t ownerId;
+        sf::Vector2f pos;
+        if(packet >> id >> ownerId >> pos){
+            m_medicDrones[id] = std::make_unique<MedicDrone>(id, ownerId, pos);
+        }
+    }
+    else if(type == PacketType::DroneShoots){
+        sf::Vector2f startPos;
+        sf::Vector2f targetPos;
+        if(packet >> startPos >> targetPos){
+            if(m_projectileManager){
+                m_projectileManager->spawnProjectile(0, startPos, targetPos, WeaponType::DroneBlaster, Faction::Players);
+            }
         }
     }
     else if(type == PacketType::DecoyExplode){
@@ -255,6 +290,75 @@ void GameState::handleWorldState(sf::Packet& packet){
             ++it;
         }
     }
+
+    std::uint32_t orbCount;
+    if(!(packet >> orbCount)) return;
+
+    std::vector<std::uint32_t> activeOrbIds;
+    for(std::uint32_t i = 0; i < orbCount; i++){
+        std::uint32_t oId;
+        sf::Vector2f oPos;
+        packet >> oId >> oPos;
+
+        activeOrbIds.push_back(oId);
+
+        if(m_medicOrbs.find(oId) == m_medicOrbs.end()){
+            m_medicOrbs[oId] = std::make_unique<MedicOrb>(oId, oPos, sf::Vector2f(1.0f, 0.0f));
+        }
+
+        m_medicOrbs[oId]->setServerPosition(oPos);
+    }
+
+    for(auto it = m_medicOrbs.begin(); it != m_medicOrbs.end();){
+        if(std::find(activeOrbIds.begin(), activeOrbIds.end(), it->first) == activeOrbIds.end()){
+            it = m_medicOrbs.erase(it);
+        }else{
+            ++it;
+        }
+    }
+
+    std::uint32_t droneCount;
+    if(!(packet >> droneCount)) return;
+
+    std::vector<std::uint32_t> activeDroneIds;
+    bool myHasDrone = false;
+    float myDroneLifetime = 0.0f;
+
+    for(std::uint32_t i = 0; i < droneCount; i++){
+        std::uint32_t dId;
+        std::uint32_t ownerId;
+        sf::Vector2f dPos;
+        MedicDroneState dState;
+        float dLifetime;
+        packet >> dId >> ownerId >> dPos >> dState >> dLifetime;
+
+        activeDroneIds.push_back(dId);
+
+        if(m_medicDrones.find(dId) == m_medicDrones.end()){
+            m_medicDrones[dId] = std::make_unique<MedicDrone>(dId, ownerId, dPos);
+        }
+
+        m_medicDrones[dId]->setServerPosition(dPos);
+        m_medicDrones[dId]->setDroneState(dState);
+        m_medicDrones[dId]->setHp(dLifetime);
+
+        if(m_player && ownerId == m_player->getId()){
+            myHasDrone = true;
+            myDroneLifetime = dLifetime;
+        }
+    }
+
+    for(auto it = m_medicDrones.begin(); it != m_medicDrones.end();){
+        if(std::find(activeDroneIds.begin(), activeDroneIds.end(), it->first) == activeDroneIds.end()){
+            it = m_medicDrones.erase(it);
+        }else{
+            ++it;
+        }
+    }
+
+    if(m_player && m_player->getClass() == PlayerClass::Medic){
+        static_cast<Medic*>(m_player.get())->setDroneState(myHasDrone, myDroneLifetime);
+    }
 }
 
 void GameState::update(sf::Time deltaTime){
@@ -322,10 +426,25 @@ void GameState::update(sf::Time deltaTime){
                 if(!decoy->isExploding()) collisionTargets.push_back(decoy.get());
             }
 
-            auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map);
+            std::vector<SectorBarrierSnapshot> barrierSnapshots;
+            barrierSnapshots.reserve(m_medicBarriers.size());
+            const float halfSpan = Config::MEDIC_BARRIER_SPAN / 2.0f;
+            for (const auto& [id, barrier] : m_medicBarriers) {
+                (void)id;
+                barrierSnapshots.push_back({
+                    barrier->getCenter(),
+                    barrier->getFacingAngle(),
+                    Config::MEDIC_BARRIER_ARC_RADIUS,
+                    halfSpan,
+                    Config::MEDIC_BARRIER_WALL_THICKNESS
+                });
+            }
+
+            auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map, barrierSnapshots);
 
             for(const auto& hit : hits){
                 if(!m_engine.getServerAddress()) break;
+                if (hit.weapon == WeaponType::MedicNeedle || hit.weapon == WeaponType::DroneBlaster) continue;
                 sf::Packet hitPacket;
                 hitPacket << PacketType::EntityHit << hit.shooterId << hit.targetId << hit.weapon;
                 (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
@@ -368,6 +487,36 @@ void GameState::update(sf::Time deltaTime){
         }
     }
 
+    std::vector<Entity*> allies;
+    std::vector<Entity*> enemyTargets;
+    if (m_player) allies.push_back(m_player.get());
+    for (auto& [id, otherPlayer] : m_otherPlayers) allies.push_back(otherPlayer.get());
+    for (auto& [id, enemy] : m_enemies) enemyTargets.push_back(enemy.get());
+
+    for (auto it = m_medicOrbs.begin(); it != m_medicOrbs.end(); ) {
+        it->second->setNearbyEntities(allies, enemyTargets);
+        it->second->update(deltaTime, m_map);
+        if (it->second->getHp() <= 0.0f) {
+            it = m_medicOrbs.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    for (auto it = m_medicBarriers.begin(); it != m_medicBarriers.end(); ) {
+        it->second->update(deltaTime, m_map);
+        if (it->second->getHp() <= 0.0f) {
+            it = m_medicBarriers.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    for (auto it = m_medicDrones.begin(); it != m_medicDrones.end(); ) {
+        it->second->update(deltaTime, m_map);
+        ++it;
+    }
+
     if (m_player && m_engine.getWindow().hasFocus()) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) || m_player->isAutoFiring()) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
@@ -395,6 +544,18 @@ void GameState::render() {
 
     for(const auto& [id, decoy] : m_decoys){
         decoy->render(window);
+    }
+
+    for(const auto& [id, orb] : m_medicOrbs){
+        orb->render(window);
+    }
+
+    for(const auto& [id, barrier] : m_medicBarriers){
+        barrier->render(window);
+    }
+
+    for(const auto& [id, drone] : m_medicDrones){
+        drone->render(window);
     }
     
     sf::CircleShape crystalShape(4.0f, 4);

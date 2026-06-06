@@ -40,6 +40,8 @@ public:
             {"Shotgun", WeaponType::Shotgun},
             {"Shuriken", WeaponType::Shuriken},
             {"VanguardWave", WeaponType::VanguardWave},
+            {"MedicNeedle", WeaponType::MedicNeedle},
+            {"DroneBlaster", WeaponType::DroneBlaster},
         };
 
         for(auto& [key, val] : json.items()){

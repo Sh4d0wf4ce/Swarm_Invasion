@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 ServerEnemy::ServerEnemy(std::uint32_t id, const sf::Vector2f& startPos, EnemyType type): m_id(id), m_position(startPos), m_type(type) {
     const auto& stats = EnemyRegistry::getStats(type);
@@ -146,4 +147,21 @@ void ServerEnemy::applyKnockback(sf::Vector2f direction, float force){
     if(lenSq > 0.0f){
         m_knockbackVelocity = (direction / std::sqrt(lenSq)) * force;
     }
+}
+
+void ServerEnemy::applyPoison(float duration, float damagePerSecond){
+    m_poisonEffects.push_back({duration, damagePerSecond});
+}
+
+void ServerEnemy::tickStatusEffects(float dt){
+    for (auto& poison : m_poisonEffects) {
+        poison.remainingTime -= dt;
+        m_hp -= poison.damagePerSecond * dt;
+    }
+
+    m_poisonEffects.erase(
+        std::remove_if(m_poisonEffects.begin(), m_poisonEffects.end(),
+            [](const PoisonEffect& p) { return p.remainingTime <= 0.0f; }),
+        m_poisonEffects.end()
+    );
 }

@@ -5,6 +5,9 @@
 #include "../entities/HealField.hpp"
 #include "../entities/BlackHole.hpp"
 #include "../entities/Decoy.hpp"
+#include "../entities/MedicOrb.hpp"
+#include "../entities/MedicBarrier.hpp"
+#include "../entities/MedicDrone.hpp"
 #include "../core/MapRenderer.hpp"
 #include "../core/ClientEngine.hpp"
 #include "../projectiles/ProjectileManager.hpp"
@@ -46,6 +49,9 @@ private:
     std::map<std::uint32_t, std::unique_ptr<HealField>> m_healFields;
     std::map<std::uint32_t, std::unique_ptr<BlackHole>> m_blackHoles;
     std::map<std::uint32_t, std::unique_ptr<Decoy>> m_decoys;
+    std::map<std::uint32_t, std::unique_ptr<MedicOrb>> m_medicOrbs;
+    std::map<std::uint32_t, std::unique_ptr<MedicBarrier>> m_medicBarriers;
+    std::map<std::uint32_t, std::unique_ptr<MedicDrone>> m_medicDrones;
     
     sf::Clock m_lastServerMessageTimer;
     sf::Clock m_heartbeatTimer;

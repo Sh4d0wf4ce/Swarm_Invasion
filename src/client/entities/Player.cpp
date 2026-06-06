@@ -2,6 +2,7 @@
 #include "Soldier.hpp"
 #include "Juggernaut.hpp"
 #include "Vanguard.hpp"
+#include "Medic.hpp"
 #include "imgui.h"
 
 
@@ -110,14 +111,14 @@ void Player::addUltCharge(float amount){
 
 std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos, PlayerClass pClass){
     switch(pClass){
-        case PlayerClass::Scout:
-            return std::make_unique<ScoutPlayer>(id, startPos, pClass); break;
         case PlayerClass::Soldier:
-            return std::make_unique<Soldier>(id, startPos); break;
+            return std::make_unique<Soldier>(id, startPos);
+        case PlayerClass::Medic:
+            return std::make_unique<Medic>(id, startPos);
         case PlayerClass::Juggernaut:
-            return std::make_unique<Juggernaut>(id, startPos); break;
+            return std::make_unique<Juggernaut>(id, startPos);
         case PlayerClass::Vanguard:
-            return std::make_unique<Vanguard>(id, startPos); break;
+            return std::make_unique<Vanguard>(id, startPos);
         default:
             return std::make_unique<Player>(id, startPos, pClass);
     }
@@ -242,8 +243,4 @@ void Player::renderRMBSkill() {
         sprintf(cdText, "%.1fs", m_cooldownRMB);
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), cdText);
     }
-}
-
-void ScoutPlayer::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
-     m_position += m_lastMoveDirection * 100.0f;
 }

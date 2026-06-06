@@ -19,6 +19,10 @@ enum class PacketType : std::uint8_t{
     SpawnHealField,
     SpawnBlackHole,
     SpawnDecoy,
+    SpawnMedicOrb,
+    SpawnMedicBarrier,
+    SpawnMedicDrone,
+    DroneShoots,
     DecoyExplode,
     PlayerDealtDamage,
     AbilityUsed,
@@ -27,7 +31,7 @@ enum class PacketType : std::uint8_t{
 
 enum class PlayerClass : std::uint8_t{
     Soldier,
-    Scout,
+    Medic,
     Juggernaut,
     Vanguard
 };
@@ -48,6 +52,8 @@ enum class WeaponType : std::uint8_t{
     Shotgun,
     Shuriken,
     VanguardWave,
+    MedicNeedle,
+    DroneBlaster,
 };
 
 enum class AbilityType : std::uint8_t{
@@ -58,8 +64,28 @@ enum class AbilityType : std::uint8_t{
     VanguardKatanaSlash,
     VanguardDash,
     VanguardDecoy,
-    VanguardDecoyExplode
+    VanguardDecoyExplode,
+    MedicTeleport,
+    MedicOrb,
+    MedicBarrier,
+    MedicUltCommand
 };
+
+enum class MedicDroneState : std::uint8_t {
+    Orbit,
+    Sentry
+};
+
+inline sf::Packet& operator<<(sf::Packet& packet, const MedicDroneState& state){
+    return packet << static_cast<std::uint8_t>(state);
+}
+
+inline sf::Packet& operator>>(sf::Packet& packet, MedicDroneState& state){
+    std::uint8_t value;
+    packet >> value;
+    state = static_cast<MedicDroneState>(value);
+    return packet;
+}
 
 inline sf::Packet& operator<<(sf::Packet& packet, const AbilityType& aType){
     return packet << static_cast<std::uint8_t>(aType);

@@ -24,6 +24,10 @@ public:
     bool isActive() const { return m_active; }
     std::uint32_t getOwnerId() const { return m_ownerId; }
     WeaponType getWeaponType() const { return m_weaponType; }
+    sf::Vector2f getPosition() const { return m_position; }
+    float getRadius() const { return m_radius; }
+    Faction getFaction() const { return m_faction; }
+    void deactivate() { m_active = false; }
 
 protected:
     sf::CircleShape m_shape;
