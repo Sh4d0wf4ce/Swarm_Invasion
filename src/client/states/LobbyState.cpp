@@ -5,7 +5,6 @@
 #include <imgui.h>
 #include <iostream>
 
-LobbyState::LobbyState(ClientEngine& engine) : State(engine) {}
 
 void LobbyState::handlePacket(PacketType type, sf::Packet& packet){
     if(type == PacketType::JoinAccept){
@@ -19,6 +18,10 @@ void LobbyState::handlePacket(PacketType type, sf::Packet& packet){
     }
 }
 
+// ==========================================
+// Connection Helpers
+// ==========================================
+
 void LobbyState::trySendJoinRequest(){
     auto resolvedIps = sf::Dns::resolve(m_ipBuffer);
     if(!resolvedIps.has_value() || resolvedIps->empty()){
@@ -27,9 +30,7 @@ void LobbyState::trySendJoinRequest(){
         m_connectErrorMessage = "Invalid IP address.";
         return;
     }
-
     m_engine.getServerAddress() = resolvedIps->front();
-
     sf::Packet joinPacket;
     joinPacket << PacketType::JoinRequest << m_selectedClass;
     (void)m_engine.getSocket().send(joinPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
@@ -41,10 +42,11 @@ void LobbyState::cancelConnecting(){
     m_connectErrorMessage.clear();
 }
 
+
+
 void LobbyState::update(sf::Time deltaTime){
     (void)deltaTime;
     if(!m_isConnecting) return;
-
     if(m_retryTimer.getElapsedTime().asSeconds() >= Config::LOBBY_JOIN_RETRY_INTERVAL){
         m_retryTimer.restart();
         trySendJoinRequest();
@@ -57,16 +59,21 @@ void LobbyState::update(sf::Time deltaTime){
     }
 }
 
+// ==========================================
+// UI
+// ==========================================
+
 void LobbyState::renderUI() {
     ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 200.0f, Config::WINDOW_HEIGHT / 2.0f - 150.0f), ImGuiCond_Once);
     ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_Once);
-
     ImGui::Begin("Swarm Invasion - M E N U", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
+    // --- Server address ---
     ImGui::Text("Server IP Address:");
     ImGui::InputText("##ip", m_ipBuffer, sizeof(m_ipBuffer));
-
     ImGui::Separator();
+
+    // --- Class selection ---
     ImGui::Text("Choose your class:");
     int classChoice = static_cast<int>(m_selectedClass);
     ImGui::RadioButton("Soldier", &classChoice, 0);
@@ -76,6 +83,7 @@ void LobbyState::renderUI() {
     m_selectedClass = static_cast<PlayerClass>(classChoice);
     ImGui::Separator();
 
+    // --- Connect / cancel ---
     if(m_isConnecting) {
         ImGui::TextColored(ImVec4(1, 1, 0, 1), "Connecting to server...");
         ImGui::TextWrapped("Retrying every %.0fs. You can cancel and try again.",

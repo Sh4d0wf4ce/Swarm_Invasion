@@ -2,10 +2,8 @@
 
 Enemy::Enemy(std::uint32_t id, const sf::Vector2f& startPos, EnemyType type) : Entity(id, startPos), m_type(type){
     const auto& stats = EnemyRegistry::getStats(type);
-
     m_maxHp = stats.maxHp;
     m_hp = stats.maxHp;
-
     m_shape.setRadius(stats.radius);
     m_shape.setFillColor(stats.color);
     m_shape.setOrigin({stats.radius, stats.radius});

@@ -5,9 +5,9 @@ MapGenerator::MapGenerator(int width, int height): m_width(width), m_height(heig
 }
 
 void MapGenerator::generate(int seed){
+    // --- Random initial wall fill with border walls ---
     std::mt19937 rng(seed);
     std::uniform_int_distribution<int> dist(0, 100);
-
     for(int x = 0; x < m_width; x++){
         for(int y = 0; y < m_height; y++){
             if(x == 0 || x == m_width - 1 || y == 0 || y == m_height - 1){
@@ -18,14 +18,15 @@ void MapGenerator::generate(int seed){
         }
     }
 
+    // --- Smooth cave-like topology ---
     for(int i = 0; i < 5; i++){
         smoothMap();
     }
 
+     // --- Clear spawn-safe area at map center ---
      int centerX = m_width / 2;
      int centerY = m_height / 2;
      float clearRadius = 8.0f;
-
      for(int x = centerX - clearRadius; x <= centerX + clearRadius; x++){
         for(int y = centerY - clearRadius; y <= centerY + clearRadius; y++){
              if(x > 0 && x < m_width - 1 && y > 0 && y < m_height -1){
@@ -40,11 +41,9 @@ void MapGenerator::generate(int seed){
 
 void MapGenerator::smoothMap(){
     std::vector<std::vector<TileType>> newMap = m_map;
-
     for(int x = 0; x < m_width; x++){
         for(int y = 0; y < m_height; y++){
             int surroundingWallsCount = getSurroundingWallCount(x, y);
-
             if(surroundingWallsCount > 4){
                 newMap[x][y] = TileType::Wall;
             }else if(surroundingWallsCount < 4){
@@ -52,7 +51,6 @@ void MapGenerator::smoothMap(){
             }
         }
     }
-
     m_map = newMap;
 }
 
@@ -68,7 +66,6 @@ int MapGenerator::getSurroundingWallCount(int gridX, int gridY) const{
             }
         }
     }
-
     return wallCount;
 }
 
@@ -78,21 +75,18 @@ TileType MapGenerator::getTile(int x, int y) const{
 }
 
 bool MapGenerator::checkCollision(const sf::Vector2f& pos, float radius) const {
+    // --- Test corner sample points against wall tiles ---
     float hitBoxOffset = radius * 0.8f;
-
     sf::Vector2f points[4] = {
         {pos.x - hitBoxOffset, pos.y - hitBoxOffset},
         {pos.x + hitBoxOffset, pos.y - hitBoxOffset},
         {pos.x - hitBoxOffset, pos.y + hitBoxOffset},
         {pos.x + hitBoxOffset, pos.y + hitBoxOffset}
     };
-
     for(const auto& p: points){
         int gridX = static_cast<int>(p.x / Config::TILE_SIZE);
         int gridY = static_cast<int>(p.y / Config::TILE_SIZE);
-    
         if(getTile(gridX, gridY) == TileType::Wall) return true;
     }
-
     return false;
 }

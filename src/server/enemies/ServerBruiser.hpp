@@ -25,6 +25,7 @@ public:
     ) override;
 
 private:
+    // Charge State Machine
     BruiserState m_state{BruiserState::Chasing};
     sf::Vector2f m_chargeDirection;
     sf::Clock m_stateTimer;

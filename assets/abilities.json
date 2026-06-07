@@ -1,0 +1,148 @@
+{
+    "Vanguard": {
+        "Decoy": {
+            "cooldown": 8.0,
+            "stealthDuration": 4.0,
+            "decoyHp": 150.0,
+            "explosionRadius": 120.0,
+            "explosionDamage": 200.0
+        },
+        "Dash": {
+            "damage": 25.0,
+            "killHeal": 5.0,
+            "dashDistance": 220.0,
+            "dashSpeed": 2500.0,
+            "maxCharges": 3.0,
+            "rechargeTime": 2.5,
+            "hitRadiusBonus": 25.0,
+            "invDuration": 0.3
+        },
+        "KatanaSlash": {
+            "damage": 35.0,
+            "knockback": 300.0,
+            "killHeal": 5.0,
+            "swingDuration": 0.25,
+            "innerRadius": 20.0,
+            "outerRadius": 95.0,
+            "halfArcDegrees": 55.0,
+            "katanaWidth": 4.0,
+            "dashTrailFade": 0.35,
+            "dashTrailWidth": 14.0
+        },
+        "Ult": {
+            "duration": 8.0,
+            "speedMultiplier": 2.0
+        },
+        "ShurikenBurst": {
+            "count": 5.0,
+            "burstInterval": 0.08,
+            "angleSpreadDegrees": 5.0,
+            "aimRange": 1000.0
+        }
+    },
+    "Medic": {
+        "Teleport": {
+            "cooldown": 6.0,
+            "range": 600.0,
+            "rangeTolerance": 10.0,
+            "fadeTotal": 0.4,
+            "iframes": 0.5
+        },
+        "Orb": {
+            "cooldown": 8.0,
+            "lifetime": 6.0,
+            "speed": 175.0,
+            "radius": 15.0,
+            "effectRadius": 120.0,
+            "tickInterval": 0.2,
+            "healPerTick": 8.0,
+            "damagePerTick": 12.0
+        },
+        "Needle": {
+            "heal": 15.0,
+            "poisonDuration": 3.0,
+            "poisonDps": 5.0
+        },
+        "Barrier": {
+            "cooldown": 12.0,
+            "lifetime": 5.0,
+            "arcRadius": 280.0,
+            "standoff": 80.0,
+            "span": 0.80,
+            "wallThickness": 18.0,
+            "knockback": 900.0
+        },
+        "Passive": {
+            "healPerSecond": 2.0
+        },
+        "Drone": {
+            "lifetime": 20.0,
+            "orbitRadius": 45.0,
+            "orbitSpeed": 2.5,
+            "playerDetectRadius": 50.0,
+            "symHealInterval": 1.0,
+            "symHealAmount": 10.0,
+            "symShootInterval": 0.8,
+            "sentryShootInterval": 0.1,
+            "moveSpeed": 280.0,
+            "attackRange": 420.0,
+            "sentryArriveDist": 8.0,
+            "ultChargeRequired": 10.0
+        }
+    },
+    "Juggernaut": {
+        "Dash": {
+            "cooldown": 5.0,
+            "damage": 20.0,
+            "knockback": 1200.0,
+            "chargeDistance": 350.0,
+            "chargeSpeedMultiplier": 3.5,
+            "collisionBonus": 15.0
+        },
+        "Repulsor": {
+            "damage": 10.0,
+            "knockback": 1000.0,
+            "range": 250.0,
+            "angleSpanDegrees": 70.0,
+            "vfxDuration": 0.2,
+            "vfxRange": 250.0
+        },
+        "BlackHole": {
+            "cooldown": 0.0,
+            "spawnMaxRange": 200.0,
+            "duration": 4.0,
+            "visualRadius": 3.0,
+            "pullRadius": 300.0,
+            "coreRadius": 30.0,
+            "coreDps": 50.0,
+            "pullSpeed": 170.0
+        },
+        "Ult": {
+            "duration": 5.0,
+            "recoilForce": 300.0
+        }
+    },
+    "Soldier": {
+        "HealField": {
+            "cooldown": 15.0,
+            "radius": 100.0,
+            "duration": 5.0,
+            "healPerSecond": 10.0
+        },
+        "Ult": {
+            "duration": 10.0,
+            "fireRateMultiplier": 0.5
+        },
+        "Sprint": {
+            "speedMultiplier": 1.6,
+            "staminaDrain": 30.0,
+            "staminaRegen": 20.0
+        },
+        "Rocket": {
+            "cooldown": 6.0
+        },
+        "AutoAim": {
+            "range": 300.0
+        }
+    }
+}

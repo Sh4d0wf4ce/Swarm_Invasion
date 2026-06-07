@@ -9,11 +9,11 @@ public:
 
     void update(sf::Time deltaTime) override;
     void render(sf::RenderTarget& target) override;
-    
     std::vector<std::uint32_t> checkCollisions(const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map) override;
 
 private:
     std::unordered_set<std::uint32_t> m_hitEntities;
+
     sf::VertexArray m_mesh;
     float m_facingAngle;
 };

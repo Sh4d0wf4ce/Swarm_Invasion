@@ -1,21 +1,23 @@
 #include "GameState.hpp"
 #include "LobbyState.hpp"
 #include "../entities/Medic.hpp"
+#include "AbilityRegistry.hpp"
 #include <iostream>
+
+// ==========================================
+// Construction & Destruction
+// ==========================================
 
 GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass) : State(engine){
     m_camera.setSize({static_cast<float>(Config::WINDOW_WIDTH), static_cast<float>(Config::WINDOW_HEIGHT)});
-
     m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
     m_map->generate(1337);
     m_mapRenderer = std::make_unique<MapRenderer>(m_map, Config::TILE_SIZE);
     m_mapRenderer->rebuild();
     m_projectileManager = std::make_unique<ProjectileManager>();
-
     sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES) * Config::TILE_SIZE / 2.0f;
     m_player = Player::create(myPlayerId, newPos, myClass);
     m_lastSentPosition = sf::Vector2f(INFINITY, INFINITY);
-
     m_camera.setCenter(newPos);
 }
 
@@ -27,19 +29,20 @@ GameState::~GameState(){
     }
 }
 
+// ==========================================
+// Input
+// ==========================================
+
 void GameState::handleInput(const sf::Event& event){
     if(m_isChoosingUpgrade) return;
-
     if(const auto* mouseBtn = event.getIf<sf::Event::MouseButtonPressed>()){
         if(m_player){
             sf::Vector2i pixelPos(mouseBtn->position.x, mouseBtn->position.y);
             auto& window = m_engine.getWindow();
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera); 
-
             if(mouseBtn->button == sf::Mouse::Button::Right){
                 m_player->onRMB(worldPos, m_engine, *m_projectileManager);
             }
-
         }
     }
 
@@ -48,7 +51,6 @@ void GameState::handleInput(const sf::Event& event){
             auto& window = m_engine.getWindow();
             sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
             sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, m_camera);
-
             if(keyEvent->code == sf::Keyboard::Key::LShift) m_player->onShift(worldPos, m_engine, *m_projectileManager);
             if(keyEvent->code == sf::Keyboard::Key::Q) m_player->onQ(worldPos, m_engine, *m_projectileManager);
             if(keyEvent->code == sf::Keyboard::Key::E) m_player->onE(worldPos, m_engine, *m_projectileManager);
@@ -57,12 +59,19 @@ void GameState::handleInput(const sf::Event& event){
     }
 }
 
+// ==========================================
+// Network — Packet Dispatch
+// ==========================================
+
 void GameState::handlePacket(PacketType type, sf::Packet& packet){
+    // --- Connection heartbeat ---
     m_lastServerMessageTimer.restart();
 
+    // --- World snapshot ---
     if(type == PacketType::WorldState){
         handleWorldState(packet);
     }
+    // --- Player combat events ---
     else if(type == PacketType::PlayerShoots){
         std::uint32_t shooterId;
         WeaponType weaponUsed;
@@ -72,6 +81,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
                 m_projectileManager->spawnProjectile(shooterId, startPos, targetPos, weaponUsed, Faction::Players);
         }
     }
+    // --- Remote abilities ---
     else if(type == PacketType::AbilityUsed){
         std::uint32_t playerId;
         AbilityType ability;
@@ -84,6 +94,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
             }
         }
     }
+    // --- Session end ---
     else if(type == PacketType::PlayerDied){
         std::cout<< "[CLIENT] You died! Leaving the game... \n";
         m_sessionEndReason = SessionEndReason::Death;
@@ -91,6 +102,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
         m_otherPlayers.clear();
         m_enemies.clear();
     }
+    // --- Level-up & upgrades ---
     else if(type == PacketType::LevelUpOffer){
         std::uint32_t offerCount = 0;
         if(packet >> offerCount){
@@ -137,6 +149,7 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
             }
         }
     }
+    // --- Spawn ability entities ---
     else if(type == PacketType::SpawnHealField){
         std::uint32_t id;
         sf::Vector2f pos;
@@ -211,12 +224,16 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
     }
 }
 
+// ==========================================
+// Network — World State Sync
+// ==========================================
+
 void GameState::handleWorldState(sf::Packet& packet){
+    // --- Players ---
     std::uint32_t playerCount;
     if(!(packet >> playerCount)) return;
-
-    // --- PLAYERS ---
     std::vector<std::uint32_t> activeServerIds;
+
     for(std::uint32_t i = 0; i < playerCount; i++){
         std::uint32_t id;
         PlayerClass pClass;
@@ -224,7 +241,6 @@ void GameState::handleWorldState(sf::Packet& packet){
         float hp;
         float stealthTimer;
         packet >> id >> pClass >> pos >> hp >> stealthTimer;
-
         activeServerIds.push_back(id);
 
         if(m_player && id == m_player->getId()){
@@ -239,15 +255,17 @@ void GameState::handleWorldState(sf::Packet& packet){
 
         m_otherPlayers[id]->setHp(hp);
         auto* medic = dynamic_cast<Medic*>(m_otherPlayers[id].get());
+        
         if (!medic || !medic->isTeleportAnimating()) {
             m_otherPlayers[id]->setPosition(pos);
         }
+
         m_otherPlayers[id]->setStealthTimer(stealthTimer);
     }
 
+    // --- Team progression & upgrade pause sync ---
     bool serverIsPaused;
     packet >> m_teamLevel >> m_teamExp >> m_teamExpMax >> serverIsPaused;
-
     if(!serverIsPaused && m_isChoosingUpgrade){
         m_isChoosingUpgrade = false;
         m_upgradeRevealPhase = false;
@@ -259,7 +277,7 @@ void GameState::handleWorldState(sf::Packet& packet){
         m_isChoosingUpgrade = true;
     }
 
-    // removing unactive players
+    // --- Remove unactive players ---
     for(auto it = m_otherPlayers.begin(); it != m_otherPlayers.end();){
         if(std::find(activeServerIds.begin(), activeServerIds.end(), it->first) == activeServerIds.end()){
             it = m_otherPlayers.erase(it);
@@ -268,10 +286,9 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
     }
 
-    // --- ENEMIES ---
+    // --- Enemies ---
     std::uint32_t enemyCount;
     if(!(packet >> enemyCount)) return;
-    
     std::vector<std::uint32_t> activeEnemyIds;
 
     for(std::uint32_t i = 0; i < enemyCount; i++){
@@ -280,12 +297,12 @@ void GameState::handleWorldState(sf::Packet& packet){
         EnemyType eType;
         float hp;
         packet >> id >> eType >> pos >> hp;
-
         activeEnemyIds.push_back(id);
 
         if(m_enemies.find(id) == m_enemies.end()){
             m_enemies[id] = std::make_unique<Enemy>(id, pos, eType);
         }
+
         m_enemies[id]->setPosition(pos);
         m_enemies[id]->setHp(hp);
     }
@@ -297,12 +314,12 @@ void GameState::handleWorldState(sf::Packet& packet){
             ++it;
         }
     }  
-    
-    // --- ENERGY CELLS ---
+
+    // --- Energy cells ---
     std::uint32_t cellCount;
     if(!(packet >> cellCount)) return;
-
     m_energyCells.clear();
+
     for(std::uint32_t i = 0; i < cellCount; i++){
         std::uint32_t cId;
         sf::Vector2f cPos;
@@ -310,17 +327,17 @@ void GameState::handleWorldState(sf::Packet& packet){
         m_energyCells[cId] = cPos;
     }
 
+    // --- Decoys ---
     std::uint32_t decoyCount;
     if(!(packet >> decoyCount)) return;
-
     std::vector<std::uint32_t> activeDecoyIds;
+
     for(std::uint32_t i = 0; i < decoyCount; i++){
         std::uint32_t dId;
         sf::Vector2f dPos;
         float dHp;
         float dMaxHp;
         packet >> dId >> dPos >> dHp >> dMaxHp;
-
         activeDecoyIds.push_back(dId);
 
         if(m_decoys.find(dId) == m_decoys.end()){
@@ -334,6 +351,7 @@ void GameState::handleWorldState(sf::Packet& packet){
 
     for(auto it = m_decoys.begin(); it != m_decoys.end();){
         bool isActive = std::find(activeDecoyIds.begin(), activeDecoyIds.end(), it->first) != activeDecoyIds.end();
+
         if(!isActive && !it->second->isExploding()){
             it = m_decoys.erase(it);
         }else{
@@ -341,15 +359,15 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
     }
 
+    // --- Medic orbs ---
     std::uint32_t orbCount;
     if(!(packet >> orbCount)) return;
-
     std::vector<std::uint32_t> activeOrbIds;
+    
     for(std::uint32_t i = 0; i < orbCount; i++){
         std::uint32_t oId;
         sf::Vector2f oPos;
         packet >> oId >> oPos;
-
         activeOrbIds.push_back(oId);
 
         if(m_medicOrbs.find(oId) == m_medicOrbs.end()){
@@ -367,10 +385,11 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
     }
 
+    // --- Medic drones ---
     std::uint32_t droneCount;
     if(!(packet >> droneCount)) return;
-
     std::vector<std::uint32_t> activeDroneIds;
+
     bool myHasDrone = false;
     float myDroneLifetime = 0.0f;
 
@@ -381,7 +400,6 @@ void GameState::handleWorldState(sf::Packet& packet){
         MedicDroneState dState;
         float dLifetime;
         packet >> dId >> ownerId >> dPos >> dState >> dLifetime;
-
         activeDroneIds.push_back(dId);
 
         if(m_medicDrones.find(dId) == m_medicDrones.end()){
@@ -406,13 +424,19 @@ void GameState::handleWorldState(sf::Packet& packet){
         }
     }
 
+    // --- Sync local medic drone UI ---
     if(m_player && m_player->getClass() == PlayerClass::Medic){
         static_cast<Medic*>(m_player.get())->setDroneState(myHasDrone, myDroneLifetime);
     }
 }
 
+// ==========================================
+// Update
+// ==========================================
+
 void GameState::update(sf::Time deltaTime){
     if(m_player){
+        // --- Connection timeout ---
         if(m_lastServerMessageTimer.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
             std::cout << "[CLIENT] Lost connection to the server (Timeout)!\n";
             m_sessionEndReason = SessionEndReason::Disconnected;
@@ -422,12 +446,13 @@ void GameState::update(sf::Time deltaTime){
             return;
         }
 
+        // --- Local player simulation ---
         m_player->setFocused(m_engine.getWindow().hasFocus());
-
         if(!m_isChoosingUpgrade){
             m_player->update(deltaTime, m_map);
         }
 
+        // --- Remote player visuals ---
         for(auto& [id, otherPlayer] : m_otherPlayers){
             (void)id;
             if(!m_isChoosingUpgrade){
@@ -435,20 +460,18 @@ void GameState::update(sf::Time deltaTime){
             }
         }
 
+        // --- Camera follow & clamp ---
         sf::Vector2f targetCenter = m_player->getPosition();
-
         if(m_map){
             float mapWidth = m_map->getWidth() * Config::TILE_SIZE;
             float mapHeight = m_map->getHeight() * Config::TILE_SIZE;
             float halfCamX = m_camera.getSize().x / 2.0f;
             float halfCamY = m_camera.getSize().y / 2.0f;
-
             if(mapWidth > m_camera.getSize().x) {
                 targetCenter.x = std::clamp(targetCenter.x, halfCamX, mapWidth - halfCamX);
             } else {
                 targetCenter.x = mapWidth / 2.0f;
             } 
-            
             if(mapHeight > m_camera.getSize().y) {
                 targetCenter.y = std::clamp(targetCenter.y, halfCamY, mapHeight - halfCamY);
             } else {
@@ -460,23 +483,21 @@ void GameState::update(sf::Time deltaTime){
         currentCenter += (targetCenter - currentCenter) * 5.0f * deltaTime.asSeconds();
         m_camera.setCenter(currentCenter);
 
+        // --- Position sync to server ---
         if(m_player->getPosition() != m_lastSentPosition || m_heartbeatTimer.getElapsedTime().asSeconds() > 1.0f){
             sf::Packet packet;
             packet << PacketType::PlayerPosition << m_player->getId() << m_player->getPosition();
-
             if(m_engine.getServerAddress()){
                 (void)m_engine.getSocket().send(packet, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
-
             m_lastSentPosition = m_player->getPosition();
             m_heartbeatTimer.restart();
         }
     }
-
     if(m_projectileManager){
         if(!m_isChoosingUpgrade){
+            // --- Build collision targets ---
             std::vector<Entity*> collisionTargets;
-
             if(m_player) collisionTargets.push_back(m_player.get());
             for(auto& [id, otherPlayer] : m_otherPlayers) collisionTargets.push_back(otherPlayer.get());
             for(auto& [id, enemy] : m_enemies) collisionTargets.push_back(enemy.get());
@@ -484,22 +505,28 @@ void GameState::update(sf::Time deltaTime){
                 if(!decoy->isExploding()) collisionTargets.push_back(decoy.get());
             }
 
+            // --- Build medic barrier snapshots ---
             std::vector<SectorBarrierSnapshot> barrierSnapshots;
             barrierSnapshots.reserve(m_medicBarriers.size());
-            const float halfSpan = Config::MEDIC_BARRIER_SPAN / 2.0f;
+            const auto& barrier = AbilityRegistry::medic().Barrier;
+            const float span = AbilityRegistry::param(barrier, "span", 0.80f);
+            const float halfSpan = span / 2.0f;
+            const float arcRadius = AbilityRegistry::param(barrier, "arcRadius", 280.f);
+            const float wallThickness = AbilityRegistry::param(barrier, "wallThickness", 18.f);
+
             for (const auto& [id, barrier] : m_medicBarriers) {
-                (void)id;
                 barrierSnapshots.push_back({
                     barrier->getCenter(),
                     barrier->getFacingAngle(),
-                    Config::MEDIC_BARRIER_ARC_RADIUS,
+                    arcRadius,
                     halfSpan,
-                    Config::MEDIC_BARRIER_WALL_THICKNESS
+                    wallThickness
                 });
             }
 
+            // --- Simulate projectiles & report hits ---
             auto hits = m_projectileManager->update(deltaTime, collisionTargets, m_map, barrierSnapshots, m_player ? m_player->getId() : 0u);
-
+            
             for(const auto& hit : hits){
                 if(!m_engine.getServerAddress()) break;
                 if (hit.weapon == WeaponType::MedicNeedle || hit.weapon == WeaponType::DroneBlaster) continue;
@@ -509,12 +536,11 @@ void GameState::update(sf::Time deltaTime){
                 (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
             }
 
+            // --- Report ability hits ---
             if(m_player){
                 auto abilityHits = m_player->checkAbilityHits(collisionTargets);
-
                 for(const auto& hit : abilityHits){
                     if(!m_engine.getServerAddress()) break;
-
                     sf::Packet hitPacket;
                     hitPacket << PacketType::AbilityHit << m_player->getId() << hit.targetId << hit.ability;
                     (void)m_engine.getSocket().send(hitPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
@@ -523,6 +549,7 @@ void GameState::update(sf::Time deltaTime){
         }
     }
 
+    // --- Update heal fields ---
     for (auto it = m_healFields.begin(); it != m_healFields.end(); ) {
         auto& field = it->second;
         field->update(deltaTime, m_map);
@@ -530,6 +557,7 @@ void GameState::update(sf::Time deltaTime){
         else ++it;
     }
 
+    // --- Update black holes ---
     for (auto it = m_blackHoles.begin(); it != m_blackHoles.end(); ) {
         auto& blackHole = it->second;
         blackHole->update(deltaTime, m_map);
@@ -537,6 +565,7 @@ void GameState::update(sf::Time deltaTime){
         else ++it;
     }
 
+    // --- Update decoys ---
     for (auto it = m_decoys.begin(); it != m_decoys.end(); ) {
         if (it->second->isFinished()) {
             it = m_decoys.erase(it);
@@ -546,12 +575,12 @@ void GameState::update(sf::Time deltaTime){
         }
     }
 
+    // --- Update medic orbs ---
     std::vector<Entity*> allies;
     std::vector<Entity*> enemyTargets;
     if (m_player) allies.push_back(m_player.get());
     for (auto& [id, otherPlayer] : m_otherPlayers) allies.push_back(otherPlayer.get());
     for (auto& [id, enemy] : m_enemies) enemyTargets.push_back(enemy.get());
-
     for (auto it = m_medicOrbs.begin(); it != m_medicOrbs.end(); ) {
         it->second->setNearbyEntities(allies, enemyTargets);
         it->second->update(deltaTime, m_map);
@@ -562,6 +591,7 @@ void GameState::update(sf::Time deltaTime){
         }
     }
 
+    // --- Update medic barriers ---
     for (auto it = m_medicBarriers.begin(); it != m_medicBarriers.end(); ) {
         it->second->update(deltaTime, m_map);
         if (it->second->getHp() <= 0.0f) {
@@ -571,82 +601,87 @@ void GameState::update(sf::Time deltaTime){
         }
     }
 
+    // --- Update medic drones ---
     for (auto it = m_medicDrones.begin(); it != m_medicDrones.end(); ) {
         it->second->update(deltaTime, m_map);
         ++it;
     }
 
+    // --- Combat input (LMB / auto-fire) ---
     if (m_player && m_engine.getWindow().hasFocus()) {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) || m_player->isAutoFiring()) {
             sf::Vector2i pixelPos = sf::Mouse::getPosition(m_engine.getWindow());
             sf::Vector2f worldPos = m_engine.getWindow().mapPixelToCoords(pixelPos, m_camera);
-
             m_player->onLMB(worldPos, m_engine, *m_projectileManager, m_enemies);
         }
     }
 }
 
+// ==========================================
+// Render
+// ==========================================
+
 void GameState::render() {
     auto& window = m_engine.getWindow();
-
     window.setView(m_camera);
 
+    // --- Map ---
     if(m_mapRenderer) m_mapRenderer->render(window);
 
+    // --- Ability entities ---
     for(const auto& [id, field] : m_healFields){
         field->render(window);
     }
-
     for(const auto& [id, blackHole] : m_blackHoles){
         blackHole->render(window);
     }
-
     for(const auto& [id, decoy] : m_decoys){
         decoy->render(window);
     }
-
     for(const auto& [id, orb] : m_medicOrbs){
         orb->render(window);
     }
-
     for(const auto& [id, barrier] : m_medicBarriers){
         barrier->render(window);
     }
-
     for(const auto& [id, drone] : m_medicDrones){
         drone->render(window);
     }
-    
+
+    // --- Energy cells ---
     sf::CircleShape crystalShape(4.0f, 4);
     crystalShape.setFillColor(sf::Color::Green);
     crystalShape.setOrigin({4.0f, 4.0f});
-
     for(const auto& [id, pos] : m_energyCells){
         crystalShape.setPosition(pos);
         window.draw(crystalShape);
     }
 
+    // --- Projectiles ---
     if(m_projectileManager) m_projectileManager->render(window);
-    if(m_player) m_player->render(window);
 
+    // --- Players & enemies ---
+    if(m_player) m_player->render(window);
     for(const auto& [id, otherPlayer]: m_otherPlayers){
         otherPlayer->render(window);
     }
-
     for(const auto& [id, enemy]: m_enemies){
         enemy->render(window);
     }
-
     window.setView(window.getDefaultView());
 }
 
+// ==========================================
+// UI
+// ==========================================
+
 void GameState::renderUI(){
+    // --- Session end overlay ---
     if(!m_player){
         const bool disconnected = (m_sessionEndReason == SessionEndReason::Disconnected);
         ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 180.0f, Config::WINDOW_HEIGHT / 2.0f - 100.0f), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(360.0f, 200.0f), ImGuiCond_Always);
         ImGui::Begin(disconnected ? "CONNECTION LOST" : "YOU DIED", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-
         if(disconnected){
             ImGui::TextColored(ImVec4(1.0f, 0.6f, 0.1f, 1.0f), "Lost connection to the server.");
             ImGui::TextWrapped("The server may have shut down or the network timed out.");
@@ -654,7 +689,6 @@ void GameState::renderUI(){
             ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "The swarm consumed you...");
         }
         ImGui::Dummy(ImVec2(0.0f, 40.0f));
-
         if(ImGui::Button("Return to Lobby", ImVec2(-1, 50))){
             m_engine.changeState(std::make_unique<LobbyState>(m_engine));
         }
@@ -662,6 +696,7 @@ void GameState::renderUI(){
         return;
     }
 
+    // --- Team XP bar ---
     ImGui::SetNextWindowPos(
         ImVec2(Config::WINDOW_WIDTH - Config::EXP_BAR_WIDTH - 12.0f, 12.0f),
         ImGuiCond_Always);
@@ -669,16 +704,15 @@ void GameState::renderUI(){
     ImGui::Begin("TeamExpBar", nullptr,
         ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground);
-
     float expProgress = static_cast<float>(m_teamExp) / static_cast<float>(m_teamExpMax);
     char expOverlay[64];
     sprintf(expOverlay, "LEVEL %d (%d/%d)", m_teamLevel, m_teamExp, m_teamExpMax);
-
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
     ImGui::ProgressBar(expProgress, ImVec2(Config::EXP_BAR_WIDTH, Config::EXP_BAR_HEIGHT), expOverlay);
     ImGui::PopStyleColor();
     ImGui::End();
 
+    // --- Upgrade selection ---
     if(m_isChoosingUpgrade){
         bool hasAugment = false;
         for(const auto& offerId : m_upgradeOffers){
@@ -691,7 +725,6 @@ void GameState::renderUI(){
         ImGui::SetNextWindowSize(ImVec2(600, 400));
         const char* windowTitle = hasAugment ? "CHOOSE YOUR UPGRADE (Milestone Augment)" : "CHOOSE YOUR UPGRADE";
         ImGui::Begin(windowTitle, nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-
         if(!m_upgradeRevealPhase){
             float timePassed = m_clientUpgradeTimer.getElapsedTime().asSeconds();
             float progress = 1.0f - (timePassed / Config::LEVEL_UP_TIMEOUT);
@@ -703,10 +736,8 @@ void GameState::renderUI(){
         ImGui::Columns(3, "Upgrades", true);
         for(int i = 0; i < 3; i++){
             ImGui::PushID(i);
-
             const std::string& offerId = m_upgradeOffers[static_cast<std::size_t>(i)];
             const UpgradeDefinition* def = offerId.empty() ? nullptr : UpgradeRegistry::getById(offerId);
-
             if(def){
                 ImGui::TextWrapped("%s", def->name.c_str());
                 ImGui::Spacing();
@@ -716,11 +747,9 @@ void GameState::renderUI(){
             }
 
             ImGui::Spacing();
-
             bool isSelected = !m_chosenUpgradeId.empty() && m_chosenUpgradeId == offerId;
             bool canChoose = !offerId.empty() && !m_upgradeRevealPhase;
             bool pushedColor = false;
-
             if(isSelected){
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
                 pushedColor = true;
@@ -728,7 +757,6 @@ void GameState::renderUI(){
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.3f, 0.3f, 0.6f));
                 pushedColor = true;
             }
-
             char chooseLabel[32];
             sprintf(chooseLabel, isSelected ? "SELECTED##%d" : "CHOOSE##%d", i);
             if(ImGui::Button(chooseLabel, ImVec2(-1, 40)) && canChoose){
@@ -746,12 +774,12 @@ void GameState::renderUI(){
         ImGui::End();
     }
 
-
+    // --- Player HUD ---
     if(m_player) m_player->renderUI();
 
+    // --- Debug panel ---
     ImGui::Begin("Swarm Invasion - Debug Panel");
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-
     if(ImGui::Button("Disconnect/Return to Lobby", ImVec2(-1, 30))){
         m_engine.changeState(std::make_unique<LobbyState>(m_engine));
     }

@@ -5,6 +5,7 @@
 
 DroneBlasterProjectile::DroneBlasterProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction)
     : Projectile(ownerId, startPos, velocity, faction, WeaponType::DroneBlaster) {
+        
     m_beamShape.setSize({22.0f, 5.0f});
     m_beamShape.setOrigin({0.0f, 2.5f});
     m_beamShape.setFillColor(sf::Color(255, 40, 40, 230));
@@ -23,6 +24,7 @@ std::vector<std::uint32_t> DroneBlasterProjectile::checkCollisions(const std::ve
     std::vector<std::uint32_t> hitlist;
     if (!m_active) return hitlist;
 
+    // --- Deactivate on wall impact ---
     if (map) {
         int gridX = static_cast<int>(m_position.x / Config::TILE_SIZE);
         int gridY = static_cast<int>(m_position.y / Config::TILE_SIZE);
@@ -32,6 +34,7 @@ std::vector<std::uint32_t> DroneBlasterProjectile::checkCollisions(const std::ve
         }
     }
 
+    // --- Track unique enemy hits without deactivating early ---
     for (Entity* entity : entities) {
         if (entity->getFaction() != Faction::Enemies) continue;
 

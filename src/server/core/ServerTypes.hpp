@@ -5,6 +5,9 @@
 #include "NetworkProtocol.hpp"
 #include <vector>
 
+// ==========================================
+// Pickups & Ability Fields
+// ==========================================
 struct EnergyCellInfo {
     sf::Vector2f position;
     int expValue;
@@ -24,6 +27,9 @@ struct BlackHoleData{
     std::uint32_t ownerId;
 };
 
+// ==========================================
+// Vanguard & Medic World Objects
+// ==========================================
 struct DecoyData{
     sf::Vector2f pos;
     float hp;
@@ -37,16 +43,6 @@ struct MedicOrbData {
     float lifetime;
     float tickAccumulator{0.0f};
     std::uint32_t ownerId;
-};
-
-struct ServerProjectileData {
-    std::uint32_t ownerId;
-    sf::Vector2f position;
-    sf::Vector2f velocity;
-    WeaponType weapon;
-    float lifetime;
-    float radius;
-    std::vector<std::uint32_t> hitEnemies;
 };
 
 struct MedicBarrierData {
@@ -69,7 +65,22 @@ struct MedicDroneData {
     bool atSentry{false};
 };
 
+// ==========================================
+// Server Projectiles
+// ==========================================
+struct ServerProjectileData {
+    std::uint32_t ownerId;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    WeaponType weapon;
+    float lifetime;
+    float radius;
+    std::vector<std::uint32_t> hitEnemies;
+};
 
+// ==========================================
+// Connected Player State
+// ==========================================
 struct ClientInfo {
     sf::IpAddress ip;
     unsigned short port;

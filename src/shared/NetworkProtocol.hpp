@@ -2,6 +2,9 @@
 
 #include <SFML/Network.hpp>
 
+// ==========================================
+// Network Packet Types
+// ==========================================
 enum class PacketType : std::uint8_t{
     Ping,
     Pong,
@@ -33,6 +36,9 @@ enum class PacketType : std::uint8_t{
     AbilityHit
 };
 
+// ==========================================
+// Game Entity Enums
+// ==========================================
 enum class PlayerClass : std::uint8_t{
     Soldier,
     Medic,
@@ -80,6 +86,9 @@ enum class MedicDroneState : std::uint8_t {
     Sentry
 };
 
+// ==========================================
+// Packet Serialization Operators
+// ==========================================
 inline sf::Packet& operator<<(sf::Packet& packet, const MedicDroneState& state){
     return packet << static_cast<std::uint8_t>(state);
 }
@@ -153,4 +162,3 @@ inline sf::Packet& operator>>(sf::Packet& packet, PlayerClass& pClass){
     pClass = static_cast<PlayerClass>(value);
     return packet;
 }
-

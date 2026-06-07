@@ -21,6 +21,7 @@ public:
     virtual void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) = 0;
     virtual void render(sf::RenderTarget& target) = 0;
 
+    
     std::uint32_t getId() const { return m_id; }
     sf::Vector2f getPosition() const { return m_position; }
     float getHp() const { return m_hp; }
@@ -29,6 +30,7 @@ public:
     void setHp(float hp){ m_hp = hp; }
     void setMaxHp(float maxHp){ m_maxHp = maxHp; }
 
+    
     virtual Faction getFaction() const = 0;
     virtual float getRadius() const = 0;
 
@@ -39,5 +41,6 @@ protected:
     float m_hp{100.0f};
     float m_maxHp{100.0f};
 
+    
     void drawHealthBar(sf::RenderTarget& target, float yOffset);
 };

@@ -33,6 +33,7 @@ public:
         target.draw(m_coreShape);
     };
 
+    
     Faction getFaction() const override { return Faction::Players; }
     float getRadius() const override { return 300.0f; }
 

@@ -3,15 +3,20 @@
 #include "HeroRegistry.hpp"
 #include "EnemyRegistry.hpp"
 #include "UpgradeRegistry.hpp"
+#include "AbilityRegistry.hpp"
 #include <iostream>
 
 int main(){
     try{
+        // --- Load game data registries ---
         std::cout<<"---SWARM INVASION - SERVER ---\n";
         WeaponRegistry::loadConfig("assets/weapons.json");
         HeroRegistry::loadConfig("assets/heroes.json");
         EnemyRegistry::loadConfig("assets/enemies.json");
         UpgradeRegistry::loadConfig("assets/upgrades.json");
+        AbilityRegistry::loadConfig("assets/abilities.json");
+
+        // --- Run server loop ---
         ServerEngine engine;
         engine.run();
     }
@@ -19,6 +24,5 @@ int main(){
         std::cerr<<"[SERVER] Error: "<<e.what()<<"\n";
         return 1;
     }
-
     return 0;
 }

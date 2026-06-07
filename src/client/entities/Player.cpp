@@ -5,15 +5,12 @@
 #include "Medic.hpp"
 #include "imgui.h"
 
-
 Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass): Entity(id, startPos), m_isFocused(true), m_class(pClass){
     const auto& stats = HeroRegistry::getStats(pClass);
-
     m_maxHp = stats.maxHp;
     m_baseMaxHp = stats.maxHp;
     m_hp = stats.maxHp;
     m_speed = stats.speed;
-    
     m_shape.setRadius(stats.radius);
     m_shape.setFillColor(stats.color);
     m_shape.setOrigin({stats.radius, stats.radius});
@@ -21,6 +18,7 @@ Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClas
 }
 
 void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
+    // --- Advance reload timer and restore ammo when complete ---
     if(m_isReloading){
         m_reloadTimer -= deltaTime.asSeconds();
         if(m_reloadTimer <= 0.0f){
@@ -29,15 +27,15 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
         }
     }
 
+    // --- Tick ability cooldowns scaled by upgrade modifiers ---
     const float cdRate = 1.0f / getUpgradeCooldownScale();
-
     if (m_cooldownShift > 0.0f) m_cooldownShift -= deltaTime.asSeconds() * cdRate;
     if (m_cooldownE > 0.0f) m_cooldownE -= deltaTime.asSeconds() * cdRate;
     if (m_cooldownRMB > 0.0f) m_cooldownRMB -= deltaTime.asSeconds() * cdRate;
     if (m_cooldownLMB > 0.0f) m_cooldownLMB -= deltaTime.asSeconds() * cdRate;
-    
-    sf::Vector2f movement(0.0f, 0.0f);
 
+    // --- Read keyboard input and normalize movement direction ---
+    sf::Vector2f movement(0.0f, 0.0f);
     if(m_isFocused){
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)) movement.y -= 1.0f;
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)) movement.y += 1.0f;
@@ -49,6 +47,7 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
     if(len > 0.0f) movement /= len;
     m_lastMoveDirection = movement;
 
+    // --- Apply movement with per-axis collision against map walls ---
     float actualSpeed = m_speed * m_speedMultiplier * m_upgradeSpeedMultiplier;
     sf::Vector2f velocity = movement * actualSpeed * deltaTime.asSeconds();
 
@@ -75,19 +74,9 @@ void Player::setFocused(bool focused){
     m_isFocused = focused;
 }
 
-void Player::playRemoteAbility(AbilityType ability, const sf::Vector2f& data){
-    (void)ability;
-    (void)data;
-}
-
-void Player::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
-    (void)deltaTime;
-    (void)map;
-}
 
 bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map){
     if(!map) return false;
-
     float hitBoxOffset = HeroRegistry::getStats(m_class).radius * 0.8f;
 
     sf::Vector2f points[4] = {
@@ -100,14 +89,12 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
     for(const auto& p: points){
         int gridX = static_cast<int>(p.x / Config::TILE_SIZE);
         int gridY = static_cast<int>(p.y / Config::TILE_SIZE);
-    
         if(map->getTile(gridX, gridY) == TileType::Wall)
             return true;
     }
 
     return false;
 }
-
 
 void Player::reload(){
     if(!m_isReloading){
@@ -145,16 +132,13 @@ void Player::renderUI(){
 void Player::renderRightPanel() {
     ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH - 320.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);
-    
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
     ImGui::Begin("HeroStatsRight", nullptr, flags);
-
     // HP
     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "HP: %.0f / %.0f", m_hp, m_maxHp);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
     ImGui::ProgressBar(m_hp / m_maxHp, ImVec2(-1, 15.0f), "");
     ImGui::PopStyleColor();
-
     // AMMO
     if (m_isReloading) {
         ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "RELOADING... %.1fs", std::max(0.0f, m_reloadTimer));
@@ -172,24 +156,19 @@ void Player::renderRightPanel() {
 void Player::renderLeftPanel() {
     ImGui::SetNextWindowPos(ImVec2(20.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(400.0f, 100.0f), ImGuiCond_Always);
-    
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBackground;
     ImGui::Begin("HeroSkillsLeft", nullptr, flags);
-
     ImGui::Columns(4, "Skills", false);
-
     renderShiftSkill(); ImGui::NextColumn();
     renderESkill();     ImGui::NextColumn();
     renderRMBSkill();   ImGui::NextColumn();
     renderQSkill();     ImGui::NextColumn();
-
     ImGui::Columns(1);
     ImGui::End();
 }
 
 void Player::renderShiftSkill() {
     ImGui::Text("LSHIFT");
-    
     if (m_cooldownShift <= 0.0f) {
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
@@ -204,7 +183,6 @@ void Player::renderShiftSkill() {
 
 void Player::renderESkill() {
     ImGui::Text("E");
-    
     if (m_cooldownE <= 0.0f) {
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.2f, 0.8f, 0.2f, 1.0f));
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
@@ -222,13 +200,11 @@ void Player::renderQSkill() {
     if (m_isUltActive) {
         char timerText[16];
         sprintf(timerText, "%.1fs", std::max(0.0f, m_ultTimer));
-        
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.8f, 0.0f, 1.0f)); 
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), timerText);
         ImGui::PopStyleColor();
     } else {
         float progress = m_ultCharge / m_maxUltCharge;
-        
         if (progress >= 1.0f) {
             ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.7f, 0.1f, 0.8f, 1.0f)); 
             ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
@@ -245,9 +221,8 @@ void Player::renderQSkill() {
 
 void Player::renderRMBSkill() {
     ImGui::Text("RMB");
-    
     if (m_cooldownRMB <= 0.0f) {
-        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.5f, 0.0f, 1.0f)); // Pomarańczowy dla strzału
+        ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(1.0f, 0.5f, 0.0f, 1.0f));
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
         ImGui::PopStyleColor();
     } else {

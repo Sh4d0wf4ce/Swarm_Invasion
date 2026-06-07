@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include <cstdint>
 #include <SFML/System/Vector2.hpp>
@@ -18,10 +17,10 @@ public:
         }
     }
 
+
     void insert(sf::Vector2f position, std::uint32_t entityId){
         int x = static_cast<int>(position.x / m_cellSize);
         int y = static_cast<int>(position.y / m_cellSize);
-
         if(x >= 0 && x < m_cols && y >= 0 && y < m_rows){
             m_cells[y * m_cols + x].push_back(entityId);
         }
@@ -30,10 +29,8 @@ public:
     std::vector<std::uint32_t> getNearby(sf::Vector2f position) const {
         std::vector<std::uint32_t> result;
         result.reserve(16);
-
         int cx = static_cast<int>(position.x / m_cellSize);
         int cy = static_cast<int>(position.y / m_cellSize);
-
         for (int y = cy - 1; y <= cy + 1; ++y) {
             for (int x = cx - 1; x <= cx + 1; ++x) {
                 if (x >= 0 && x < m_cols && y >= 0 && y < m_rows) {
@@ -44,7 +41,6 @@ public:
         }
         return result;
     }
-
 
 private:
     float m_cellSize;

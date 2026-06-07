@@ -1,13 +1,13 @@
 #include "ServerEngine.hpp"
 #include "SectorMath.hpp"
 #include "UpgradeRegistry.hpp"
+#include "AbilityRegistry.hpp"
 #include <iostream>
 #include <cmath>
 #include <algorithm>
 
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
-
     m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
     m_map->generate(1337);
 
@@ -23,7 +23,6 @@ ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
 
 void ServerEngine::run(){
     std::cout<<"[SERVER] Launching engine (Tickrat: 60)...\n";
-
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
 
     while(m_isRunning){
@@ -32,7 +31,6 @@ void ServerEngine::run(){
 
         while(timeSinceLastUpdate > m_timePerTick){
             timeSinceLastUpdate -= m_timePerTick;
-
             processNetwork();
             update(m_timePerTick);
         }
@@ -70,7 +68,7 @@ void ServerEngine::processNetwork(){
 void ServerEngine::update(sf::Time deltaTime){
     m_tickCounter++;
 
-    // CARD SELECTION SCREEN
+    // --- Upgrade menu pause branch ---
     if(m_isPaused){
         proccessUpgradeMenuTimeout();
         if(m_clients.empty() && needsWorldReset()){
@@ -80,7 +78,7 @@ void ServerEngine::update(sf::Time deltaTime){
         return;
     }
 
-    // REMOVING UNACTIVE PLAYERS
+    // --- Remove inactive players ---
     removeAFKPlayers();
 
     if(m_clients.empty()){
@@ -105,97 +103,91 @@ void ServerEngine::update(sf::Time deltaTime){
         }
     }
 
-    // ENEMIES DIRECTOR
-    {
-        std::map<std::uint32_t, ClientInfo> visibleTargets;
-        
-        // Dodajemy tylko widocznych graczy
-        for(const auto& [id, info] : m_clients) {
-            if (info.stealthTimer <= 0.0f) {
-                visibleTargets.insert({id, info});
+    // --- AI director: waves, behaviours, and combat relay ---
+
+    std::map<std::uint32_t, ClientInfo> visibleTargets;
+
+    for(const auto& [id, info] : m_clients) {
+        if (info.stealthTimer <= 0.0f) {
+            visibleTargets.insert({id, info});
+        }
+    }
+
+    for(const auto& [id, decoy] : m_decoys) {
+        if (m_clients.count(decoy.ownerId)) {
+            ClientInfo fakePlayer = m_clients.at(decoy.ownerId);
+            fakePlayer.position = decoy.pos;
+            fakePlayer.hp = decoy.hp; 
+            fakePlayer.invTimer = 0.0f;
+            fakePlayer.stealthTimer = 0.0f;
+            fakePlayer.pClass = PlayerClass::Vanguard;
+            visibleTargets.insert({id + 100000, fakePlayer});
+        }
+    }
+
+    m_aiDirector.updateWaves(deltaTime, m_enemies, visibleTargets, m_map, m_globalEntityCounter);
+    std::vector<std::uint32_t> deadFromPoison;
+    float dt = deltaTime.asSeconds();
+
+    for (auto& [id, enemy] : m_enemies) {
+        enemy->tickStatusEffects(dt);
+        if (enemy->getHp() <= 0.0f) deadFromPoison.push_back(id);
+    }
+
+    for (std::uint32_t enemyId : deadFromPoison) {
+        if (m_enemies.count(enemyId)) {
+            m_energyCells[m_globalEntityCounter++] = {m_enemies[enemyId]->getPosition(), 1, 0};
+            m_enemies.erase(enemyId);
+        }
+    }
+
+    std::vector<EnemyShootEvent> shootEvents;
+    auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, visibleTargets, m_map, shootEvents);
+
+    for(auto& [id, info] : m_clients){
+        if(visibleTargets.count(id)) info.hp = visibleTargets.at(id).hp;
+    }
+
+    for(auto& [id, decoy] : m_decoys){
+        if(visibleTargets.count(id + 100000)) decoy.hp = visibleTargets.at(id + 100000).hp;
+    }
+
+    for(std::uint32_t deadId : deadPlayers){
+        if (deadId >= 100000) {
+            std::uint32_t actualDecoyId = deadId - 100000;
+            if (m_decoys.count(actualDecoyId)) {
+                DecoyData decoy = m_decoys.at(actualDecoyId);
+                explodeDecoy(actualDecoyId, decoy);
+                m_decoys.erase(actualDecoyId);
             }
-        }
-        
-        for(const auto& [id, decoy] : m_decoys) {
-            if (m_clients.count(decoy.ownerId)) {
-                ClientInfo fakePlayer = m_clients.at(decoy.ownerId);
-                
-                fakePlayer.position = decoy.pos;
-                fakePlayer.hp = decoy.hp; 
-                fakePlayer.invTimer = 0.0f;
-                fakePlayer.stealthTimer = 0.0f;
-                fakePlayer.pClass = PlayerClass::Vanguard;
-                
-                visibleTargets.insert({id + 100000, fakePlayer});
+        } 
+        else if (m_clients.count(deadId)) {
+            auto& targetInfo = m_clients.at(deadId);
+            std::cout << "[SERVER] Player " << deadId << " died!\n";
+            sf::Packet deathPacket;
+            deathPacket << PacketType::PlayerDied;
+            (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
+
+            for (auto dit = m_medicDrones.begin(); dit != m_medicDrones.end(); ) {
+                if (dit->second.ownerId == deadId) dit = m_medicDrones.erase(dit);
+                else ++dit;
             }
+
+            m_clients.erase(deadId);
         }
+    }
 
-        m_aiDirector.updateWaves(deltaTime, m_enemies, visibleTargets, m_map, m_globalEntityCounter);
+    for(const auto& shoot: shootEvents){
+        sf::Packet shootPacket;
+        shootPacket << PacketType::EnemyShoots << shoot.weapon << shoot.startPos << shoot.targetPos;
 
-        std::vector<std::uint32_t> deadFromPoison;
-        float dt = deltaTime.asSeconds();
-        for (auto& [id, enemy] : m_enemies) {
-            enemy->tickStatusEffects(dt);
-            if (enemy->getHp() <= 0.0f) deadFromPoison.push_back(id);
-        }
-        for (std::uint32_t enemyId : deadFromPoison) {
-            if (m_enemies.count(enemyId)) {
-                m_energyCells[m_globalEntityCounter++] = {m_enemies[enemyId]->getPosition(), 1, 0};
-                m_enemies.erase(enemyId);
-            }
-        }
-        
-        std::vector<EnemyShootEvent> shootEvents;
-        
-        auto deadPlayers = m_aiDirector.updateBehaviours(deltaTime, m_enemies, visibleTargets, m_map, shootEvents);
-
-        for(auto& [id, info] : m_clients){
-            if(visibleTargets.count(id)) info.hp = visibleTargets.at(id).hp;
-        }
-        for(auto& [id, decoy] : m_decoys){
-            if(visibleTargets.count(id + 100000)) decoy.hp = visibleTargets.at(id + 100000).hp;
-        }
-
-        for(std::uint32_t deadId : deadPlayers){
-            if (deadId >= 100000) {
-                std::uint32_t actualDecoyId = deadId - 100000;
-                if (m_decoys.count(actualDecoyId)) {
-                    DecoyData decoy = m_decoys.at(actualDecoyId);
-                    explodeDecoy(actualDecoyId, decoy);
-                    m_decoys.erase(actualDecoyId);
-                }
-            } 
-            else if (m_clients.count(deadId)) {
-                auto& targetInfo = m_clients.at(deadId);
-                std::cout << "[SERVER] Player " << deadId << " died!\n";
-
-                sf::Packet deathPacket;
-                deathPacket << PacketType::PlayerDied;
-                (void)m_socket.send(deathPacket, targetInfo.ip, targetInfo.port);
-
-                for (auto dit = m_medicDrones.begin(); dit != m_medicDrones.end(); ) {
-                    if (dit->second.ownerId == deadId) dit = m_medicDrones.erase(dit);
-                    else ++dit;
-                }
-
-                m_clients.erase(deadId);
-            }
-        }
-
-        for(const auto& shoot: shootEvents){
-            sf::Packet shootPacket;
-            shootPacket << PacketType::EnemyShoots << shoot.weapon << shoot.startPos << shoot.targetPos;
-
-            for(const auto& [playerId, info] : m_clients){
-                (void)m_socket.send(shootPacket, info.ip, info.port);
-            }
+        for(const auto& [playerId, info] : m_clients){
+            (void)m_socket.send(shootPacket, info.ip, info.port);
         }
     }
 
     if(m_clients.empty()){
-        if(needsWorldReset()){
-            resetWorld();
-        }
+        if(needsWorldReset()) resetWorld();
         return;
     }
 
@@ -204,29 +196,20 @@ void ServerEngine::update(sf::Time deltaTime){
         else ++it;
     }
 
-    // EXP SYSTEM
+    // --- Pickups, fields, and ability entity simulation ---
     updateEnergyCells(deltaTime);
-
-    // HEALING FIELDS
     updateHealingFields(deltaTime);
-
     updateMedicPassives(deltaTime);
-
     updateBlackHoles(deltaTime);
-
     updateMedicOrbs(deltaTime);
-
     updateMedicBarriers(deltaTime);
-
     updateMedicDrones(deltaTime);
-
     updateServerProjectiles(deltaTime);
 
-    // SENDING CURRENT WORLD STATE TO CLiENTS
+    // --- Broadcast world state to clients ---
     if(m_tickCounter % 60 == 0){
         std::cout<<"[SERVER] Server is ticking... Active time: " << (m_tickCounter/60) << "s\n";
     }
-
     sendWorldState();
 }
 
@@ -242,7 +225,6 @@ void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, u
 void ServerEngine::handlePlayerPosition(sf::Packet& packet){
     std::uint32_t playerId;
     sf::Vector2f position;
-
     if(packet >> playerId >> position){
         auto it = m_clients.find(playerId);
         if(it != m_clients.end()){
@@ -255,12 +237,13 @@ void ServerEngine::handlePlayerPosition(sf::Packet& packet){
 void ServerEngine::handleEntityHit(sf::Packet& packet){
     std::uint32_t shooterId, targetId;
     WeaponType weaponUsed;
-
     if(packet >> shooterId >> targetId >> weaponUsed){
         if (weaponUsed == WeaponType::MedicNeedle) return;
 
+        // --- Resolve base weapon damage ---
         float baseDamage = WeaponRegistry::getStats(weaponUsed).damage;
 
+        // --- Decoy hit ---
         if(m_decoys.count(targetId)){
             auto& decoy = m_decoys.at(targetId);
             decoy.hp -= baseDamage;
@@ -272,25 +255,23 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
             return;
         }
 
-        // Player hit
+        // --- Player hit ---
         if(m_clients.count(targetId)){
             if(m_clients.at(targetId).invTimer > 0.0f) return;
             float damageTaken = baseDamage;
-
             if(m_clients.at(targetId).pClass == PlayerClass::Juggernaut) damageTaken *= 0.8f;
-
             m_clients.at(targetId).hp -= damageTaken;
-
             if(m_clients.at(targetId).hp <= 0.0f){
                 sf::Packet deathPacket;
                 deathPacket << PacketType::PlayerDied;
                 (void)m_socket.send(deathPacket, m_clients.at(targetId).ip, m_clients.at(targetId).port);
             }
         }
-        // Enemy hit
+        // --- Enemy hit ---
         if(m_enemies.count(targetId)){
             float damageDealt = baseDamage;
 
+            // --- Apply shooter damage multiplier and crit ---
             if (m_clients.count(shooterId)) {
                 damageDealt *= m_clients.at(shooterId).damageMultiplier;
             }
@@ -300,15 +281,14 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
                     damageDealt *= 2.0f;
                 }
             }
-
             m_enemies[targetId]->takeDamage(damageDealt);
 
+            // --- Notify shooter and handle kill rewards ---
             if(m_clients.count(shooterId) && weaponUsed != WeaponType::VanguardWave){
                 sf::Packet damagePacket;
                 damagePacket << PacketType::PlayerDealtDamage << damageDealt;
                 (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
             }
-
             if(m_enemies[targetId]->getHp() <= 0.0f){
                 if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
                     auto& shooter = m_clients.at(shooterId);
@@ -316,7 +296,6 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
                     shooter.hp += 5.0f;
                     if (shooter.hp > maxHp) shooter.hp = maxHp;
                 }
-
                 m_energyCells[m_globalEntityCounter++] = {m_enemies[targetId]->getPosition(), 1, 0};
                 m_enemies.erase(targetId);
             }
@@ -330,11 +309,9 @@ void ServerEngine::handleJoinRequest(sf::Packet& packet, const sf::IpAddress& se
         std::uint32_t newId = m_globalEntityCounter++;
         sf::Vector2f newPos = sf::Vector2f(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES)*Config::TILE_SIZE / 2.0f;
         const auto& stats = HeroRegistry::getStats(requestedClass);
-
         m_clients.insert_or_assign(newId, ClientInfo{
             sender, port, newPos, sf::Clock(), stats.maxHp, stats.speed, requestedClass
         });
-        
         sf::Packet reply;
         reply << PacketType::JoinAccept << newId;
         (void)m_socket.send(reply, sender, port);
@@ -353,7 +330,6 @@ void ServerEngine::handlePlayerShoots(sf::Packet& packet){
 
         sf::Packet relayPacket;
         relayPacket << PacketType::PlayerShoots << shooterId << weaponUsed << startPos << targetPos;
-
         for(const auto& [id, info] : m_clients){
             if(id == shooterId) continue;
             (void)m_socket.send(relayPacket, info.ip, info.port);
@@ -381,6 +357,7 @@ void ServerEngine::handleUpgradeChosen(sf::Packet& packet){
     if (!m_pendingOffers.count(playerId)) return;
 
     const auto& offers = m_pendingOffers.at(playerId);
+
     if (std::find(offers.begin(), offers.end(), upgradeId) == offers.end()) return;
     if (m_upgradeMenuPhase != UpgradeMenuPhase::Selecting) return;
 
@@ -392,49 +369,55 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
     AbilityType ability;
     if(packet >> shooterId >> targetId >> ability){
         if(ability == AbilityType::JuggernautDash){
-            float damage = 20.0f;
+            // --- Juggernaut dash: damage, knockback, and feedback ---
+            const auto& stats = AbilityRegistry::getStats(AbilityType::JuggernautDash);
 
+            float damage = stats.damage;
             if(!m_enemies.count(targetId)) return;
             m_enemies[targetId]->takeDamage(damage);
 
             if(m_clients.count(shooterId)){
                 sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
                 float lenSq = pushDir.lengthSquared();
-
+                
                 if(lenSq > 0.0f){
                     pushDir /= std::sqrt(lenSq);
-                    m_enemies[targetId]->applyKnockback(pushDir, 1200.0f);
+                    m_enemies[targetId]->applyKnockback(pushDir, stats.knockback);
                 }
 
                 sf::Packet damagePacket;
                 damagePacket << PacketType::PlayerDealtDamage << damage;
                 (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
             }
-        }else if(ability == AbilityType::JuggernautRepulsor){
-            float damage = 10.0f;
             
+        }else if(ability == AbilityType::JuggernautRepulsor){
+            // --- Juggernaut repulsor: radial knockback damage ---
+            const auto& stats = AbilityRegistry::getStats(AbilityType::JuggernautRepulsor);
+            float damage = stats.damage;
+
             if(m_enemies.count(targetId)){
                 m_enemies[targetId]->takeDamage(damage);
 
                 if (m_clients.count(shooterId)) {
                     sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
-                    m_enemies[targetId]->applyKnockback(pushDir, 1000.0f);
-
+                    m_enemies[targetId]->applyKnockback(pushDir, stats.knockback);
                     sf::Packet damagePacket;
                     damagePacket << PacketType::PlayerDealtDamage << damage;
                     (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
                 }
             }
         }else if(ability == AbilityType::VanguardKatanaSlash){
-            const float damage = 35.0f;
+            // --- Vanguard katana slash: damage, knockback, and kill heal ---
+            const auto& stats = AbilityRegistry::getStats(AbilityType::VanguardKatanaSlash);
+            const float damage = stats.damage;
+            const float killHeal = AbilityRegistry::param(AbilityType::VanguardKatanaSlash, "killHeal", 5.f);
 
             if (m_enemies.count(targetId)) {
                 m_enemies[targetId]->takeDamage(damage);
 
                 if (m_clients.count(shooterId)) {
                     sf::Vector2f pushDir = m_enemies[targetId]->getPosition() - m_clients.at(shooterId).position;
-                    m_enemies[targetId]->applyKnockback(pushDir, 300.0f);
-
+                    m_enemies[targetId]->applyKnockback(pushDir, stats.knockback);
                     sf::Packet damagePacket;
                     damagePacket << PacketType::PlayerDealtDamage << damage;
                     (void)m_socket.send(damagePacket, m_clients.at(shooterId).ip, m_clients.at(shooterId).port);
@@ -444,7 +427,7 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                     if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
                         auto& shooter = m_clients.at(shooterId);
                         float maxHp = getEffectiveMaxHp(shooter);
-                        shooter.hp += 5.0f;
+                        shooter.hp += killHeal;
                         if (shooter.hp > maxHp) shooter.hp = maxHp;
                     }
 
@@ -452,8 +435,12 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                     m_enemies.erase(targetId);
                 }
             }
+
         }else if(ability == AbilityType::VanguardDash){
-            float damage = 25.0f;
+            // --- Vanguard dash: contact damage and kill heal ---
+            const auto& stats = AbilityRegistry::getStats(AbilityType::VanguardDash);
+            float damage = stats.damage;
+            const float killHeal = AbilityRegistry::param(AbilityType::VanguardDash, "killHeal", 5.f);
 
             if (m_enemies.count(targetId)) {
                 m_enemies[targetId]->takeDamage(damage);
@@ -468,7 +455,7 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
                     if (m_clients.count(shooterId) && m_clients.at(shooterId).pClass == PlayerClass::Vanguard) {
                         auto& shooter = m_clients.at(shooterId);
                         float maxHp = getEffectiveMaxHp(shooter);
-                        shooter.hp += 5.0f;
+                        shooter.hp += killHeal;
                         if (shooter.hp > maxHp) shooter.hp = maxHp;
                     }
 
@@ -484,53 +471,70 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
     std::uint32_t playerId;
     AbilityType ability;
     sf::Vector2f pos;
+
     if (packet >> playerId >> ability >> pos) {
-
         if(ability == AbilityType::SoldierHealField){
+            // --- Soldier heal field spawn ---
+            const auto& healField = AbilityRegistry::getStats(AbilityType::SoldierHealField);
             std::uint32_t fieldId = m_globalEntityCounter++;
-            m_healFields[fieldId] = {pos, 100.0f, 5.0f, 10.0f};
+            m_healFields[fieldId] = {pos, healField.radius, healField.duration, AbilityRegistry::param(AbilityType::SoldierHealField, "healPerSecond", 10.f)};
 
             sf::Packet broadcastPacket;
-            broadcastPacket << PacketType::SpawnHealField << fieldId << pos << 100.0f << 5.0f;
+            broadcastPacket << PacketType::SpawnHealField << fieldId << pos << healField.radius << healField.duration;
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
+
         }else if(ability == AbilityType::JuggernautBlackHole){
+            // --- Juggernaut black hole spawn ---
+            const auto& bhStats = AbilityRegistry::getStats(AbilityType::JuggernautBlackHole);
             std::uint32_t bhId = m_globalEntityCounter++;
-            m_blackHoles[bhId] = {pos, 4.0f, playerId};
+            m_blackHoles[bhId] = {pos, bhStats.duration, playerId};
 
             sf::Packet broadcastPacket;
-            broadcastPacket << PacketType::SpawnBlackHole << bhId << pos << 3.0f;
+            broadcastPacket << PacketType::SpawnBlackHole << bhId << pos << AbilityRegistry::param(AbilityType::JuggernautBlackHole, "visualRadius", 3.f);
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
+
         }else if(ability == AbilityType::VanguardDash){
+            // --- Vanguard dash: grant brief invulnerability ---
             if (m_clients.count(playerId)) {
-                m_clients.at(playerId).invTimer = 0.3f;
+                m_clients.at(playerId).invTimer = AbilityRegistry::param(AbilityType::VanguardDash, "invDuration", 0.3f);
             }
+
         }else if(ability == AbilityType::VanguardDecoy){
+            // --- Vanguard decoy: stealth and decoy spawn ---
             if (!m_clients.count(playerId)) return;
+            const auto& decoyStats = AbilityRegistry::getStats(AbilityType::VanguardDecoy);
+            const float stealthDuration = AbilityRegistry::param(AbilityType::VanguardDecoy, "stealthDuration", 4.f);
+            const float decoyHp = AbilityRegistry::param(AbilityType::VanguardDecoy, "decoyHp", 150.f);
 
             auto& client = m_clients.at(playerId);
             if (client.stealthTimer > 0.0f || playerHasActiveDecoy(playerId)) return;
 
-            client.stealthTimer = Config::VANGUARD_STEALTH_DURATION;
-
+            client.stealthTimer = stealthDuration;
             std::uint32_t decoyId = m_globalEntityCounter++;
+
             m_decoys[decoyId] = {
                 pos,
-                Config::VANGUARD_DECOY_HP,
+                decoyHp,
                 playerId,
-                Config::VANGUARD_STEALTH_DURATION
+                stealthDuration
             };
 
             sf::Packet broadcastPacket;
-            broadcastPacket << PacketType::SpawnDecoy << decoyId << pos << Config::VANGUARD_DECOY_HP;
+            broadcastPacket << PacketType::SpawnDecoy << decoyId << pos << decoyHp;
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
+
         }else if(ability == AbilityType::MedicTeleport){
+            // --- Medic teleport: clamp range and apply iframes ---
             if (!m_clients.count(playerId)) return;
+
+            const auto& tpStats = AbilityRegistry::getStats(AbilityType::MedicTeleport);
+            const float rangeTolerance = AbilityRegistry::param(AbilityType::MedicTeleport, "rangeTolerance", 10.f);
 
             auto& client = m_clients.at(playerId);
             if (client.pClass != PlayerClass::Medic) return;
@@ -538,13 +542,13 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             sf::Vector2f origin = client.position;
             sf::Vector2f target = pos;
             sf::Vector2f delta = target - origin;
-            float distSq = delta.lengthSquared();
 
+            float distSq = delta.lengthSquared();
             if (distSq > 1e-4f) {
                 float dist = std::sqrt(distSq);
-                float maxAllowed = Config::MEDIC_TELEPORT_RANGE + Config::MEDIC_TELEPORT_RANGE_TOLERANCE;
+                float maxAllowed = tpStats.range + rangeTolerance;
                 if (dist > maxAllowed) {
-                    target = origin + (delta / dist) * Config::MEDIC_TELEPORT_RANGE;
+                    target = origin + (delta / dist) * tpStats.range;
                 }
             }
 
@@ -552,11 +556,14 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             if (m_map->checkCollision(target, radius)) return;
 
             client.position = target;
-            client.invTimer = Config::MEDIC_TELEPORT_IFRAMES;
+            client.invTimer = AbilityRegistry::param(AbilityType::MedicTeleport, "iframes", 0.5f);
         }else if(ability == AbilityType::MedicOrb){
+            // --- Medic orb: spawn bouncing heal/damage zone ---
             if (!m_clients.count(playerId)) return;
 
+            const auto& orbStats = AbilityRegistry::getStats(AbilityType::MedicOrb);
             auto& client = m_clients.at(playerId);
+
             if (client.pClass != PlayerClass::Medic) return;
             if (playerHasActiveOrb(playerId)) return;
 
@@ -572,8 +579,8 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             sf::Vector2f spawnPos = client.position;
             m_medicOrbs[orbId] = {
                 spawnPos,
-                dir * Config::MEDIC_ORB_SPEED,
-                Config::MEDIC_ORB_LIFETIME,
+                dir * orbStats.speed,
+                orbStats.lifetime,
                 0.0f,
                 playerId
             };
@@ -584,9 +591,14 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
         }else if(ability == AbilityType::MedicBarrier){
+            // --- Medic barrier: spawn arc wall from facing angle ---
             float facingAngle;
             if (!(packet >> facingAngle)) return;
             if (!m_clients.count(playerId)) return;
+
+            const auto& barrierStats = AbilityRegistry::getStats(AbilityType::MedicBarrier);
+            const float arcRadius = AbilityRegistry::param(AbilityType::MedicBarrier, "arcRadius", 280.f);
+            const float standoff = AbilityRegistry::param(AbilityType::MedicBarrier, "standoff", 80.f);
 
             auto& client = m_clients.at(playerId);
             if (client.pClass != PlayerClass::Medic) return;
@@ -596,28 +608,31 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
             sf::Vector2f arcCenter = SectorMath::arcCircleCenter(
                 origin,
                 facingAngle,
-                Config::MEDIC_BARRIER_ARC_RADIUS,
-                Config::MEDIC_BARRIER_STANDOFF);
+                arcRadius,
+                standoff);
 
             std::uint32_t barrierId = m_globalEntityCounter++;
             m_medicBarriers[barrierId] = {
                 arcCenter,
                 facingAngle,
-                Config::MEDIC_BARRIER_LIFETIME,
+                barrierStats.lifetime,
                 playerId
             };
 
             sf::Packet broadcastPacket;
-            broadcastPacket << PacketType::SpawnMedicBarrier << barrierId << arcCenter << facingAngle << Config::MEDIC_BARRIER_LIFETIME;
+            broadcastPacket << PacketType::SpawnMedicBarrier << barrierId << arcCenter << facingAngle << barrierStats.lifetime;
             for (const auto& [id, clientInfo] : m_clients) {
                 (void)m_socket.send(broadcastPacket, clientInfo.ip, clientInfo.port);
             }
+
         }else if(ability == AbilityType::MedicUltCommand){
+            // --- Medic ult: redirect or spawn support drone ---
             if (!m_clients.count(playerId)) return;
             if (m_clients.at(playerId).pClass != PlayerClass::Medic) return;
             handleMedicDroneCommand(playerId, pos);
         }
 
+        // --- Relay movement abilities to other clients ---
         if (ability == AbilityType::VanguardDash ||
             ability == AbilityType::VanguardKatanaSlash ||
             ability == AbilityType::JuggernautDash ||
@@ -633,7 +648,6 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
     }
 }
 
-
 float ServerEngine::getEffectiveMaxHp(const ClientInfo& client) const {
     return HeroRegistry::getStats(client.pClass).maxHp * client.hpMultiplier;
 }
@@ -645,9 +659,11 @@ std::vector<const UpgradeDefinition*> ServerEngine::buildUpgradePool(PlayerClass
 std::vector<std::string> ServerEngine::rollUpgradeOffer(const ClientInfo& client) const {
     bool wantAugment = (m_teamLevel >= 4 && m_teamLevel % 4 == 0);
     auto pool = buildUpgradePool(client.pClass, wantAugment);
+
     if (pool.empty() && wantAugment) {
         pool = buildUpgradePool(client.pClass, false);
     }
+
     return UpgradeRegistry::pickWeightedRandom(pool, 3);
 }
 
@@ -682,30 +698,29 @@ void ServerEngine::applyUpgrade(ClientInfo& client, const UpgradeDefinition& upg
 void ServerEngine::sendLevelUpOffers() {
     m_pendingOffers.clear();
     for (const auto& [id, info] : m_clients) {
-        (void)info;
         auto offers = rollUpgradeOffer(m_clients.at(id));
         m_pendingOffers[id] = offers;
-
         sf::Packet offerPacket;
         offerPacket << PacketType::LevelUpOffer;
         offerPacket << static_cast<std::uint32_t>(offers.size());
+
         for (const auto& offerId : offers) {
             offerPacket << offerId;
         }
+
         (void)m_socket.send(offerPacket, m_clients.at(id).ip, m_clients.at(id).port);
     }
 }
 
-
 void ServerEngine::finalizeUpgradeSelections() {
     for (const auto& [playerId, info] : m_clients) {
-        (void)info;
         bool wasRandom = false;
         std::string chosenId;
-
         auto chosenIt = m_playerChosenUpgrades.find(playerId);
+
         if (chosenIt != m_playerChosenUpgrades.end() && !chosenIt->second.empty()) {
             chosenId = chosenIt->second;
+
         } else if (m_pendingOffers.count(playerId) && !m_pendingOffers.at(playerId).empty()) {
             const auto& offers = m_pendingOffers.at(playerId);
             chosenId = offers[static_cast<std::size_t>(std::rand()) % offers.size()];
@@ -714,8 +729,8 @@ void ServerEngine::finalizeUpgradeSelections() {
         }
 
         if (chosenId.empty()) continue;
-
         const UpgradeDefinition* def = UpgradeRegistry::getById(chosenId);
+
         if (def) {
             applyUpgrade(m_clients.at(playerId), *def);
             sendUpgradeMultipliers(playerId);
@@ -732,6 +747,7 @@ void ServerEngine::sendUpgradeMultipliers(std::uint32_t playerId) {
 
     const ClientInfo& info = m_clients.at(playerId);
     sf::Packet packet;
+
     packet << PacketType::PlayerUpgradeMultipliers << playerId
            << info.hpMultiplier << info.speedMultiplier
            << info.damageMultiplier << info.cooldownMultiplier;
@@ -767,7 +783,6 @@ void ServerEngine::resetWorld() {
     m_medicBarriers.clear();
     m_medicDrones.clear();
     m_serverProjectiles.clear();
-
     m_globalEntityCounter = 1;
     m_teamLevel = 1;
     m_teamExp = 0;
@@ -777,9 +792,7 @@ void ServerEngine::resetWorld() {
     m_pendingOffers.clear();
     m_upgradeMenuPhase = UpgradeMenuPhase::None;
     m_tickCounter = 0;
-
     m_aiDirector.reset();
-
     std::cout << "[SERVER] All players left. Resetting world to initial state...\n";
 }
 
@@ -828,7 +841,7 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
     for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
         auto& cell = it->second;
 
-        // 1. looking for closest player;
+        // --- Assign magnet target when none is locked ---
         if(cell.targetPlayerId == 0){
             float closestDist = std::pow(Config::MAGNET_RADIUS, 2);
             for(const auto& [pId, pInfo] : m_clients){
@@ -840,27 +853,24 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
             }
         }
 
-        // 2. exp goes to the closest player in magnet radius
+        // --- Move toward target and collect on pickup ---
         if(cell.targetPlayerId != 0 && m_clients.count(cell.targetPlayerId)){
             auto& pInfo = m_clients.at(cell.targetPlayerId);
             sf::Vector2f dir = pInfo.position - cell.position;
             float distSq = dir.lengthSquared();
-
             if(distSq < std::pow(Config::PICKUP_RADIUS, 2)){
+                // --- Team level-up and upgrade menu trigger ---
                 m_teamExp += cell.expValue;
                 if(m_teamExp >= m_teamExpMax){
                     m_teamExp -= m_teamExpMax;
                     m_teamLevel++;
                     m_teamExpMax = static_cast<int>(m_teamExpMax * 1.5f);
                     std::cout << "[SERVER] Players reached level " << m_teamLevel << "!\n";
-
                     m_isPaused = true;
                     m_upgradeTimer.restart();
                     m_playerChosenUpgrades.clear();
                     m_upgradeMenuPhase = UpgradeMenuPhase::Selecting;
-
                     sendLevelUpOffers();
-
                     sf::Packet pausePacket;
                     pausePacket << PacketType::LevelUpTriggered;
                     for(auto& [id, info] : m_clients){
@@ -882,7 +892,6 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
 void ServerEngine::updateHealingFields(sf::Time deltaTime){
     for (auto it = m_healFields.begin(); it != m_healFields.end(); ) {
         auto& field = it->second;
-
         for (auto& [id, clientInfo] : m_clients) {
             float distSq = (clientInfo.position - field.position).lengthSquared();
             if (distSq <= (field.radius * field.radius)) {
@@ -893,7 +902,6 @@ void ServerEngine::updateHealingFields(sf::Time deltaTime){
                 }
             }
         }
-
         field.duration -= deltaTime.asSeconds();
         if (field.duration <= 0.0f) {
             it = m_healFields.erase(it);
@@ -905,55 +913,53 @@ void ServerEngine::updateHealingFields(sf::Time deltaTime){
 
 void ServerEngine::updateMedicPassives(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
-
+    const float healPerSecond = AbilityRegistry::param(AbilityRegistry::medic().Passive, "healPerSecond", 2.f);
     for (auto& [id, clientInfo] : m_clients) {
-        (void)id;
         if (clientInfo.pClass != PlayerClass::Medic) continue;
-
         float maxHp = getEffectiveMaxHp(clientInfo);
         if (clientInfo.hp >= maxHp) continue;
-
-        clientInfo.hp += Config::MEDIC_PASSIVE_HEAL_PER_SECOND * dt;
+        clientInfo.hp += healPerSecond * dt;
         if (clientInfo.hp > maxHp) clientInfo.hp = maxHp;
     }
 }
 
 void ServerEngine::updateBlackHoles(sf::Time deltaTime){
     std::vector<std::uint32_t> deadFromBlackHole;
+    const auto& bhStats = AbilityRegistry::getStats(AbilityType::JuggernautBlackHole);
+    const float pullRadius = AbilityRegistry::param(AbilityType::JuggernautBlackHole, "pullRadius", 300.f);
+    const float coreRadius = AbilityRegistry::param(AbilityType::JuggernautBlackHole, "coreRadius", 30.f);
+    const float coreDps = AbilityRegistry::param(AbilityType::JuggernautBlackHole, "coreDps", 50.f);
+    const float pullSpeed = AbilityRegistry::param(AbilityType::JuggernautBlackHole, "pullSpeed", 170.f);
 
     for(auto it = m_blackHoles.begin(); it != m_blackHoles.end(); ){
+        // --- Tick black hole lifetime ---
         it->second.duration -= deltaTime.asSeconds();
         if(it->second.duration <= 0.0f){
             it = m_blackHoles.erase(it);
             continue;
         }
 
-        float pullRadius = 300.0f;
-        float coreRadius = 30.0f;
-
+        float pullRadiusLocal = pullRadius;
+        float coreRadiusLocal = coreRadius;
         for(auto& [enemyId, enemy] : m_enemies){
             sf::Vector2f diff = it->second.position - enemy->getPosition();
             float distSq = diff.lengthSquared();
 
-            if(distSq > 0.0f && distSq < pullRadius * pullRadius){
+            // --- Pull enemies inward or deal core damage ---
+            if(distSq > 0.0f && distSq < pullRadiusLocal * pullRadiusLocal){
                 float dist = std::sqrt(distSq);
-
-                if(dist < coreRadius){
-                    float damageDealt = 50.0f * deltaTime.asSeconds();
+                if(dist < coreRadiusLocal){
+                    float damageDealt = coreDps * deltaTime.asSeconds();
                     enemy->takeDamage(damageDealt);
-
                     if (m_clients.count(it->second.ownerId)) {
                         sf::Packet damagePacket;
                         damagePacket << PacketType::PlayerDealtDamage << damageDealt;
                         (void)m_socket.send(damagePacket, m_clients.at(it->second.ownerId).ip, m_clients.at(it->second.ownerId).port);
                     }
-
                     if(enemy->getHp() <= 0.0f) deadFromBlackHole.push_back(enemyId);
-                    
                 }else{
-                    sf::Vector2f pullStep = (diff / dist) * 170.0f * deltaTime.asSeconds();
+                    sf::Vector2f pullStep = (diff / dist) * pullSpeed * deltaTime.asSeconds();
                     sf::Vector2f newPos = enemy->getPosition() + pullStep;
-
                     if(!m_map->checkCollision(newPos, EnemyRegistry::getStats(enemy->getType()).radius)){
                         enemy->setPosition(newPos);
                     }
@@ -963,6 +969,7 @@ void ServerEngine::updateBlackHoles(sf::Time deltaTime){
         ++it;
     }
 
+    // --- Spawn energy cells for black hole kills ---
     for(auto id: deadFromBlackHole){
         if(m_enemies.count(id)){
             m_energyCells[m_globalEntityCounter++] = {m_enemies[id]->getPosition(), 1, 0};
@@ -972,12 +979,15 @@ void ServerEngine::updateBlackHoles(sf::Time deltaTime){
 }
 
 void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
-    const float radiusSq = Config::VANGUARD_DECOY_EXPLOSION_RADIUS * Config::VANGUARD_DECOY_EXPLOSION_RADIUS;
+    const float explosionRadius = AbilityRegistry::param(AbilityType::VanguardDecoy, "explosionRadius", 120.f);
+    const float explosionDamage = AbilityRegistry::param(AbilityType::VanguardDecoy, "explosionDamage", 200.f);
+    const float radiusSq = explosionRadius * explosionRadius;
     std::vector<std::uint32_t> deadFromExplosion;
 
+    // --- Damage enemies inside blast radius ---
     for (auto& [eId, targetEnemy] : m_enemies) {
         if ((targetEnemy->getPosition() - decoy.pos).lengthSquared() < radiusSq) {
-            targetEnemy->takeDamage(Config::VANGUARD_DECOY_EXPLOSION_DAMAGE);
+            targetEnemy->takeDamage(explosionDamage);
             if (targetEnemy->getHp() <= 0.0f) {
                 deadFromExplosion.push_back(eId);
             }
@@ -991,6 +1001,7 @@ void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
         }
     }
 
+    // --- Notify clients of decoy explosion ---
     sf::Packet expPacket;
     expPacket << PacketType::DecoyExplode << decoyId;
     for (const auto& [cId, cInfo] : m_clients) {
@@ -1014,57 +1025,59 @@ bool ServerEngine::playerHasActiveOrb(std::uint32_t playerId) const{
 
 void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
     float dt = deltaTime.asSeconds();
-    const float effectRadiusSq = Config::MEDIC_ORB_EFFECT_RADIUS * Config::MEDIC_ORB_EFFECT_RADIUS;
+    const auto& orbStats = AbilityRegistry::getStats(AbilityType::MedicOrb);
+    const float effectRadius = AbilityRegistry::param(AbilityType::MedicOrb, "effectRadius", 120.f);
+    const float effectRadiusSq = effectRadius * effectRadius;
+    const float tickInterval = AbilityRegistry::param(AbilityType::MedicOrb, "tickInterval", 0.2f);
+    const float healPerTick = AbilityRegistry::param(AbilityType::MedicOrb, "healPerTick", 8.f);
+    const float damagePerTick = AbilityRegistry::param(AbilityType::MedicOrb, "damagePerTick", 12.f);
     std::vector<std::uint32_t> deadFromOrb;
-
     for (auto it = m_medicOrbs.begin(); it != m_medicOrbs.end(); ) {
         auto& orb = it->second;
 
+        // --- Move orb with axis-separated wall bounce ---
         sf::Vector2f velocity = orb.velocity * dt;
-
         sf::Vector2f nextPosX = orb.position + sf::Vector2f(velocity.x, 0.0f);
-        if (m_map->checkCollision(nextPosX, Config::MEDIC_ORB_RADIUS)) {
+        if (m_map->checkCollision(nextPosX, orbStats.radius)) {
             orb.velocity.x = -orb.velocity.x;
         } else {
             orb.position.x = nextPosX.x;
         }
 
         sf::Vector2f nextPosY = orb.position + sf::Vector2f(0.0f, velocity.y);
-        if (m_map->checkCollision(nextPosY, Config::MEDIC_ORB_RADIUS)) {
+        if (m_map->checkCollision(nextPosY, orbStats.radius)) {
             orb.velocity.y = -orb.velocity.y;
         } else {
             orb.position.y = nextPosY.y;
         }
-
         orb.tickAccumulator += dt;
-        if (orb.tickAccumulator >= Config::MEDIC_ORB_TICK_INTERVAL) {
+        if (orb.tickAccumulator >= tickInterval) {
             orb.tickAccumulator = 0.0f;
 
+            // --- Heal players in orb radius ---
             for (auto& [id, clientInfo] : m_clients) {
                 float distSq = (clientInfo.position - orb.position).lengthSquared();
                 if (distSq <= effectRadiusSq) {
                     float maxHp = getEffectiveMaxHp(clientInfo);
-                    clientInfo.hp += Config::MEDIC_ORB_HEAL_PER_TICK;
+                    clientInfo.hp += healPerTick;
                     if (clientInfo.hp > maxHp) clientInfo.hp = maxHp;
                 }
             }
 
+            // --- Damage enemies in orb radius ---
             for (auto& [enemyId, enemy] : m_enemies) {
                 float distSq = (enemy->getPosition() - orb.position).lengthSquared();
                 if (distSq <= effectRadiusSq) {
-                    enemy->takeDamage(Config::MEDIC_ORB_DAMAGE_PER_TICK);
-
+                    enemy->takeDamage(damagePerTick);
                     if (m_clients.count(orb.ownerId)) {
                         sf::Packet damagePacket;
-                        damagePacket << PacketType::PlayerDealtDamage << Config::MEDIC_ORB_DAMAGE_PER_TICK;
+                        damagePacket << PacketType::PlayerDealtDamage << damagePerTick;
                         (void)m_socket.send(damagePacket, m_clients.at(orb.ownerId).ip, m_clients.at(orb.ownerId).port);
                     }
-
                     if (enemy->getHp() <= 0.0f) deadFromOrb.push_back(enemyId);
                 }
             }
         }
-
         orb.lifetime -= dt;
         if (orb.lifetime <= 0.0f) {
             it = m_medicOrbs.erase(it);
@@ -1073,6 +1086,7 @@ void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
         }
     }
 
+    // --- Spawn energy cells for orb kills ---
     for (auto enemyId : deadFromOrb) {
         if (m_enemies.count(enemyId)) {
             m_energyCells[m_globalEntityCounter++] = {m_enemies[enemyId]->getPosition(), 1, 0};
@@ -1083,19 +1097,24 @@ void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
 
 void ServerEngine::updateMedicBarriers(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
-    const float halfSpan = Config::MEDIC_BARRIER_SPAN / 2.0f;
+    const auto& barrierStats = AbilityRegistry::getStats(AbilityType::MedicBarrier);
+    const float arcRadius = AbilityRegistry::param(AbilityType::MedicBarrier, "arcRadius", 280.f);
+    const float wallThickness = AbilityRegistry::param(AbilityType::MedicBarrier, "wallThickness", 18.f);
+    const float span = AbilityRegistry::param(AbilityType::MedicBarrier, "span", 0.8f);
+    const float halfSpan = span / 2.0f;
 
     for (auto it = m_medicBarriers.begin(); it != m_medicBarriers.end(); ) {
         auto& barrier = it->second;
 
+        // --- Knock back enemies intersecting the arc wall ---
         for (auto& [enemyId, enemy] : m_enemies) {
             float enemyRadius = EnemyRegistry::getStats(enemy->getType()).radius;
             if (!SectorMath::isInArcWall(
                     barrier.center,
                     barrier.facingAngle,
-                    Config::MEDIC_BARRIER_ARC_RADIUS,
+                    arcRadius,
                     halfSpan,
-                    Config::MEDIC_BARRIER_WALL_THICKNESS,
+                    wallThickness,
                     enemy->getPosition(),
                     enemyRadius)) {
                 continue;
@@ -1109,9 +1128,8 @@ void ServerEngine::updateMedicBarriers(sf::Time deltaTime) {
             } else {
                 pushDir = delta / std::sqrt(distSq);
             }
-            enemy->applyKnockback(pushDir, Config::MEDIC_BARRIER_KNOCKBACK);
+            enemy->applyKnockback(pushDir, barrierStats.knockback);
         }
-
         barrier.lifetime -= dt;
         if (barrier.lifetime <= 0.0f) {
             it = m_medicBarriers.erase(it);
@@ -1132,7 +1150,6 @@ std::uint32_t ServerEngine::findNearestEnemyId(const sf::Vector2f& from, float m
     const float maxRangeSq = maxRange * maxRange;
     std::uint32_t bestId = 0;
     float bestDistSq = maxRangeSq;
-
     for (const auto& [enemyId, enemy] : m_enemies) {
         float distSq = (enemy->getPosition() - from).lengthSquared();
         if (distSq < bestDistSq) {
@@ -1145,7 +1162,6 @@ std::uint32_t ServerEngine::findNearestEnemyId(const sf::Vector2f& from, float m
 
 void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos) {
     const auto& stats = WeaponRegistry::getStats(WeaponType::DroneBlaster);
-
     sf::Vector2f dir = targetPos - startPos;
     float lenSq = dir.lengthSquared();
     if (lenSq < 1e-4f) {
@@ -1153,7 +1169,6 @@ void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPo
     } else {
         dir /= std::sqrt(lenSq);
     }
-
     m_serverProjectiles.push_back({
         ownerId,
         startPos,
@@ -1162,7 +1177,6 @@ void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPo
         stats.lifetime,
         stats.radius
     });
-
     sf::Packet shootPacket;
     shootPacket << PacketType::DroneShoots << startPos << targetPos;
     for (const auto& [id, clientInfo] : m_clients) {
@@ -1172,15 +1186,16 @@ void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPo
 
 void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f targetPos) {
     MedicDroneData* drone = findDroneByOwner(playerId);
+    const auto& droneStats = AbilityRegistry::medic().Drone;
 
+    // --- Spawn drone on first ult command ---
     if (!drone) {
         if (!m_clients.count(playerId)) return;
-
         std::uint32_t droneId = m_globalEntityCounter++;
         sf::Vector2f spawnPos = m_clients.at(playerId).position;
         m_medicDrones[droneId] = {
             spawnPos,
-            Config::MEDIC_DRONE_LIFETIME,
+            droneStats.lifetime,
             playerId,
             MedicDroneState::Orbit,
             playerId,
@@ -1191,7 +1206,6 @@ void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f 
             false
         };
         drone = &m_medicDrones[droneId];
-
         sf::Packet spawnPacket;
         spawnPacket << PacketType::SpawnMedicDrone << droneId << playerId << spawnPos;
         for (const auto& [id, clientInfo] : m_clients) {
@@ -1199,10 +1213,11 @@ void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f 
         }
     }
 
-    const float detectSq = Config::MEDIC_DRONE_PLAYER_DETECT_RADIUS * Config::MEDIC_DRONE_PLAYER_DETECT_RADIUS;
+    // --- Resolve orbit target vs sentry position ---
+    const float detectRadius = AbilityRegistry::param(droneStats, "playerDetectRadius", 50.f);
+    const float detectSq = detectRadius * detectRadius;
     std::uint32_t nearestPlayerId = 0;
     float nearestDistSq = detectSq;
-
     for (const auto& [id, clientInfo] : m_clients) {
         float distSq = (clientInfo.position - targetPos).lengthSquared();
         if (distSq <= nearestDistSq) {
@@ -1210,7 +1225,6 @@ void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f 
             nearestPlayerId = id;
         }
     }
-
     if (nearestPlayerId != 0) {
         drone->state = MedicDroneState::Orbit;
         drone->orbitTargetId = nearestPlayerId;
@@ -1224,45 +1238,55 @@ void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f 
 
 void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
+    const auto& droneStats = AbilityRegistry::medic().Drone;
+    const float orbitRadius = AbilityRegistry::param(droneStats, "orbitRadius", 45.f);
+    const float orbitSpeed = AbilityRegistry::param(droneStats, "orbitSpeed", 2.5f);
+    const float symHealInterval = AbilityRegistry::param(droneStats, "symHealInterval", 1.f);
+    const float symHealAmount = AbilityRegistry::param(droneStats, "symHealAmount", 10.f);
+    const float sentryArriveDist = AbilityRegistry::param(droneStats, "sentryArriveDist", 8.f);
+    const float moveSpeed = AbilityRegistry::param(droneStats, "moveSpeed", 280.f);
+    const float symShootInterval = AbilityRegistry::param(droneStats, "symShootInterval", 0.8f);
+    const float sentryShootInterval = AbilityRegistry::param(droneStats, "sentryShootInterval", 0.1f);
+    const float attackRange = AbilityRegistry::param(droneStats, "attackRange", 420.f);
 
     for (auto it = m_medicDrones.begin(); it != m_medicDrones.end(); ) {
         auto& drone = it->second;
-
         if (!m_clients.count(drone.ownerId)) {
             it = m_medicDrones.erase(it);
             continue;
         }
 
         if (drone.state == MedicDroneState::Orbit) {
+            // --- Orbit ally and apply periodic symbiotic heal ---
             if (!m_clients.count(drone.orbitTargetId)) {
                 drone.orbitTargetId = drone.ownerId;
             }
 
             sf::Vector2f targetPos = m_clients.at(drone.orbitTargetId).position;
-            drone.orbitAngle += Config::MEDIC_DRONE_ORBIT_SPEED * dt;
+            drone.orbitAngle += orbitSpeed * dt;
             drone.position = targetPos + sf::Vector2f(
-                std::cos(drone.orbitAngle) * Config::MEDIC_DRONE_ORBIT_RADIUS,
-                std::sin(drone.orbitAngle) * Config::MEDIC_DRONE_ORBIT_RADIUS
+                std::cos(drone.orbitAngle) * orbitRadius,
+                std::sin(drone.orbitAngle) * orbitRadius
             );
-
             drone.healTimer -= dt;
             if (drone.healTimer <= 0.0f) {
-                drone.healTimer = Config::MEDIC_DRONE_SYM_HEAL_INTERVAL;
+                drone.healTimer = symHealInterval;
                 if (m_clients.count(drone.orbitTargetId)) {
                     auto& target = m_clients.at(drone.orbitTargetId);
                     float maxHp = getEffectiveMaxHp(target);
                     if (target.hp < maxHp) {
-                        target.hp += Config::MEDIC_DRONE_SYM_HEAL_AMOUNT;
+                        target.hp += symHealAmount;
                         if (target.hp > maxHp) target.hp = maxHp;
                     }
                 }
             }
         } else {
+            // --- Move to sentry point and hold position ---
             sf::Vector2f toSentry = drone.sentryPos - drone.position;
             float distSq = toSentry.lengthSquared();
-            if (!drone.atSentry && distSq > Config::MEDIC_DRONE_SENTRY_ARRIVE_DIST * Config::MEDIC_DRONE_SENTRY_ARRIVE_DIST) {
+            if (!drone.atSentry && distSq > sentryArriveDist * sentryArriveDist) {
                 float dist = std::sqrt(distSq);
-                sf::Vector2f step = (toSentry / dist) * Config::MEDIC_DRONE_MOVE_SPEED * dt;
+                sf::Vector2f step = (toSentry / dist) * moveSpeed * dt;
                 if (step.lengthSquared() >= distSq) {
                     drone.position = drone.sentryPos;
                     drone.atSentry = true;
@@ -1274,20 +1298,18 @@ void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
                 drone.position = drone.sentryPos;
             }
         }
-
         drone.shootTimer -= dt;
         if (drone.shootTimer <= 0.0f) {
+            // --- Fire drone blaster at nearest enemy ---
             float interval = drone.state == MedicDroneState::Orbit
-                ? Config::MEDIC_DRONE_SYM_SHOOT_INTERVAL
-                : Config::MEDIC_DRONE_SENTRY_SHOOT_INTERVAL;
+                ? symShootInterval
+                : sentryShootInterval;
             drone.shootTimer = interval;
-
-            std::uint32_t enemyId = findNearestEnemyId(drone.position, Config::MEDIC_DRONE_ATTACK_RANGE);
+            std::uint32_t enemyId = findNearestEnemyId(drone.position, attackRange);
             if (enemyId != 0 && m_enemies.count(enemyId)) {
                 spawnDroneBlaster(drone.ownerId, drone.position, m_enemies[enemyId]->getPosition());
             }
         }
-
         drone.lifetime -= dt;
         if (drone.lifetime <= 0.0f) {
             it = m_medicDrones.erase(it);
@@ -1299,9 +1321,9 @@ void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
 
 void ServerEngine::spawnMedicNeedle(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos) {
     const auto& stats = WeaponRegistry::getStats(WeaponType::MedicNeedle);
-
     sf::Vector2f dir = targetPos - startPos;
     float lenSq = dir.lengthSquared();
+
     if (lenSq < 1e-4f) {
         dir = sf::Vector2f(1.0f, 0.0f);
     } else {
@@ -1326,7 +1348,7 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
 
     for (auto it = m_serverProjectiles.begin(); it != m_serverProjectiles.end(); ) {
         auto& proj = *it;
-
+        
         if (proj.weapon != WeaponType::MedicNeedle && proj.weapon != WeaponType::DroneBlaster) {
             ++it;
             continue;
@@ -1334,72 +1356,65 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
 
         proj.position += proj.velocity * dt;
         proj.lifetime -= dt;
-
         bool destroyed = false;
 
+        // --- Destroy on wall collision ---
         if (m_map->checkCollision(proj.position, proj.radius)) {
             destroyed = true;
         }
 
         if (!destroyed && proj.weapon == WeaponType::MedicNeedle) {
+            // --- Medic needle heals allied players on contact ---
             for (auto& [playerId, clientInfo] : m_clients) {
                 if (playerId == proj.ownerId) continue;
-
                 float heroRadius = HeroRegistry::getStats(clientInfo.pClass).radius;
                 sf::Vector2f diff = proj.position - clientInfo.position;
                 float collDist = heroRadius + proj.radius;
-
                 if (diff.lengthSquared() < collDist * collDist) {
                     float maxHp = getEffectiveMaxHp(clientInfo);
-                    clientInfo.hp += Config::MEDIC_NEEDLE_HEAL;
+                    clientInfo.hp += AbilityRegistry::medic().Needle.heal;
                     if (clientInfo.hp > maxHp) clientInfo.hp = maxHp;
                     destroyed = true;
                     break;
                 }
             }
         }
-
         if (!destroyed) {
+            // --- Resolve enemy hits for needle and blaster ---
             for (auto& [enemyId, enemy] : m_enemies) {
                 float enemyRadius = EnemyRegistry::getStats(enemy->getType()).radius;
                 sf::Vector2f diff = proj.position - enemy->getPosition();
                 float collDist = enemyRadius + proj.radius;
-
                 if (diff.lengthSquared() >= collDist * collDist) continue;
-
                 if (proj.weapon == WeaponType::DroneBlaster) {
                     if (std::find(proj.hitEnemies.begin(), proj.hitEnemies.end(), enemyId) != proj.hitEnemies.end()) {
                         continue;
                     }
                     proj.hitEnemies.push_back(enemyId);
-
                     enemy->takeDamage(blasterDamage);
-
                     if (m_clients.count(proj.ownerId)) {
                         sf::Packet damagePacket;
                         damagePacket << PacketType::PlayerDealtDamage << blasterDamage;
                         (void)m_socket.send(damagePacket, m_clients.at(proj.ownerId).ip, m_clients.at(proj.ownerId).port);
                     }
-
                     if (enemy->getHp() <= 0.0f) deadFromProjectile.push_back(enemyId);
                     continue;
                 }
-
                 enemy->takeDamage(needleDamage);
-                enemy->applyPoison(Config::MEDIC_NEEDLE_POISON_DURATION, Config::MEDIC_NEEDLE_POISON_DPS);
-
+                const auto& needle = AbilityRegistry::medic().Needle;
+                enemy->applyPoison(
+                    AbilityRegistry::param(needle, "poisonDuration", 3.f),
+                    AbilityRegistry::param(needle, "poisonDps", 5.f));
                 if (m_clients.count(proj.ownerId)) {
                     sf::Packet damagePacket;
                     damagePacket << PacketType::PlayerDealtDamage << needleDamage;
                     (void)m_socket.send(damagePacket, m_clients.at(proj.ownerId).ip, m_clients.at(proj.ownerId).port);
                 }
-
                 if (enemy->getHp() <= 0.0f) deadFromProjectile.push_back(enemyId);
                 destroyed = true;
                 break;
             }
         }
-
         if (destroyed || proj.lifetime <= 0.0f) {
             it = m_serverProjectiles.erase(it);
         } else {
@@ -1407,6 +1422,7 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
         }
     }
 
+    // --- Spawn energy cells for projectile kills ---
     for (std::uint32_t enemyId : deadFromProjectile) {
         if (m_enemies.count(enemyId)) {
             m_energyCells[m_globalEntityCounter++] = {m_enemies[enemyId]->getPosition(), 1, 0};
@@ -1417,34 +1433,33 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
 
 void ServerEngine::sendWorldState(){
     if(m_clients.empty()) return;
-
     sf::Packet worldPacket;
 
-    // Players info
+    // --- Players ---
     worldPacket << PacketType::WorldState << static_cast<std::uint32_t>(m_clients.size());
-    
     for(const auto& [clientId, info] : m_clients){
         worldPacket << clientId << info.pClass << info.position << info.hp << info.stealthTimer;
     }
 
-    // Exp info
+    // --- Team progression ---
     worldPacket << m_teamLevel << m_teamExp << m_teamExpMax << m_isPaused;
 
-    // Enemy info
+    // --- Enemies ---
     worldPacket << static_cast<std::uint32_t>(m_enemies.size());
     for(const auto& [enemyId, enemy] : m_enemies){
         worldPacket << enemyId << enemy->getType() << enemy->getPosition() << enemy->getHp();
     }
 
-    // Energy Cells info
+    // --- Energy cells ---
     worldPacket << static_cast<std::uint32_t>(m_energyCells.size());
     for(const auto& [cellId, cell] : m_energyCells){
         worldPacket << cellId << cell.position;
     }
 
+    // --- Decoys, orbs, and medic drones ---
     worldPacket << static_cast<std::uint32_t>(m_decoys.size());
     for(const auto& [decoyId, decoy] : m_decoys){
-        worldPacket << decoyId << decoy.pos << decoy.hp << Config::VANGUARD_DECOY_HP;
+        worldPacket << decoyId << decoy.pos << decoy.hp << AbilityRegistry::param(AbilityType::VanguardDecoy, "decoyHp", 150.f);
     }
 
     worldPacket << static_cast<std::uint32_t>(m_medicOrbs.size());
@@ -1457,7 +1472,7 @@ void ServerEngine::sendWorldState(){
         worldPacket << droneId << drone.ownerId << drone.position << drone.state << drone.lifetime;
     }
 
-    // Sending
+    // --- Broadcast packet to all connected clients ---
     for(const auto& [clientId, info] : m_clients){
         (void)m_socket.send(worldPacket, info.ip, info.port);
     }

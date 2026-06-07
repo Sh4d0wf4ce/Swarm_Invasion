@@ -1,25 +1,33 @@
 #include "Medic.hpp"
 #include "../core/ClientEngine.hpp"
 #include "../projectiles/ProjectileManager.hpp"
+#include "AbilityRegistry.hpp"
 #include "imgui.h"
+
 
 Medic::Medic(std::uint32_t id, const sf::Vector2f& startPos): Player(id, startPos, PlayerClass::Medic) {
     m_maxAmmo = 0;
     m_ammo = 0;
     m_fireRate = 0.2f;
-    m_maxCooldownShift = Config::MEDIC_TELEPORT_COOLDOWN;
-    m_maxCooldownRMB = Config::MEDIC_ORB_COOLDOWN;
-    m_maxCooldownE = Config::MEDIC_BARRIER_COOLDOWN;
-    m_maxUltCharge = 10;
+    const auto& m = AbilityRegistry::medic();
+    m_maxCooldownShift = m.Teleport.cooldown;
+    m_maxCooldownRMB = m.Orb.cooldown;
+    m_maxCooldownE = m.Barrier.cooldown;
+    m_maxUltCharge = AbilityRegistry::param(m.Drone, "ultChargeRequired", 10.f);
 }
 
+// ==========================================
+// Teleport system
+// ==========================================
+
 bool Medic::computeTeleportTarget(const sf::Vector2f& mouseWorldPos, const std::shared_ptr<MapGenerator>& map, sf::Vector2f& outTarget) {
+    const float teleportRange = AbilityRegistry::medic().Teleport.range;
     sf::Vector2f dir = mouseWorldPos - m_position;
     float distSq = dir.lengthSquared();
 
-    if (distSq > Config::MEDIC_TELEPORT_RANGE * Config::MEDIC_TELEPORT_RANGE) {
+    if (distSq > teleportRange * teleportRange) {
         float dist = std::sqrt(distSq);
-        outTarget = m_position + (dir / dist) * Config::MEDIC_TELEPORT_RANGE;
+        outTarget = m_position + (dir / dist) * teleportRange;
     } else {
         outTarget = mouseWorldPos;
     }
@@ -36,9 +44,8 @@ void Medic::tryStartTeleport(const std::shared_ptr<MapGenerator>& map) {
 
     m_teleportTarget = target;
     m_cooldownShift = m_maxCooldownShift;
-    m_teleportPhase = TeleportPhase::FadeOut;
     m_teleportAnimTime = 0.0f;
-
+    m_teleportPhase = TeleportPhase::FadeOut;
     const auto& stats = HeroRegistry::getStats(m_class);
     m_baseFillColor = stats.color;
     m_baseOutlineColor = stats.color;
@@ -52,7 +59,7 @@ void Medic::tryStartTeleport(const std::shared_ptr<MapGenerator>& map) {
 
 void Medic::advanceTeleportAnimation(float dt) {
     m_teleportAnimTime += dt;
-    const float half = Config::MEDIC_TELEPORT_FADE_TOTAL / 2.0f;
+    const float half = AbilityRegistry::param(AbilityRegistry::medic().Teleport, "fadeTotal", 0.4f) / 2.0f;
 
     if (m_teleportPhase == TeleportPhase::FadeOut) {
         const float t = std::min(m_teleportAnimTime, half);
@@ -78,42 +85,46 @@ void Medic::advanceTeleportAnimation(float dt) {
             m_teleportPhase = TeleportPhase::None;
         }
     }
-
     m_shape.setPosition(m_position);
 }
 
-void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
-    float dt = deltaTime.asSeconds();
 
+void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
+
+    // --- Shift teleport ---
     if (m_shiftRequested) {
         m_shiftRequested = false;
         tryStartTeleport(map);
         m_shiftEngine = nullptr;
     }
 
+    // --- Teleport animation ---
     if (m_teleportPhase != TeleportPhase::None) {
         float dt = deltaTime.asSeconds();
         if (m_cooldownShift > 0.0f) m_cooldownShift -= dt;
         if (m_cooldownE > 0.0f) m_cooldownE -= dt;
         if (m_cooldownRMB > 0.0f) m_cooldownRMB -= dt;
         if (m_cooldownLMB > 0.0f) m_cooldownLMB -= dt;
-
         advanceTeleportAnimation(dt);
         return;
     }
-
     Player::update(deltaTime, map);
 }
+
 
 void Medic::render(sf::RenderTarget& target) {
     Player::render(target);
 }
 
+
+// ==========================================
+// Ability inputs
+// ==========================================
+
 void Medic::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) {
     if (m_cooldownLMB > 0.0f) return;
 
     m_cooldownLMB = m_fireRate * m_fireRateMultiplier;
-
     WeaponType weapon = WeaponType::MedicNeedle;
     projMgr.spawnProjectile(m_id, m_position, mouseWorldPos, weapon, Faction::Players);
 
@@ -126,16 +137,16 @@ void Medic::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
 
 void Medic::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownRMB > 0.0f) return;
+    m_cooldownRMB = m_maxCooldownRMB;
 
     sf::Vector2f dir = mouseWorldPos - m_position;
     float lenSq = dir.lengthSquared();
+
     if (lenSq < 1e-4f) {
         dir = sf::Vector2f(1.0f, 0.0f);
     } else {
         dir /= std::sqrt(lenSq);
     }
-
-    m_cooldownRMB = m_maxCooldownRMB;
 
     if (engine.getServerAddress()) {
         sf::Packet packet;
@@ -154,11 +165,10 @@ void Medic::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pro
 
 void Medic::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownE > 0.0f) return;
+    m_cooldownE = m_maxCooldownE;
 
     sf::Vector2f dir = mouseWorldPos - m_position;
     float facingAngle = std::atan2(dir.y, dir.x);
-
-    m_cooldownE = m_maxCooldownE;
 
     if (engine.getServerAddress()) {
         sf::Packet packet;
@@ -168,12 +178,14 @@ void Medic::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Project
 }
 
 void Medic::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
+    const float droneLifetime = AbilityRegistry::medic().Drone.lifetime;
+
     if (!m_droneActive) {
         if (m_ultCharge < m_maxUltCharge) return;
         m_ultCharge = 0.0f;
         m_isUltActive = true;
         m_droneActive = true;
-        m_droneLifetime = Config::MEDIC_DRONE_LIFETIME;
+        m_droneLifetime = droneLifetime;
     }
 
     if (engine.getServerAddress()) {
@@ -183,10 +195,15 @@ void Medic::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Project
     }
 }
 
+// ==========================================
+// Drone state
+// ==========================================
+
 void Medic::setDroneState(bool active, float lifetime) {
     m_droneActive = active;
     m_droneLifetime = lifetime;
     m_isUltActive = active;
+
     if (!active) {
         m_droneLifetime = 0.0f;
     }
@@ -194,11 +211,11 @@ void Medic::setDroneState(bool active, float lifetime) {
 
 void Medic::renderQSkill() {
     ImGui::Text("Q");
-
+    const float droneLifetime = AbilityRegistry::medic().Drone.lifetime;
     if (m_droneActive) {
         char timerText[16];
         sprintf(timerText, "%.1fs", std::max(0.0f, m_droneLifetime));
-        float progress = m_droneLifetime / Config::MEDIC_DRONE_LIFETIME;
+        float progress = m_droneLifetime / droneLifetime;
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.1f, 0.9f, 0.7f, 1.0f));
         ImGui::ProgressBar(progress, ImVec2(80.0f, 15.0f), timerText);
         ImGui::PopStyleColor();
@@ -206,7 +223,6 @@ void Medic::renderQSkill() {
     }
 
     float progress = m_ultCharge / m_maxUltCharge;
-
     if (progress >= 1.0f) {
         ImGui::PushStyleColor(ImGuiCol_PlotHistogram, ImVec4(0.1f, 0.9f, 0.7f, 1.0f));
         ImGui::ProgressBar(1.0f, ImVec2(80.0f, 15.0f), "READY");
@@ -220,16 +236,20 @@ void Medic::renderQSkill() {
     }
 }
 
+
 std::vector<AbilityHitRecord> Medic::checkAbilityHits(const std::vector<Entity*>& entities) {
-    
     return {};
 }
+
+// ==========================================
+// Remote sync
+// ==========================================
 
 void Medic::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
     if (ability != AbilityType::MedicTeleport) return;
 
-    m_teleportTarget = data;
     const auto& stats = HeroRegistry::getStats(m_class);
+    m_teleportTarget = data;
     m_baseFillColor = stats.color;
     m_baseOutlineColor = stats.color;
     m_teleportPhase = TeleportPhase::FadeOut;
@@ -237,7 +257,6 @@ void Medic::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
 }
 
 void Medic::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
-    (void)map;
     if (m_teleportPhase != TeleportPhase::None) {
         advanceTeleportAnimation(deltaTime.asSeconds());
     }

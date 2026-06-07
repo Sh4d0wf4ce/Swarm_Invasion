@@ -16,6 +16,8 @@ public:
     virtual void onEnter() {}
     virtual void onExit() {}
 
+
+    // Interface
     virtual void handlePacket(PacketType type, sf::Packet& packet) = 0;
     virtual void handleInput(const sf::Event& event) = 0;
     virtual void update(sf::Time deltaTime) = 0;

@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Projectile.hpp"
 
 class NeedleProjectile : public Projectile {

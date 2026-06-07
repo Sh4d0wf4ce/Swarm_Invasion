@@ -25,6 +25,7 @@ std::vector<std::uint32_t> NeedleProjectile::checkCollisions(const std::vector<E
     std::vector<std::uint32_t> hitlist;
     if (!m_active) return hitlist;
 
+    // --- Deactivate on wall impact ---
     if (map) {
         int gridX = static_cast<int>(m_position.x / Config::TILE_SIZE);
         int gridY = static_cast<int>(m_position.y / Config::TILE_SIZE);
@@ -34,6 +35,7 @@ std::vector<std::uint32_t> NeedleProjectile::checkCollisions(const std::vector<E
         }
     }
 
+    // --- Heal allies or damage enemies on contact ---
     for (Entity* entity : entities) {
         if (entity->getId() == m_ownerId) continue;
 

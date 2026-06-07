@@ -25,43 +25,39 @@ void AIDirector::reset(){
 }
 
 void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies, const std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, std::uint32_t& entityCounter){
+    // --- Advance wave tier on timer ---
     if(m_waveTimer.getElapsedTime().asSeconds() >= 30.0f){
         m_currentWave++;
         m_waveTimer.restart();
-
-        m_currentSpawnRate = std::min(0.1f, m_currentSpawnRate * 0.75f);
+        m_currentSpawnRate = std::max(0.1f, m_currentSpawnRate * 0.75f);
         std::cout << "[AI DIRECTOR] WAVE " << m_currentWave << " STARTED! Spawn rate: " << m_currentSpawnRate << "s\n";
     }
-
     if(m_spawnTimer.getElapsedTime().asSeconds() > m_currentSpawnRate && !clients.empty()){
         m_spawnTimer.restart();
 
+        // --- Pick random spawn tile away from players ---
         std::uniform_int_distribution<int> distX(1, map->getWidth() - 2);
         std::uniform_int_distribution<int> distY(1, map->getHeight() - 2);
-
         sf::Vector2f spawnPos;
         bool validSpawn = false;
-
         for(int i = 0; i < 50; i++){
             int tx = distX(m_rng);
             int ty = distY(m_rng);
 
+            // --- Weighted random enemy type selection ---
             std::vector<std::pair<EnemyType, int>> spawnWeights = {
-                {EnemyType::Crawler, 50000}, //50
+                {EnemyType::Crawler, 50}, //50
                 {EnemyType::Bruiser, 20}, //20
                 {EnemyType::Spitter, 20}, //20
                 {EnemyType::Kamikaze, 10}, //10
             };
-
             int totalWeight = 0;
             for(const auto& [type, weight] : spawnWeights){
                 totalWeight += weight;
             }
-
             int rng = rand() % totalWeight;
             EnemyType randomType = EnemyType::Crawler;
             int currentSum = 0;;
-
             for(const auto& [type, weight] : spawnWeights){
                 currentSum += weight;
                 if(rng < currentSum){
@@ -71,9 +67,7 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
             }
 
             const auto& stats = EnemyRegistry::getStats(randomType);
-
             spawnPos = sf::Vector2f((tx + 0.5f) * Config::TILE_SIZE, (ty + 0.5f) * Config::TILE_SIZE);
-
             if(!map->checkCollision(spawnPos, stats.radius)){   
                 bool tooClose = false;
                 for(const auto& [id, info] : clients){
@@ -83,37 +77,36 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
                         break;
                     }
                 }
-    
+
+                // --- Spawn enemy ---
                 if(!tooClose){
                     if (randomType == EnemyType::Crawler) enemies[entityCounter] = std::make_unique<ServerCrawler>(entityCounter, spawnPos, randomType);
                     else if (randomType == EnemyType::Bruiser) enemies[entityCounter] = std::make_unique<ServerBruiser>(entityCounter, spawnPos, randomType);
                     else if (randomType == EnemyType::Kamikaze) enemies[entityCounter] = std::make_unique<ServerKamikaze>(entityCounter, spawnPos, randomType);
                     else enemies[entityCounter] = std::make_unique<ServerSpitter>(entityCounter, spawnPos, randomType);
-                    
                     entityCounter++;
                     break;
                 }
             }
-
         }
     }
 }
-
 
 std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, std::vector<EnemyShootEvent>& outShootEvents){
     std::vector<std::uint32_t> deadPlayers;
     if(clients.empty()) return deadPlayers;
 
+    // --- Rebuild spatial grid from enemy positions ---
     m_grid.clear();
     for(const auto& [id, enemy] : enemies){
         m_grid.insert(enemy->getPosition(), id);
     }
 
     if(m_pathFindingTimer.getElapsedTime().asSeconds() > 0.25f){
+        // --- Refresh flow field toward visible players ---
         buildFlowField(map, clients);
         m_pathFindingTimer.restart();
     }
-
 
     for(auto& [id, enemy] : enemies){
         auto killedByThisEnemy = enemy->update(deltaTime, clients, map, m_flowField, outShootEvents, enemies, m_grid);
@@ -123,13 +116,10 @@ std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std:
     return deadPlayers;
 }
 
-
 void AIDirector::buildFlowField(std::shared_ptr<MapGenerator> map, const std::map<uint32_t, ClientInfo>& clients){
     if(!map || clients.empty()) return;
-
     int width = map->getWidth();
     int height = map->getHeight();
-
     if (m_flowField.empty() || m_flowField.size() != width) {
         m_flowField.assign(width, std::vector<int>(height, MAXINT32));
     } else {
@@ -137,40 +127,33 @@ void AIDirector::buildFlowField(std::shared_ptr<MapGenerator> map, const std::ma
             std::fill(m_flowField[x].begin(), m_flowField[x].end(), MAXINT32);
         }
     }
-    
-    std::queue<sf::Vector2i> q;
 
+    // --- Seed BFS from all player tiles ---
+    std::queue<sf::Vector2i> q;
     for(const auto& [id, info]: clients){
         int px = static_cast<int>(info.position.x / Config::TILE_SIZE);
         int py = static_cast<int>(info.position.y / Config::TILE_SIZE);
-
         if(px > 0 && px < width && py > 0 && py < height){
             m_flowField[px][py] = 0;
             q.push({px, py});
         }
     }
 
-    //directions
+    // --- Expand cost field with 8-directional BFS ---
     int dx[] = {-1, 1, 0, 0, -1, 1, -1, 1};
     int dy[] = {0, 0, -1, 1, -1, -1, 1, 1};
-
-    //BFS
+    
     while(!q.empty()){
         auto curr = q.front();
         q.pop();
-
         int currentDist = m_flowField[curr.x][curr.y];
-
         for(int i = 0; i < 8; i++){
             int nx = curr.x + dx[i];
             int ny = curr.y + dy[i];
-
             if(nx <= 0 || nx >= width - 1 || ny <= 0 || ny >= height -1) continue;
             if(map->getTile(nx, ny) == TileType::Wall) continue;
-
             // cost in not diagonal direction: 10, cost in diagonal direction 10 * sqrt(2) = approx 14
             int moveCost = (i < 4) ? 10 : 14;
-
             if(currentDist + moveCost < m_flowField[nx][ny]){
                 m_flowField[nx][ny] = currentDist + moveCost;
                 q.push({nx, ny});

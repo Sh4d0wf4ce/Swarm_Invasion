@@ -1,7 +1,5 @@
 #pragma once
-
 #include "NetworkProtocol.hpp"
-
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
@@ -11,13 +9,14 @@
 #include <random>
 #include <algorithm>
 
+
+// Upgrade Definitions
 enum class UpgradeStat {
     MaxHP,
     Speed,
     Damage,
     Cooldown
 };
-
 struct UpgradeDefinition {
     std::string id;
     std::string name;
@@ -28,9 +27,11 @@ struct UpgradeDefinition {
     UpgradeStat stat{UpgradeStat::MaxHP};
     float modifierValue{0.0f};
 };
-
 class UpgradeRegistry {
 public:
+    // ==========================================
+    // Config Loading & Lookup
+    // ==========================================
     static void loadConfig(const std::string& filepath) {
         std::ifstream file(filepath);
         if (!file.is_open()) {
@@ -41,23 +42,19 @@ public:
         nlohmann::json j;
         file >> j;
         file.close();
-
         m_upgrades.clear();
-
         std::unordered_map<std::string, PlayerClass> classMap = {
             {"Soldier", PlayerClass::Soldier},
             {"Medic", PlayerClass::Medic},
             {"Juggernaut", PlayerClass::Juggernaut},
             {"Vanguard", PlayerClass::Vanguard}
         };
-
         std::unordered_map<std::string, UpgradeStat> statMap = {
             {"MaxHP", UpgradeStat::MaxHP},
             {"Speed", UpgradeStat::Speed},
             {"Damage", UpgradeStat::Damage},
             {"Cooldown", UpgradeStat::Cooldown}
         };
-
         for (auto& [key, val] : j.items()) {
             UpgradeDefinition def;
             def.id = key;
@@ -66,7 +63,6 @@ public:
             def.weight = val["weight"];
             def.isAugment = val.value("isAugment", false);
             def.modifierValue = val["modifierValue"];
-
             if (val.contains("targetClass") && !val["targetClass"].is_null()) {
                 std::string classStr = val["targetClass"];
                 if (classMap.count(classStr)) {
@@ -78,7 +74,6 @@ public:
             if (statMap.count(statStr)) {
                 def.stat = statMap[statStr];
             }
-
             m_upgrades[key] = def;
         }
 
@@ -95,6 +90,9 @@ public:
         return m_upgrades;
     }
 
+    // ==========================================
+    // Offer Selection
+    // ==========================================
     static std::vector<const UpgradeDefinition*> buildPool(
         PlayerClass playerClass,
         bool wantAugment) {
@@ -114,21 +112,17 @@ public:
         int count) {
         std::vector<std::string> result;
         if (pool.empty() || count <= 0) return result;
-
         std::vector<const UpgradeDefinition*> remaining = pool;
         int picks = std::min(count, static_cast<int>(remaining.size()));
-
         for (int i = 0; i < picks; ++i) {
             float totalWeight = 0.0f;
             for (const auto* def : remaining) {
                 totalWeight += def->weight;
             }
             if (totalWeight <= 0.0f) break;
-
             float roll = (static_cast<float>(std::rand()) / RAND_MAX) * totalWeight;
             float cumulative = 0.0f;
             auto chosenIt = remaining.end();
-
             for (auto it = remaining.begin(); it != remaining.end(); ++it) {
                 cumulative += (*it)->weight;
                 if (roll <= cumulative) {
@@ -136,15 +130,12 @@ public:
                     break;
                 }
             }
-
             if (chosenIt == remaining.end()) {
                 chosenIt = remaining.begin();
             }
-
             result.push_back((*chosenIt)->id);
             remaining.erase(chosenIt);
         }
-
         return result;
     }
 

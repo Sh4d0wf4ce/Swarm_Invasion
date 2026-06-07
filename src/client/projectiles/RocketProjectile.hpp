@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Projectile.hpp"
 #include <optional>
 #include <SFML/Graphics/Sprite.hpp>
@@ -12,11 +11,12 @@ public:
     void update(sf::Time deltaTime) override;
     void render(sf::RenderTarget& target) override;
     std::vector<std::uint32_t> checkCollisions(const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map) override;
-
 private:
     std::optional<sf::Sprite> m_sprite;
     sf::CircleShape m_explosionShape;
 
+    
+    // Explosion State
     bool m_isExploding{false};
     float m_explosionTimer{0.0f};
     sf::Vector2f m_explosionPos;

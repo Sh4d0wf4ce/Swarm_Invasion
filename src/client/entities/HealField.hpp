@@ -27,6 +27,7 @@ public:
 
 private:
     float m_healPerSecond{10.0f};
+    
     float m_radius;
     sf::CircleShape m_shape;
 };

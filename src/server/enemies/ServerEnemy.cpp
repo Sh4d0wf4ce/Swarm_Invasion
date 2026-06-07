@@ -2,7 +2,6 @@
 #include "Config.hpp"
 #include "EnemyRegistry.hpp"
 #include "HeroRegistry.hpp"
-
 #include <cmath>
 #include <iostream>
 #include <algorithm>
@@ -28,18 +27,14 @@ bool ServerEnemy::hasLineOfSight(sf::Vector2f start, sf::Vector2f end, float rad
 sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, float myRadius, const SpatialGrid& grid){
     sf::Vector2f separationVector(0.0f, 0.0f);
     std::vector<std::uint32_t> nearby = grid.getNearby(m_position);
-
     for(std::uint32_t otherId : nearby){
         if(m_id == otherId) continue;
         auto it = allEnemies.find(otherId);
-        
         if(it != allEnemies.end()){
             const auto& otherEnemy = it->second;
-            
             sf::Vector2f diff = m_position - otherEnemy->getPosition();
             float distSq = diff.lengthSquared();
             float combinedRadius = myRadius + EnemyRegistry::getStats(otherEnemy->getType()).radius;
-            
             if(distSq > 0 && distSq < combinedRadius * combinedRadius){
                 separationVector += diff / std::sqrt(distSq);
             }
@@ -49,26 +44,23 @@ sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std:
 }
 
 std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
+    // --- Apply knockback displacement when active ---
     if(m_knockbackVelocity.lengthSquared() > 10.0f){
         sf::Vector2f velocity = m_knockbackVelocity * deltaTime.asSeconds();
-        
         sf::Vector2f nextPosX = m_position + sf::Vector2f(velocity.x, 0.0f);
         if(!map->checkCollision(nextPosX, EnemyRegistry::getStats(m_type).radius)) m_position.x = nextPosX.x;
-        
         sf::Vector2f nextPosY = m_position + sf::Vector2f(0.0f, velocity.y);
         if(!map->checkCollision(nextPosY, EnemyRegistry::getStats(m_type).radius)) m_position.y = nextPosY.y;
-
         m_knockbackVelocity -= m_knockbackVelocity * 6.0f * deltaTime.asSeconds(); 
-        
         return {};
     }
-    
+
     std::vector<std::uint32_t> deadPlayers;
     const auto& eStats = EnemyRegistry::getStats(m_type);
 
+    // --- Find closest target and apply melee contact damage ---
     std::uint32_t targetId = clients.begin()->first;
     float minDistanceSq  = (clients.begin()->second.position - m_position).lengthSquared();
-
     for(auto& [playerId, playerInfo] : clients){
         if(playerInfo.invTimer > 0.0f) continue;
         float distSq = (playerInfo.position - m_position).lengthSquared();
@@ -87,6 +79,7 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
         }   
     }
 
+    // --- Choose direct chase or flow-field steering ---
     sf::Vector2f desiredDirection(0.0f, 0.0f);
     if(hasLineOfSight(m_position, clients.at(targetId).position, eStats.radius, map)){
         desiredDirection = clients.at(targetId).position - m_position;
@@ -111,12 +104,11 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
         }
     }
 
+    // --- Blend separation and move with axis collision ---
     sf::Vector2f separationVector = calculateSeparation(allEnemies, eStats.radius, grid);
     if(desiredDirection.lengthSquared() > 0) desiredDirection /= std::sqrt(desiredDirection.lengthSquared());
-    
     sf::Vector2f finalDirection = desiredDirection + (separationVector * 1.5f);
     float lenSq = finalDirection.lengthSquared();
-
     if(lenSq > 0){
         finalDirection /= std::sqrt(lenSq);
         sf::Vector2f velocity = finalDirection * m_speed * deltaTime.asSeconds();
@@ -131,7 +123,6 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
 std::uint32_t ServerEnemy::getClosestPlayerId(const std::map<std::uint32_t, ClientInfo>& clients, float& outMinDistSq) const {
     std::uint32_t targetId = clients.begin()->first;
     outMinDistSq = (clients.begin()->second.position - m_position).lengthSquared();
-
     for(const auto& [playerId, playerInfo] : clients){
         float distSq = (playerInfo.position - m_position).lengthSquared();
         if(distSq < outMinDistSq){
@@ -158,7 +149,6 @@ void ServerEnemy::tickStatusEffects(float dt){
         poison.remainingTime -= dt;
         m_hp -= poison.damagePerSecond * dt;
     }
-
     m_poisonEffects.erase(
         std::remove_if(m_poisonEffects.begin(), m_poisonEffects.end(),
             [](const PoisonEffect& p) { return p.remainingTime <= 0.0f; }),
