@@ -1,0 +1,66 @@
+\doxysection{Enemy\+Registry.\+hpp}
+\hypertarget{_enemy_registry_8hpp_source}{}\label{_enemy_registry_8hpp_source}\index{src/shared/EnemyRegistry.hpp@{src/shared/EnemyRegistry.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/Color.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_enemy_stats}{EnemyStats}}\{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{float}\ maxHp;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{float}\ speed;}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{float}\ radius;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ damage;}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{float}\ attackCooldown;}
+\DoxyCodeLine{00019\ \ \ \ \ sf::Color\ color;}
+\DoxyCodeLine{00020\ \};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_enemy_registry}{EnemyRegistry}}\ \{}
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_enemy_registry_a75a65fe91552591eb4d6ba530b2e7a3a}{loadConfig}}(\textcolor{keyword}{const}\ std::string\&\ filepath)\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ std::ifstream\ file(filepath);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!file.is\_open())\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Could\ not\ open\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}!\(\backslash\)n"{}};}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ nlohmann::json\ j;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ file\ >>\ j;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ EnemyType>\ typeMap\ =\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Crawler"{}},\ EnemyType::Crawler\},}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Bruiser"{}},\ EnemyType::Bruiser\},}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Spitter"{}},\ EnemyType::Spitter\},}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Kamikaze"{}},\ EnemyType::Kamikaze\}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ j.items())\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (typeMap.find(key)\ !=\ typeMap.end())\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ type\ =\ typeMap[key];}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_enemy_stats}{EnemyStats}}\ stats;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.maxHp\ =\ val[\textcolor{stringliteral}{"{}maxHp"{}}];}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.speed\ =\ val[\textcolor{stringliteral}{"{}speed"{}}];}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.radius\ =\ val[\textcolor{stringliteral}{"{}radius"{}}];}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.damage\ =\ val[\textcolor{stringliteral}{"{}damage"{}}];}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.attackCooldown\ =\ val[\textcolor{stringliteral}{"{}attackCooldown"{}}];}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ c\ =\ val[\textcolor{stringliteral}{"{}color"{}}];}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.color\ =\ sf::Color(c[0],\ c[1],\ c[2],\ c[3]);}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[type]\ =\ stats;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}[REGISTRY]\ Successfully\ loaded\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}\ ("{}}\ <<\ m\_stats.size()\ <<\ \textcolor{stringliteral}{"{}\ enemies)\(\backslash\)n"{}};}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_enemy_stats}{EnemyStats}}\&\ \doxymbox{\hyperlink{class_enemy_registry_ad132f41b3819e42e55837f591967e11d}{getStats}}(\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ eType)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_stats.at(eType);}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ std::unordered\_map<EnemyType,\ EnemyStats>\ m\_stats;}
+\DoxyCodeLine{00076\ \};}
+
+\end{DoxyCode}

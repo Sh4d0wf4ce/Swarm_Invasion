@@ -1,0 +1,77 @@
+\doxysection{Weapon\+Registry.\+hpp}
+\hypertarget{_weapon_registry_8hpp_source}{}\label{_weapon_registry_8hpp_source}\index{src/shared/WeaponRegistry.hpp@{src/shared/WeaponRegistry.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/Color.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_weapon_stats}{WeaponStats}}\{}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{float}\ speed;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{float}\ radius;}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{float}\ damage;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00018\ \ \ \ \ sf::Color\ color;}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{int}\ pellets;}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{float}\ spreadAngle;}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ explosionRadius;}
+\DoxyCodeLine{00022\ \};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_weapon_registry}{WeaponRegistry}}\{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_weapon_registry_a9cb013647c84a2799f84807d2b01f11a}{loadConfig}}(\textcolor{keyword}{const}\ std::string\&\ filepath)\{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ std::ifstream\ file(filepath);}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(!file.is\_open())\{}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Could\ not\ open\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}!\(\backslash\)n"{}};}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ nlohmann::json\ json;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ file\ >>\ json;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ WeaponType>\ typeMap\ =\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Rifle"{}},\ WeaponType::Rifle\},}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Laser"{}},\ WeaponType::Laser\},}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Rocket"{}},\ WeaponType::Rocket\},}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}AcidSpit"{}},\ WeaponType::AcidSpit\},}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Shotgun"{}},\ WeaponType::Shotgun\},}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Shuriken"{}},\ WeaponType::Shuriken\},}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}VanguardWave"{}},\ WeaponType::VanguardWave\},}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}MedicNeedle"{}},\ WeaponType::MedicNeedle\},}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}DroneBlaster"{}},\ WeaponType::DroneBlaster\},}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ json.items())\{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(typeMap.find(key)\ !=\ typeMap.end())\{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ type\ =\ typeMap[key];}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_weapon_stats}{WeaponStats}}\ stats;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.speed\ =\ val[\textcolor{stringliteral}{"{}speed"{}}];}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.radius\ =\ val[\textcolor{stringliteral}{"{}radius"{}}];}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.damage\ =\ val[\textcolor{stringliteral}{"{}damage"{}}];}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.lifetime\ =\ val[\textcolor{stringliteral}{"{}lifetime"{}}];}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.pellets\ =\ val.value(\textcolor{stringliteral}{"{}pellets"{}},\ 1);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.spreadAngle\ =\ val.value(\textcolor{stringliteral}{"{}spreadAngle"{}},\ 0.0f);}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.explosionRadius\ =\ val.value(\textcolor{stringliteral}{"{}explosionRadius"{}},\ 0.0f);}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ c\ =\ val[\textcolor{stringliteral}{"{}color"{}}];}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.color\ =\ sf::Color(c[0],\ c[1],\ c[2],\ c[3]);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[type]\ =\ stats;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}[REGISTRY]\ Successfully\ loaded\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}\ ("{}}\ <<\ m\_stats.size()\ <<\ \textcolor{stringliteral}{"{}\ weapons)\(\backslash\)n"{}};}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_weapon_stats}{WeaponStats}}\&\ \doxymbox{\hyperlink{class_weapon_registry_a06c741c39e94c22594bce7440b1fc050}{getStats}}(\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ wType)\{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_stats.at(wType);}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ std::unordered\_map<WeaponType,\ WeaponStats>\ m\_stats;}
+\DoxyCodeLine{00087\ \};}
+
+\end{DoxyCode}

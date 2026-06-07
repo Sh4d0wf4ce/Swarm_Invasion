@@ -1,0 +1,611 @@
+\doxysection{Player Class Reference}
+\hypertarget{class_player}{}\label{class_player}\index{Player@{Player}}
+
+
+Base class for locally controlled hero entities.  
+
+
+
+
+{\ttfamily \+\#include $<$Player.\+hpp$>$}
+
+Inheritance diagram for Player:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_player}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Initializes a player with hero stats, shape, and default state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Advances reload and cooldown timers, then applies keyboard movement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the player circle and health bar. \end{DoxyCompactList}\item 
+\Hypertarget{class_player_a77b026739f392b3d9d980ffce7489212}\label{class_player_a77b026739f392b3d9d980ffce7489212} 
+virtual void {\bfseries render\+UI} ()
+\begin{DoxyCompactList}\small\item\em Renders both HUD panels for the local hero. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a6883ea051661974f3b0b60aed06adc3a}{update\+Remote\+Visuals}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a38c93f696a344c75dd5288edb6576175}{play\+Remote\+Ability}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} ability, const sf::\+\+Vector2f \&data)
+\item 
+void \doxymbox{\hyperlink{class_player_af2793f057492e5fce5331fa036263cad}{set\+Focused}} (bool focused)
+\begin{DoxyCompactList}\small\item\em Sets whether this player accepts local keyboard input. \end{DoxyCompactList}\item 
+\Hypertarget{class_player_ae84af87ac867559b7a9fee2958266247}\label{class_player_ae84af87ac867559b7a9fee2958266247} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries get\+Class} () const
+\item 
+Faction \doxymbox{\hyperlink{class_player_a8ac884bfdd0202512ecef922a56990f0}{get\+Faction}} () const override
+\item 
+float \doxymbox{\hyperlink{class_player_a4337238654d5f36dd2a89f00f72d3960}{get\+Radius}} () const override
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a55313ee49349dfeb73a72f26c945d7cd}{on\+Shift}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a3f7dd2aa5cbb5034a2d8ce00f4e42549}{onQ}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a2eb30c1129e976da39b96c847ae1ebbc}{onE}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_afbb469f42788710404927d021b31615f}{on\+RMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a709e733d76f870141c6829776c76e946}{on\+LMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&enemies)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a3b6f25b2227918ba499d48725bedc37d}{reload}} ()
+\begin{DoxyCompactList}\small\item\em Starts a reload if one is not already in progress. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_adf77ec30ad0615e3693a4d1f3a296937}{add\+Ult\+Charge}} (float amount)
+\begin{DoxyCompactList}\small\item\em Adds ultimate charge, clamped to the maximum while ult is inactive. \end{DoxyCompactList}\item 
+\Hypertarget{class_player_aea451110a87760d420ae841c69a0223a}\label{class_player_aea451110a87760d420ae841c69a0223a} 
+virtual bool {\bfseries is\+Auto\+Firing} () const
+\item 
+\Hypertarget{class_player_a968f87990475db253c0ab64dc8b314fd}\label{class_player_a968f87990475db253c0ab64dc8b314fd} 
+bool {\bfseries is\+Ult\+Active} () const
+\item 
+\Hypertarget{class_player_ab46eec2d40fa4426b4585229c954c20a}\label{class_player_ab46eec2d40fa4426b4585229c954c20a} 
+int {\bfseries get\+Ammo} () const
+\item 
+\Hypertarget{class_player_a2d6347d713ce7c92cfc703828496d2cd}\label{class_player_a2d6347d713ce7c92cfc703828496d2cd} 
+bool {\bfseries is\+Reloading} () const
+\item 
+virtual std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ \doxymbox{\hyperlink{class_player_afe9ecb410e274bcb24650273684a7eb8}{check\+Ability\+Hits}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities)
+\item 
+\Hypertarget{class_player_ad5d2556bfc197f7c6bc07774bfb261fc}\label{class_player_ad5d2556bfc197f7c6bc07774bfb261fc} 
+void {\bfseries set\+Stealth\+Timer} (float timer)
+\item 
+\Hypertarget{class_player_a266bd99d123d03090ab028b7d3748506}\label{class_player_a266bd99d123d03090ab028b7d3748506} 
+float {\bfseries get\+Stealth\+Timer} () const
+\item 
+void \doxymbox{\hyperlink{class_player_af22ac0793705ba6fff981082a16af0d6}{set\+Upgrade\+Multipliers}} (float hp\+Mult, float speed\+Mult, float damage\+Mult, float cooldown\+Mult)
+\begin{DoxyCompactList}\small\item\em Applies run upgrade multipliers to HP, speed, damage, and cooldowns. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a2bea558d18cc033039b0fbbbff869c65}{get\+Upgrade\+Cooldown\+Scale}} () const
+\begin{DoxyCompactList}\small\item\em Returns the cooldown duration scale from upgrade multipliers. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a221a133c2c7e97b100f35c902e8fba62}{get\+Effective\+Max\+Cooldown}} (float base\+Cooldown) const
+\begin{DoxyCompactList}\small\item\em Scales a base cooldown by the current upgrade multiplier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ \doxymbox{\hyperlink{class_player_aab8a11adbac17c5c8ea94ec0203aa592}{create}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Factory that constructs the correct hero subclass for a player class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}{check\+Collision}} (const sf::\+\+Vector2f \&pos, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Tests whether a position overlaps a wall tile. \end{DoxyCompactList}\item 
+\Hypertarget{class_player_a6349334201b615234714c46eaafb5d21}\label{class_player_a6349334201b615234714c46eaafb5d21} 
+virtual void {\bfseries render\+Left\+Panel} ()
+\begin{DoxyCompactList}\small\item\em Renders the left HUD panel with ability cooldown indicators. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_aaf187efa0d73c6200da953e09d6470b9}{render\+Right\+Panel}} ()
+\begin{DoxyCompactList}\small\item\em Renders the right HUD panel with HP and ammo status. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a11a9f06b90f268689c3e5b931a17ea3c}{render\+Shift\+Skill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Shift ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}{render\+ESkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the E ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a884b262895cd0e45d1a61514bc1ea763}{render\+QSkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Q ultimate charge or active timer in the left HUD panel. \end{DoxyCompactList}\item 
+\Hypertarget{class_player_ab7429b9930f53d032ce0af95f6f20f1b}\label{class_player_ab7429b9930f53d032ce0af95f6f20f1b} 
+virtual void {\bfseries render\+RMBSkill} ()
+\begin{DoxyCompactList}\small\item\em Renders the right-\/mouse ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_player_a265d48d13f657bd2fb0c6a30285be2d3}\label{class_player_a265d48d13f657bd2fb0c6a30285be2d3} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+\Hypertarget{class_player_ac872b310930295033b218f1551a27e34}\label{class_player_ac872b310930295033b218f1551a27e34} 
+float {\bfseries m\+\_\+speed}
+\item 
+\Hypertarget{class_player_aed4837d16b7a0d379640bb3d94641b2f}\label{class_player_aed4837d16b7a0d379640bb3d94641b2f} 
+bool {\bfseries m\+\_\+is\+Focused}
+\item 
+\Hypertarget{class_player_a2746c368538930ba91d597e6080f44bf}\label{class_player_a2746c368538930ba91d597e6080f44bf} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+class}
+\item 
+\Hypertarget{class_player_a6b5a534465b853bf5b43093a9f769d34}\label{class_player_a6b5a534465b853bf5b43093a9f769d34} 
+sf::\+\+Vector2f {\bfseries m\+\_\+last\+Move\+Direction} \{1.\+0f, 0.\+0f\}
+\item 
+\Hypertarget{class_player_a99f3df75e1afd29f28f6ea867a899f2e}\label{class_player_a99f3df75e1afd29f28f6ea867a899f2e} 
+float {\bfseries m\+\_\+cooldown\+Shift} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_a641d23466cb2fe45b9883c8b2b5fa5e7}\label{class_player_a641d23466cb2fe45b9883c8b2b5fa5e7} 
+float {\bfseries m\+\_\+cooldownE} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_a27c8813e6a4d81b64938162e9f2fc474}\label{class_player_a27c8813e6a4d81b64938162e9f2fc474} 
+float {\bfseries m\+\_\+cooldown\+RMB} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_af376d9c888fe296a25d015e918e5b915}\label{class_player_af376d9c888fe296a25d015e918e5b915} 
+float {\bfseries m\+\_\+cooldown\+LMB} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_a87483bc47db2879bd5192b4db4b23e14}\label{class_player_a87483bc47db2879bd5192b4db4b23e14} 
+float {\bfseries m\+\_\+max\+Cooldown\+Shift} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_a343c8dbc64785daca90ac3b48e16a10a}\label{class_player_a343c8dbc64785daca90ac3b48e16a10a} 
+float {\bfseries m\+\_\+max\+CooldownE} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_a7a736d50f1c02b618309851bb914970d}\label{class_player_a7a736d50f1c02b618309851bb914970d} 
+float {\bfseries m\+\_\+max\+Cooldown\+RMB} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_ac3c023ad6982f26c46642cd8808cb2ce}\label{class_player_ac3c023ad6982f26c46642cd8808cb2ce} 
+float {\bfseries m\+\_\+fire\+Rate} \{0.\+15f\}
+\item 
+\Hypertarget{class_player_ad07be623e850b23d7a1376790b6346dc}\label{class_player_ad07be623e850b23d7a1376790b6346dc} 
+int {\bfseries m\+\_\+ammo} \{30\}
+\item 
+\Hypertarget{class_player_a24f4983a70ca3d0ffbd52ec426e2099e}\label{class_player_a24f4983a70ca3d0ffbd52ec426e2099e} 
+int {\bfseries m\+\_\+max\+Ammo} \{30\}
+\item 
+\Hypertarget{class_player_a87736030994368af9c7c74c3fe287496}\label{class_player_a87736030994368af9c7c74c3fe287496} 
+bool {\bfseries m\+\_\+is\+Reloading} \{false\}
+\item 
+\Hypertarget{class_player_a9813a50d9e07bee4b07f02e9facc67c4}\label{class_player_a9813a50d9e07bee4b07f02e9facc67c4} 
+float {\bfseries m\+\_\+reload\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_a3b83432fec97ad329f0e26f4651da260}\label{class_player_a3b83432fec97ad329f0e26f4651da260} 
+float {\bfseries m\+\_\+reload\+Time} \{1.\+5f\}
+\item 
+\Hypertarget{class_player_ab64a09927c52492c77d11484be5fb0ef}\label{class_player_ab64a09927c52492c77d11484be5fb0ef} 
+float {\bfseries m\+\_\+ult\+Charge} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_ae5590f146c80a46cd2d5ad879eb78daf}\label{class_player_ae5590f146c80a46cd2d5ad879eb78daf} 
+float {\bfseries m\+\_\+max\+Ult\+Charge} \{500.\+0f\}
+\item 
+\Hypertarget{class_player_a1609aef0b8d9b792abbafd901ab21bd6}\label{class_player_a1609aef0b8d9b792abbafd901ab21bd6} 
+float {\bfseries m\+\_\+ult\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_a86f808baac532f356970136dbb861555}\label{class_player_a86f808baac532f356970136dbb861555} 
+bool {\bfseries m\+\_\+is\+Ult\+Active} \{false\}
+\item 
+\Hypertarget{class_player_a24a61931ec582538358661fd9f0f2517}\label{class_player_a24a61931ec582538358661fd9f0f2517} 
+float {\bfseries m\+\_\+fire\+Rate\+Multiplier} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_a2e6aa09d9dfeee0f2b3abd1ca45ea559}\label{class_player_a2e6aa09d9dfeee0f2b3abd1ca45ea559} 
+float {\bfseries m\+\_\+speed\+Multiplier} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_adcaee06bab16a06e34faf795c69b8e8e}\label{class_player_adcaee06bab16a06e34faf795c69b8e8e} 
+float {\bfseries m\+\_\+stealth\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_player_ab29e64abfbe4252215393796cfdbc1f6}\label{class_player_ab29e64abfbe4252215393796cfdbc1f6} 
+float {\bfseries m\+\_\+base\+Max\+Hp} \{100.\+0f\}
+\item 
+\Hypertarget{class_player_a1f49913b9f2c0074cb8fead92381c706}\label{class_player_a1f49913b9f2c0074cb8fead92381c706} 
+float {\bfseries m\+\_\+upgrade\+Hp\+Multiplier} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_a24a2e0f7d772e9a7eb6e905573bf506c}\label{class_player_a24a2e0f7d772e9a7eb6e905573bf506c} 
+float {\bfseries m\+\_\+upgrade\+Speed\+Multiplier} \{1.\+0f\}
+\item 
+\Hypertarget{class_player_a5fde460426575212c814e927ced83fc1}\label{class_player_a5fde460426575212c814e927ced83fc1} 
+float {\bfseries m\+\_\+upgrade\+Cooldown\+Multiplier} \{1.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base class for locally controlled hero entities. 
+
+Handles movement, cooldowns, ammo, ultimate charge, upgrade multipliers, and Im\+Gui HUD panels. Subclasses override ability input hooks and class-\/specific combat behavior. 
+
+\label{doc-constructors}
+\Hypertarget{class_player_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_player_a9d57553968700a7f1c370d3536f4a6bb}\index{Player@{Player}!Player@{Player}}
+\index{Player@{Player}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{Player()}{Player()}}
+{\footnotesize\ttfamily \label{class_player_a9d57553968700a7f1c370d3536f4a6bb} 
+Player::\+\+Player (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{p\+Class}{}\end{DoxyParamCaption})}
+
+
+
+Initializes a player with hero stats, shape, and default state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+{\em p\+Class} & Hero class used to look up registry stats. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_player_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_player_adf77ec30ad0615e3693a4d1f3a296937}\index{Player@{Player}!addUltCharge@{addUltCharge}}
+\index{addUltCharge@{addUltCharge}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{addUltCharge()}{addUltCharge()}}
+{\footnotesize\ttfamily \label{class_player_adf77ec30ad0615e3693a4d1f3a296937} 
+void Player::\+add\+Ult\+Charge (\begin{DoxyParamCaption}\item[{float}]{amount}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Adds ultimate charge, clamped to the maximum while ult is inactive. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em amount} & Charge points to add. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_player_afe9ecb410e274bcb24650273684a7eb8}\index{Player@{Player}!checkAbilityHits@{checkAbilityHits}}
+\index{checkAbilityHits@{checkAbilityHits}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{checkAbilityHits()}{checkAbilityHits()}}
+{\footnotesize\ttfamily \label{class_player_afe9ecb410e274bcb24650273684a7eb8} 
+virtual std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ Player::\+check\+Ability\+Hits (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_abef1097265c4462d8d66d42518f7ac91}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_a8912d566cb0b9af5017dbace35f25ee7}{Medic}}, and \doxymbox{\hyperlink{class_vanguard_a25ed1c85775610932107e175c1bd168e}{Vanguard}}.
+
+\Hypertarget{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}\index{Player@{Player}!checkCollision@{checkCollision}}
+\index{checkCollision@{checkCollision}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{checkCollision()}{checkCollision()}}
+{\footnotesize\ttfamily \label{class_player_a8f31f991ccb195f24f9dd9acd13b34a7} 
+bool Player::\+check\+Collision (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{pos}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Tests whether a position overlaps a wall tile. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & Candidate world position to test. \\
+\hline
+{\em map} & Tile map used for collision lookup. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if any corner of the hit box intersects a wall. 
+\end{DoxyReturn}
+\Hypertarget{class_player_aab8a11adbac17c5c8ea94ec0203aa592}\index{Player@{Player}!create@{create}}
+\index{create@{create}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{create()}{create()}}
+{\footnotesize\ttfamily \label{class_player_aab8a11adbac17c5c8ea94ec0203aa592} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ Player::\+create (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{p\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Factory that constructs the correct hero subclass for a player class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+{\em p\+Class} & Hero class to instantiate. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Owning pointer to the created player subclass. 
+\end{DoxyReturn}
+\Hypertarget{class_player_a221a133c2c7e97b100f35c902e8fba62}\index{Player@{Player}!getEffectiveMaxCooldown@{getEffectiveMaxCooldown}}
+\index{getEffectiveMaxCooldown@{getEffectiveMaxCooldown}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{getEffectiveMaxCooldown()}{getEffectiveMaxCooldown()}}
+{\footnotesize\ttfamily \label{class_player_a221a133c2c7e97b100f35c902e8fba62} 
+float Player::\+get\+Effective\+Max\+Cooldown (\begin{DoxyParamCaption}\item[{float}]{base\+Cooldown}{}\end{DoxyParamCaption}) const}
+
+
+
+Scales a base cooldown by the current upgrade multiplier. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em base\+Cooldown} & Unmodified cooldown duration in seconds. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Effective maximum cooldown after upgrade scaling. 
+\end{DoxyReturn}
+\Hypertarget{class_player_a8ac884bfdd0202512ecef922a56990f0}\index{Player@{Player}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_player_a8ac884bfdd0202512ecef922a56990f0} 
+Faction Player::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_player_a4337238654d5f36dd2a89f00f72d3960}\index{Player@{Player}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_player_a4337238654d5f36dd2a89f00f72d3960} 
+float Player::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_player_a2bea558d18cc033039b0fbbbff869c65}\index{Player@{Player}!getUpgradeCooldownScale@{getUpgradeCooldownScale}}
+\index{getUpgradeCooldownScale@{getUpgradeCooldownScale}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{getUpgradeCooldownScale()}{getUpgradeCooldownScale()}}
+{\footnotesize\ttfamily \label{class_player_a2bea558d18cc033039b0fbbbff869c65} 
+float Player::\+get\+Upgrade\+Cooldown\+Scale (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+
+
+Returns the cooldown duration scale from upgrade multipliers. 
+
+\begin{DoxyReturn}{Returns}
+Cooldown multiplier clamped to a minimum of 0.\+1. 
+\end{DoxyReturn}
+\Hypertarget{class_player_a2eb30c1129e976da39b96c847ae1ebbc}\index{Player@{Player}!onE@{onE}}
+\index{onE@{onE}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{onE()}{onE()}}
+{\footnotesize\ttfamily \label{class_player_a2eb30c1129e976da39b96c847ae1ebbc} 
+virtual void Player::\+onE (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a4a1932b70aca04b98f74f74460795187}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_a585b6e8fd973d882bb88398b73118413}{Medic}}, \doxymbox{\hyperlink{class_soldier_a39384a4fd49f3924360004378eeab3a9}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_af738bb203fa0f2bd56a6e1757f721843}{Vanguard}}.
+
+\Hypertarget{class_player_a709e733d76f870141c6829776c76e946}\index{Player@{Player}!onLMB@{onLMB}}
+\index{onLMB@{onLMB}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{onLMB()}{onLMB()}}
+{\footnotesize\ttfamily \label{class_player_a709e733d76f870141c6829776c76e946} 
+virtual void Player::\+on\+LMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&}]{enemies}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a294c6b8d97f5a1f95339c75c0c7559c8}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_a6002addbbaac2d57609632b9c78205fe}{Medic}}, \doxymbox{\hyperlink{class_soldier_a3e8b89366c7ca00d46f48cbf2e0f3036}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_a1ed7baec181d11e3cfe311e2f1c5c713}{Vanguard}}.
+
+\Hypertarget{class_player_a3f7dd2aa5cbb5034a2d8ce00f4e42549}\index{Player@{Player}!onQ@{onQ}}
+\index{onQ@{onQ}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{onQ()}{onQ()}}
+{\footnotesize\ttfamily \label{class_player_a3f7dd2aa5cbb5034a2d8ce00f4e42549} 
+virtual void Player::\+onQ (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a9644a4df78b65057e6d1043a78fe2350}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_ac271dedc199f960c3e81244aafdcbf22}{Medic}}, \doxymbox{\hyperlink{class_soldier_afdc6dbdeeab3eb4c0b3ec1348bc688a5}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_af6b87a6955ceed066cda4c4dd343b486}{Vanguard}}.
+
+\Hypertarget{class_player_afbb469f42788710404927d021b31615f}\index{Player@{Player}!onRMB@{onRMB}}
+\index{onRMB@{onRMB}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{onRMB()}{onRMB()}}
+{\footnotesize\ttfamily \label{class_player_afbb469f42788710404927d021b31615f} 
+virtual void Player::\+on\+RMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a9752ec4550e502534c5f054be0f0a813}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_a61f123c9c4468d32569eea1cccbfe285}{Medic}}, \doxymbox{\hyperlink{class_soldier_aaa690d0d9909a1ba79c61b3a79fd9531}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_ae2da4baeac3a40f8e6470f8a3d2cf733}{Vanguard}}.
+
+\Hypertarget{class_player_a55313ee49349dfeb73a72f26c945d7cd}\index{Player@{Player}!onShift@{onShift}}
+\index{onShift@{onShift}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{onShift()}{onShift()}}
+{\footnotesize\ttfamily \label{class_player_a55313ee49349dfeb73a72f26c945d7cd} 
+virtual void Player::\+on\+Shift (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a834e855e39645be1e0d1386c79b90bd8}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_ad967370498efb89a6300685aabddc682}{Medic}}, and \doxymbox{\hyperlink{class_vanguard_a309294736f92ba52e926ee6b4076094b}{Vanguard}}.
+
+\Hypertarget{class_player_a38c93f696a344c75dd5288edb6576175}\index{Player@{Player}!playRemoteAbility@{playRemoteAbility}}
+\index{playRemoteAbility@{playRemoteAbility}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{playRemoteAbility()}{playRemoteAbility()}}
+{\footnotesize\ttfamily \label{class_player_a38c93f696a344c75dd5288edb6576175} 
+virtual void Player::\+play\+Remote\+Ability (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}}]{ability}{, }\item[{const sf::\+\+Vector2f \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a00f6c3b9231e37c9d6c935b644c5ea0f}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_a68c3ef5e6c32156590849f7a33cea16f}{Medic}}, and \doxymbox{\hyperlink{class_vanguard_a89ccb8d5f2609e3d9df9724e572efadb}{Vanguard}}.
+
+\Hypertarget{class_player_a3b6f25b2227918ba499d48725bedc37d}\index{Player@{Player}!reload@{reload}}
+\index{reload@{reload}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{reload()}{reload()}}
+{\footnotesize\ttfamily \label{class_player_a3b6f25b2227918ba499d48725bedc37d} 
+void Player::\+reload (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Starts a reload if one is not already in progress. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_vanguard_a76aa4d080d46f3ae3ea7c7529ab98428}{Vanguard}}.
+
+\Hypertarget{class_player_a7ca27cb19d606eb3f138065f68eb1d41}\index{Player@{Player}!render@{render}}
+\index{render@{render}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_player_a7ca27cb19d606eb3f138065f68eb1d41} 
+void Player::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the player circle and health bar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_vanguard_a4c917e62bbd1a21880075e78d608f763}{Vanguard}}.
+
+\Hypertarget{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}\index{Player@{Player}!renderESkill@{renderESkill}}
+\index{renderESkill@{renderESkill}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{renderESkill()}{renderESkill()}}
+{\footnotesize\ttfamily \label{class_player_ad137f64f69d3daf143c384c8a4a4c3f8} 
+void Player::\+render\+ESkill (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Renders the E ability cooldown bar in the left HUD panel. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_vanguard_a8651ac45a92c3f254592f4f4c4025808}{Vanguard}}.
+
+\Hypertarget{class_player_a884b262895cd0e45d1a61514bc1ea763}\index{Player@{Player}!renderQSkill@{renderQSkill}}
+\index{renderQSkill@{renderQSkill}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{renderQSkill()}{renderQSkill()}}
+{\footnotesize\ttfamily \label{class_player_a884b262895cd0e45d1a61514bc1ea763} 
+void Player::\+render\+QSkill (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Renders the Q ultimate charge or active timer in the left HUD panel. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_medic_aaa55240f226b147da7f82aa5d4f9e373}{Medic}}.
+
+\Hypertarget{class_player_aaf187efa0d73c6200da953e09d6470b9}\index{Player@{Player}!renderRightPanel@{renderRightPanel}}
+\index{renderRightPanel@{renderRightPanel}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{renderRightPanel()}{renderRightPanel()}}
+{\footnotesize\ttfamily \label{class_player_aaf187efa0d73c6200da953e09d6470b9} 
+void Player::\+render\+Right\+Panel (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Renders the right HUD panel with HP and ammo status. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_vanguard_a456f6809ab9691a670335e6ec8927522}{Vanguard}}.
+
+\Hypertarget{class_player_a11a9f06b90f268689c3e5b931a17ea3c}\index{Player@{Player}!renderShiftSkill@{renderShiftSkill}}
+\index{renderShiftSkill@{renderShiftSkill}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{renderShiftSkill()}{renderShiftSkill()}}
+{\footnotesize\ttfamily \label{class_player_a11a9f06b90f268689c3e5b931a17ea3c} 
+void Player::\+render\+Shift\+Skill (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [virtual]}}
+
+
+
+Renders the Shift ability cooldown bar in the left HUD panel. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_soldier_a7778a124f1ba632495788c3fdec15b47}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_a3f80ace6b4fd349cd6f4b19cac64e65a}{Vanguard}}.
+
+\Hypertarget{class_player_af2793f057492e5fce5331fa036263cad}\index{Player@{Player}!setFocused@{setFocused}}
+\index{setFocused@{setFocused}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{setFocused()}{setFocused()}}
+{\footnotesize\ttfamily \label{class_player_af2793f057492e5fce5331fa036263cad} 
+void Player::\+set\+Focused (\begin{DoxyParamCaption}\item[{bool}]{focused}{}\end{DoxyParamCaption})}
+
+
+
+Sets whether this player accepts local keyboard input. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em focused} & True when the player should respond to movement keys. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_player_af22ac0793705ba6fff981082a16af0d6}\index{Player@{Player}!setUpgradeMultipliers@{setUpgradeMultipliers}}
+\index{setUpgradeMultipliers@{setUpgradeMultipliers}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{setUpgradeMultipliers()}{setUpgradeMultipliers()}}
+{\footnotesize\ttfamily \label{class_player_af22ac0793705ba6fff981082a16af0d6} 
+void Player::\+set\+Upgrade\+Multipliers (\begin{DoxyParamCaption}\item[{float}]{hp\+Mult}{, }\item[{float}]{speed\+Mult}{, }\item[{float}]{damage\+Mult}{, }\item[{float}]{cooldown\+Mult}{}\end{DoxyParamCaption})}
+
+
+
+Applies run upgrade multipliers to HP, speed, damage, and cooldowns. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hp\+Mult} & Maximum HP multiplier. \\
+\hline
+{\em speed\+Mult} & Movement speed multiplier. \\
+\hline
+{\em damage\+Mult} & Damage multiplier (stored for subclasses). \\
+\hline
+{\em cooldown\+Mult} & Cooldown duration multiplier. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}\index{Player@{Player}!update@{update}}
+\index{update@{update}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_player_a8fe14563c7fce6c7b1e1e521a52cd871} 
+void Player::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Advances reload and cooldown timers, then applies keyboard movement. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map used for wall collision checks. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_soldier_a202cc021f853f61c7089a9d0d32630d5}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_a4606aa4dbfd9f4746618601454040c41}{Vanguard}}.
+
+\Hypertarget{class_player_a6883ea051661974f3b0b60aed06adc3a}\index{Player@{Player}!updateRemoteVisuals@{updateRemoteVisuals}}
+\index{updateRemoteVisuals@{updateRemoteVisuals}!Player@{Player}}
+\doxysubsubsection{\texorpdfstring{updateRemoteVisuals()}{updateRemoteVisuals()}}
+{\footnotesize\ttfamily \label{class_player_a6883ea051661974f3b0b60aed06adc3a} 
+virtual void Player::\+update\+Remote\+Visuals (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_juggernaut_a351a24a15b6addf7300ce1d5783a7844}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_ad9af4567482ec131b99810acb271e122}{Medic}}, and \doxymbox{\hyperlink{class_vanguard_aca1aa3297801e56c7243fd32161d7bf8}{Vanguard}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Player.\+hpp\item 
+src/\+client/\+entities/\+Player.\+cpp\end{DoxyCompactItemize}

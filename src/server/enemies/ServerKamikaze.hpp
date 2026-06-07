@@ -2,6 +2,9 @@
 
 #include "ServerEnemy.hpp"
 
+/**
+ * @brief Suicide enemy that rushes in a zigzag pattern and detonates near players.
+ */
 class ServerKamikaze : public ServerEnemy {
 public:
     using ServerEnemy::ServerEnemy;

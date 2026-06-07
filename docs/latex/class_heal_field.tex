@@ -1,0 +1,206 @@
+\doxysection{Heal\+Field Class Reference}
+\hypertarget{class_heal_field}{}\label{class_heal_field}\index{HealField@{HealField}}
+
+
+\doxylink{class_soldier}{Soldier} heal field zone that restores health over its lifetime.  
+
+
+
+
+{\ttfamily \+\#include $<$Heal\+Field.\+hpp$>$}
+
+Inheritance diagram for Heal\+Field:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_heal_field}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_heal_field_a07556d2f08b24fdd34432259eb406956}{Heal\+Field}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, float duration, float radius)
+\begin{DoxyCompactList}\small\item\em Constructs a heal field with the given duration and radius. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_heal_field_a24aa54d6d5a6efddaa9e9f6b08600842}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Reduces remaining lifetime each frame. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_heal_field_ac20d32aede869a5b18dd200fcb27dff6}{render}} (sf::\+\+Render\+Target \&target)
+\begin{DoxyCompactList}\small\item\em Draws the heal field circle. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_heal_field_af3a8afb3e9fe53cbfa0a155140e14051}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the player faction for combat filtering. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_heal_field_a1c73e8ebb4c6f5c5f81b3d194148167e}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the heal zone collision radius. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_heal_field_a0b12cfee98c27f25fd94fd339ce8f7ee}{get\+Heal\+Per\+Second}} () const
+\begin{DoxyCompactList}\small\item\em Returns the healing rate applied to allies inside the field. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_heal_field_ac24a9665240a89c94a159c4999b0a453}\label{class_heal_field_ac24a9665240a89c94a159c4999b0a453} 
+float {\bfseries m\+\_\+heal\+Per\+Second} \{10.\+0f\}
+\item 
+\Hypertarget{class_heal_field_a0bbc1e62cbd99633afc49d6d7e64ea5d}\label{class_heal_field_a0bbc1e62cbd99633afc49d6d7e64ea5d} 
+float {\bfseries m\+\_\+radius}
+\item 
+\Hypertarget{class_heal_field_a93bd42f19e687229b4baacd37c9f3e6e}\label{class_heal_field_a93bd42f19e687229b4baacd37c9f3e6e} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_soldier}{Soldier} heal field zone that restores health over its lifetime. 
+
+Renders a green circle and counts down remaining duration through the entity HP value. Belongs to the player faction. 
+
+\label{doc-constructors}
+\Hypertarget{class_heal_field_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_heal_field_a07556d2f08b24fdd34432259eb406956}\index{HealField@{HealField}!HealField@{HealField}}
+\index{HealField@{HealField}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{HealField()}{HealField()}}
+{\footnotesize\ttfamily \label{class_heal_field_a07556d2f08b24fdd34432259eb406956} 
+Heal\+Field::\+\+Heal\+Field (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{float}]{duration}{, }\item[{float}]{radius}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a heal field with the given duration and radius. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Center position in world space. \\
+\hline
+{\em duration} & Total lifetime in seconds stored as HP. \\
+\hline
+{\em radius} & Effect radius in world units. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_heal_field_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_heal_field_af3a8afb3e9fe53cbfa0a155140e14051}\index{HealField@{HealField}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_heal_field_af3a8afb3e9fe53cbfa0a155140e14051} 
+Faction Heal\+Field::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the player faction for combat filtering. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+Players. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_heal_field_a0b12cfee98c27f25fd94fd339ce8f7ee}\index{HealField@{HealField}!getHealPerSecond@{getHealPerSecond}}
+\index{getHealPerSecond@{getHealPerSecond}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{getHealPerSecond()}{getHealPerSecond()}}
+{\footnotesize\ttfamily \label{class_heal_field_a0b12cfee98c27f25fd94fd339ce8f7ee} 
+float Heal\+Field::\+get\+Heal\+Per\+Second (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the healing rate applied to allies inside the field. 
+
+\begin{DoxyReturn}{Returns}
+Hit points restored per second. 
+\end{DoxyReturn}
+\Hypertarget{class_heal_field_a1c73e8ebb4c6f5c5f81b3d194148167e}\index{HealField@{HealField}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_heal_field_a1c73e8ebb4c6f5c5f81b3d194148167e} 
+float Heal\+Field::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the heal zone collision radius. 
+
+\begin{DoxyReturn}{Returns}
+Effect radius in world units. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_heal_field_ac20d32aede869a5b18dd200fcb27dff6}\index{HealField@{HealField}!render@{render}}
+\index{render@{render}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_heal_field_ac20d32aede869a5b18dd200fcb27dff6} 
+void Heal\+Field::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Draws the heal field circle. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_heal_field_a24aa54d6d5a6efddaa9e9f6b08600842}\index{HealField@{HealField}!update@{update}}
+\index{update@{update}!HealField@{HealField}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_heal_field_a24aa54d6d5a6efddaa9e9f6b08600842} 
+void Heal\+Field::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reduces remaining lifetime each frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Heal\+Field.\+hpp\end{DoxyCompactItemize}

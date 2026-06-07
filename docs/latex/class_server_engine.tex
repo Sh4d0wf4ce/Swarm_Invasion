@@ -1,0 +1,752 @@
+\doxysection{Server\+Engine Class Reference}
+\hypertarget{class_server_engine}{}\label{class_server_engine}\index{ServerEngine@{ServerEngine}}
+
+
+Authoritative UDP game server managing clients, combat, abilities, and world state.  
+
+
+
+
+{\ttfamily \+\#include $<$Server\+Engine.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_server_engine_a02bd1093c93180ca5e4bb8d14ed9addb}{Server\+Engine}} ()
+\begin{DoxyCompactList}\small\item\em Binds the UDP socket, generates the map, and prepares the 60 Hz tick clock. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_ac10d1cf750a879d31a85c0c5a6c7fc65}\label{class_server_engine_ac10d1cf750a879d31a85c0c5a6c7fc65} 
+void {\bfseries run} ()
+\begin{DoxyCompactList}\small\item\em Main server loop:\+ fixed-\/rate network processing and simulation updates. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_engine_ad1624292b1ed23be276b24f24be3ba07}\label{class_server_engine_ad1624292b1ed23be276b24f24be3ba07} 
+void {\bfseries process\+Network} ()
+\begin{DoxyCompactList}\small\item\em Drains all pending UDP packets and dispatches them to packet handlers. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a2c564289a82f5f22e0e55541641ee8de}{update}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Advances one simulation tick:\+ AI, abilities, projectiles, deaths, and world broadcast. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_aabff8e8988eccbba05ed8c23044c0b82}\label{class_server_engine_aabff8e8988eccbba05ed8c23044c0b82} 
+void {\bfseries send\+World\+State} ()
+\begin{DoxyCompactList}\small\item\em Serializes and broadcasts the full world snapshot to every connected client. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_ad356983248ccfa62b995ff39fe29ca40}{handle\+Ping}} (sf::\+\+Packet \&packet, const sf::\+\+Ip\+Address \&sender, unsigned short port)
+\begin{DoxyCompactList}\small\item\em Responds to a client ping with a pong packet. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a8184fdf0a9e05b93566c0c9bec84da9e}{handle\+Player\+Position}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Updates a connected player\textquotesingle{}s position and refreshes activity timestamp. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a3cddf8f98f59a3bdeb30207cde9b6d54}{handle\+Entity\+Hit}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Applies weapon damage to decoys, players, or enemies and handles kill rewards. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a2598e12bcc804d83c9ffacf1edb682aa}{handle\+Join\+Request}} (sf::\+\+Packet \&packet, const sf::\+\+Ip\+Address \&sender, unsigned short port)
+\begin{DoxyCompactList}\small\item\em Registers a new player, assigns an ID, and sends a join-\/accept reply. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a4f0103253d7358f5a4d354914f645702}{handle\+Player\+Shoots}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Spawns server-\/authoritative medic needles and relays shoot events to other clients. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_aa60b2ee166251c6fa405ed7722f94934}{handle\+Player\+Disconnect}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Removes a disconnected player and cleans up their medic drone. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a13ca2c2a4961fca2dcdd312a4a8d6461}{handle\+Upgrade\+Chosen}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Records a player\textquotesingle{}s upgrade selection during the level-\/up menu phase. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_ac1bd8bfafef8312323657bf8ba99aa9a}{handle\+Ability\+Hit}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Resolves ability contact hits for dash, repulsor, katana, and vanguard dash abilities. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a06d9fdd8dea7c5d36a328351a32bb906}{handle\+Ability\+Used}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Spawns ability world entities and relays movement abilities to other clients. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_a88cc8e4a0d680f345d8e6c01a5b8b6e1}\label{class_server_engine_a88cc8e4a0d680f345d8e6c01a5b8b6e1} 
+void {\bfseries proccess\+Upgrade\+Menu\+Timeout} ()
+\begin{DoxyCompactList}\small\item\em Advances the upgrade menu selecting and reveal phases while the game is paused. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_a8ab5a08ca2325096010b387a47f635a5}\label{class_server_engine_a8ab5a08ca2325096010b387a47f635a5} 
+void {\bfseries remove\+AFKPlayers} ()
+\begin{DoxyCompactList}\small\item\em Disconnects clients that have exceeded the network inactivity timeout. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_server_engine_a90dca41c34da612e555e2f3d4c1f5a2c}{needs\+World\+Reset}} () const
+\begin{DoxyCompactList}\small\item\em Returns whether leftover world state requires a full reset after all players leave. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_a14ed3c338f00ee022f13628b6a85fa8b}\label{class_server_engine_a14ed3c338f00ee022f13628b6a85fa8b} 
+void {\bfseries reset\+World} ()
+\begin{DoxyCompactList}\small\item\em Clears all world entities, progression, and AI state back to initial values. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_server_engine_a22f4069d51a06e6cdd68e350c6452ed8}{get\+Effective\+Max\+Hp}} (const \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&client) const
+\begin{DoxyCompactList}\small\item\em Computes a player\textquotesingle{}s maximum HP including upgrade multipliers. \end{DoxyCompactList}\item 
+std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_server_engine_a220da71a17a15af9adaf528d51e255f2}{build\+Upgrade\+Pool}} (\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class, bool want\+Augment) const
+\begin{DoxyCompactList}\small\item\em Builds the eligible upgrade pool for a player class and augment tier. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+string $>$ \doxymbox{\hyperlink{class_server_engine_ad8225f95a7127ce4a58380dd22b82695}{roll\+Upgrade\+Offer}} (const \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&client) const
+\begin{DoxyCompactList}\small\item\em Rolls three weighted random upgrade IDs for a client. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_ab771dbe9254dd33c1b0159a6768e88f2}{apply\+Upgrade}} (\doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&client, const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \&upgrade)
+\begin{DoxyCompactList}\small\item\em Applies an upgrade\textquotesingle{}s stat modifier to a client and records owned augments. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_ae5580a1020c18ba9bcb7fe25b773dbd3}\label{class_server_engine_ae5580a1020c18ba9bcb7fe25b773dbd3} 
+void {\bfseries send\+Level\+Up\+Offers} ()
+\begin{DoxyCompactList}\small\item\em Generates and sends level-\/up upgrade offers to every connected client. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_ab8fc3192bfbf4eb1e4ef068df065f4ca}{send\+Upgrade\+Multipliers}} (std::\+uint32\+\_\+t player\+Id)
+\begin{DoxyCompactList}\small\item\em Sends updated stat multipliers to a client after an upgrade is applied. \end{DoxyCompactList}\item 
+\Hypertarget{class_server_engine_a7572e7a00838a8eba67f199de043e133}\label{class_server_engine_a7572e7a00838a8eba67f199de043e133} 
+void {\bfseries finalize\+Upgrade\+Selections} ()
+\begin{DoxyCompactList}\small\item\em Applies chosen or random upgrades and notifies clients of resolved selections. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_abc15e8922b7b1f4ac3c279601bf30ea8}{update\+Energy\+Cells}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Updates energy cell magnet movement, pickup collection, and team level-\/up triggers. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a98b77f6c6d903450cf8d902f74c584d2}{update\+Healing\+Fields}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Heals players inside active soldier heal fields and expires finished fields. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_acd4080cc00a132363b8325dacbb712ae}{update\+Medic\+Passives}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Applies medic class passive regeneration to all medic players below max HP. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_aa12a44ae9aef700571f6e2a49502be24}{update\+Black\+Holes}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Simulates black hole pull, core damage, enemy kills, and lifetime expiry. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a0b50443a96f66dcbc0ac5daf69ba0e6d}{update\+Medic\+Orbs}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Moves medic orbs with wall bounce, applies periodic heal/\+damage ticks, and expires orbs. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a93330d438e3f262c2c4293b88486e33a}{update\+Medic\+Barriers}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Knocks back enemies intersecting medic barriers and expires finished barriers. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_aff1de40262f9d6514eaea4ef5657a357}{update\+Medic\+Drones}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Updates medic drone movement, symbiotic healing, shooting, and lifetime expiry. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a25f260977ff1dd32328e5652bbed0c60}{update\+Server\+Projectiles}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Simulates medic needle and drone blaster projectiles with heal, damage, and poison effects. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a0b58ec61cc55dfa4dfe531f5671b9187}{handle\+Medic\+Drone\+Command}} (std::\+uint32\+\_\+t player\+Id, sf::\+\+Vector2f target\+Pos)
+\begin{DoxyCompactList}\small\item\em Spawns or retasks a medic drone to orbit a nearby player or hold a sentry point. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a092d941fa9804f1cf990a7333742d104}{spawn\+Drone\+Blaster}} (std::\+uint32\+\_\+t owner\+Id, sf::\+\+Vector2f start\+Pos, sf::\+\+Vector2f target\+Pos)
+\begin{DoxyCompactList}\small\item\em Creates a server-\/side drone blaster projectile and broadcasts the visual shot event. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a73ff1807b5dcc91f476c1070a1907de4}{spawn\+Medic\+Needle}} (std::\+uint32\+\_\+t owner\+Id, sf::\+\+Vector2f start\+Pos, sf::\+\+Vector2f target\+Pos)
+\begin{DoxyCompactList}\small\item\em Adds an authoritative medic needle projectile to the server simulation. \end{DoxyCompactList}\item 
+std::\+uint32\+\_\+t \doxymbox{\hyperlink{class_server_engine_a6753ccadf75e55225dc523b9776690ad}{find\+Nearest\+Enemy\+Id}} (const sf::\+\+Vector2f \&from, float max\+Range) const
+\begin{DoxyCompactList}\small\item\em Finds the nearest live enemy within a maximum range of a world position. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{struct_medic_drone_data}{Medic\+Drone\+Data}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_server_engine_accf47dd580be3e76be81947626403550}{find\+Drone\+By\+Owner}} (std::\+uint32\+\_\+t owner\+Id)
+\begin{DoxyCompactList}\small\item\em Finds the medic drone owned by a given player, if one exists. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_engine_a80718fe3cb4684443b27dded70179fb4}{explode\+Decoy}} (std::\+uint32\+\_\+t decoy\+Id, const \doxymbox{\hyperlink{struct_decoy_data}{Decoy\+Data}} \&decoy)
+\begin{DoxyCompactList}\small\item\em Damages enemies in a decoy explosion radius and notifies all clients. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_server_engine_a0f5eede7fb3ad074ac85b17003319b40}{player\+Has\+Active\+Decoy}} (std::\+uint32\+\_\+t player\+Id) const
+\begin{DoxyCompactList}\small\item\em Checks whether a player currently owns an active decoy entity. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_server_engine_afb88a17a062c88860cf076a4e26aa81d}{player\+Has\+Active\+Orb}} (std::\+uint32\+\_\+t player\+Id) const
+\begin{DoxyCompactList}\small\item\em Checks whether a player currently owns an active medic orb. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_engine_ab89f676555314cbbf4cf56c0b6fb904b}\label{class_server_engine_ab89f676555314cbbf4cf56c0b6fb904b} 
+std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ {\bfseries m\+\_\+map}
+\item 
+\Hypertarget{class_server_engine_af19129e247360c25c34abda3f04c910c}\label{class_server_engine_af19129e247360c25c34abda3f04c910c} 
+\doxymbox{\hyperlink{class_a_i_director}{AIDirector}} {\bfseries m\+\_\+ai\+Director}
+\item 
+\Hypertarget{class_server_engine_af04dc774db3c27e2383ccfdac0efa998}\label{class_server_engine_af04dc774db3c27e2383ccfdac0efa998} 
+sf::\+\+Udp\+Socket {\bfseries m\+\_\+socket}
+\item 
+\Hypertarget{class_server_engine_a355704b6a132cb0bb9249b742ab10697}\label{class_server_engine_a355704b6a132cb0bb9249b742ab10697} 
+sf::\+\+Clock {\bfseries m\+\_\+clock}
+\item 
+\Hypertarget{class_server_engine_a8e12bbc7ae9ed52233c28bce2f525a8f}\label{class_server_engine_a8e12bbc7ae9ed52233c28bce2f525a8f} 
+sf::\+\+Time {\bfseries m\+\_\+time\+Per\+Tick}
+\item 
+\Hypertarget{class_server_engine_a75e9999438835edb5d5e600f797e2f62}\label{class_server_engine_a75e9999438835edb5d5e600f797e2f62} 
+bool {\bfseries m\+\_\+is\+Running}
+\item 
+\Hypertarget{class_server_engine_a70f3a3631c0cf53964db47181b4efe12}\label{class_server_engine_a70f3a3631c0cf53964db47181b4efe12} 
+int {\bfseries m\+\_\+tick\+Counter}
+\item 
+\Hypertarget{class_server_engine_af70e192a41104c52976800817f0042b9}\label{class_server_engine_af70e192a41104c52976800817f0042b9} 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+global\+Entity\+Counter} = 1
+\item 
+\Hypertarget{class_server_engine_ad851ce81bc4dacfabf7ff0373d57970c}\label{class_server_engine_ad851ce81bc4dacfabf7ff0373d57970c} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ {\bfseries m\+\_\+clients}
+\item 
+\Hypertarget{class_server_engine_ab186dc6b00d7fe839d102afd0f5bc01d}\label{class_server_engine_ab186dc6b00d7fe839d102afd0f5bc01d} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_energy_cell_info}{Energy\+Cell\+Info}} $>$ {\bfseries m\+\_\+energy\+Cells}
+\item 
+\Hypertarget{class_server_engine_aeb9cdcda65904e5582d15294e063e53f}\label{class_server_engine_aeb9cdcda65904e5582d15294e063e53f} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_heal_field_info}{Heal\+Field\+Info}} $>$ {\bfseries m\+\_\+heal\+Fields}
+\item 
+\Hypertarget{class_server_engine_afbb86b7d8a9c4b6ba263f638071b4f4c}\label{class_server_engine_afbb86b7d8a9c4b6ba263f638071b4f4c} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_black_hole_data}{Black\+Hole\+Data}} $>$ {\bfseries m\+\_\+black\+Holes}
+\item 
+\Hypertarget{class_server_engine_a0dce45645a490827b262ec4a25fe94b3}\label{class_server_engine_a0dce45645a490827b262ec4a25fe94b3} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_decoy_data}{Decoy\+Data}} $>$ {\bfseries m\+\_\+decoys}
+\item 
+\Hypertarget{class_server_engine_a99cb6046c06d491fb956796bee870625}\label{class_server_engine_a99cb6046c06d491fb956796bee870625} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_medic_orb_data}{Medic\+Orb\+Data}} $>$ {\bfseries m\+\_\+medic\+Orbs}
+\item 
+\Hypertarget{class_server_engine_a6752a433864dbd8461e87f5df5eddf65}\label{class_server_engine_a6752a433864dbd8461e87f5df5eddf65} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_medic_barrier_data}{Medic\+Barrier\+Data}} $>$ {\bfseries m\+\_\+medic\+Barriers}
+\item 
+\Hypertarget{class_server_engine_ab6403deca65a64b6a039524f29655d55}\label{class_server_engine_ab6403deca65a64b6a039524f29655d55} 
+std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_medic_drone_data}{Medic\+Drone\+Data}} $>$ {\bfseries m\+\_\+medic\+Drones}
+\item 
+\Hypertarget{class_server_engine_aba56960ba62d6821d05500e8c3f8782a}\label{class_server_engine_aba56960ba62d6821d05500e8c3f8782a} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_server_projectile_data}{Server\+Projectile\+Data}} $>$ {\bfseries m\+\_\+server\+Projectiles}
+\item 
+\Hypertarget{class_server_engine_aacbb2ce096138fc444feb6cd96e98528}\label{class_server_engine_aacbb2ce096138fc444feb6cd96e98528} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ {\bfseries m\+\_\+enemies}
+\item 
+\Hypertarget{class_server_engine_a0c44ae85afd61762fdcb6c8991a01a57}\label{class_server_engine_a0c44ae85afd61762fdcb6c8991a01a57} 
+int {\bfseries m\+\_\+team\+Level} = 1
+\item 
+\Hypertarget{class_server_engine_a7418884a54765c92a606250f3ac45fbb}\label{class_server_engine_a7418884a54765c92a606250f3ac45fbb} 
+int {\bfseries m\+\_\+team\+Exp} = 0
+\item 
+\Hypertarget{class_server_engine_a3f0a9b15aa60a4777fdad222409becd1}\label{class_server_engine_a3f0a9b15aa60a4777fdad222409becd1} 
+int {\bfseries m\+\_\+team\+Exp\+Max} = 10
+\item 
+\Hypertarget{class_server_engine_a49eb5e928ff3f704bf51db849c955eee}\label{class_server_engine_a49eb5e928ff3f704bf51db849c955eee} 
+bool {\bfseries m\+\_\+is\+Paused} = false
+\item 
+\Hypertarget{class_server_engine_a99cb65410aa1394a51cefa7d6347a131}\label{class_server_engine_a99cb65410aa1394a51cefa7d6347a131} 
+sf::\+\+Clock {\bfseries m\+\_\+upgrade\+Timer}
+\item 
+\Hypertarget{class_server_engine_a84e250e711058070a70b36fd400fa1f3}\label{class_server_engine_a84e250e711058070a70b36fd400fa1f3} 
+sf::\+\+Clock {\bfseries m\+\_\+upgrade\+Reveal\+Timer}
+\item 
+\Hypertarget{class_server_engine_a0616c73f7ced8894ce7dfa8a0092b8e3}\label{class_server_engine_a0616c73f7ced8894ce7dfa8a0092b8e3} 
+Upgrade\+Menu\+Phase {\bfseries m\+\_\+upgrade\+Menu\+Phase} = Upgrade\+Menu\+Phase::\+\+None
+\item 
+\Hypertarget{class_server_engine_a28b00bf89c1d05de475d8f9614a2b863}\label{class_server_engine_a28b00bf89c1d05de475d8f9614a2b863} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+string $>$ {\bfseries m\+\_\+player\+Chosen\+Upgrades}
+\item 
+\Hypertarget{class_server_engine_a4be1cc1b6f6fd958130b96394bd72680}\label{class_server_engine_a4be1cc1b6f6fd958130b96394bd72680} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+vector$<$ std::\+string $>$ $>$ {\bfseries m\+\_\+pending\+Offers}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Authoritative UDP game server managing clients, combat, abilities, and world state. 
+
+Runs a fixed 60 Hz tick loop, processes incoming packets, simulates enemies and ability entities, handles upgrade progression, and broadcasts world snapshots to connected clients. 
+
+\label{doc-constructors}
+\Hypertarget{class_server_engine_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_server_engine_a02bd1093c93180ca5e4bb8d14ed9addb}\index{ServerEngine@{ServerEngine}!ServerEngine@{ServerEngine}}
+\index{ServerEngine@{ServerEngine}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{ServerEngine()}{ServerEngine()}}
+{\footnotesize\ttfamily \label{class_server_engine_a02bd1093c93180ca5e4bb8d14ed9addb} 
+Server\+Engine::\+\+Server\+Engine (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Binds the UDP socket, generates the map, and prepares the 60 Hz tick clock. 
+
+
+\begin{DoxyExceptions}{Exceptions}
+{\em None} & Does not throw exceptions; bind failure sets m\+\_\+is\+Running to false. \\
+\hline
+\end{DoxyExceptions}
+
+
+\label{doc-func-members}
+\Hypertarget{class_server_engine_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_server_engine_ab771dbe9254dd33c1b0159a6768e88f2}\index{ServerEngine@{ServerEngine}!applyUpgrade@{applyUpgrade}}
+\index{applyUpgrade@{applyUpgrade}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{applyUpgrade()}{applyUpgrade()}}
+{\footnotesize\ttfamily \label{class_server_engine_ab771dbe9254dd33c1b0159a6768e88f2} 
+void Server\+Engine::\+apply\+Upgrade (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&}]{client}{, }\item[{const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \&}]{upgrade}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Applies an upgrade\textquotesingle{}s stat modifier to a client and records owned augments. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em client} & Client state to modify in place. \\
+\hline
+{\em upgrade} & Upgrade definition containing stat type and modifier value. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a220da71a17a15af9adaf528d51e255f2}\index{ServerEngine@{ServerEngine}!buildUpgradePool@{buildUpgradePool}}
+\index{buildUpgradePool@{buildUpgradePool}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{buildUpgradePool()}{buildUpgradePool()}}
+{\footnotesize\ttfamily \label{class_server_engine_a220da71a17a15af9adaf528d51e255f2} 
+std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ Server\+Engine::\+build\+Upgrade\+Pool (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{p\+Class}{, }\item[{bool}]{want\+Augment}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Builds the eligible upgrade pool for a player class and augment tier. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Class} & \doxylink{class_player}{Player} class used to filter upgrades. \\
+\hline
+{\em want\+Augment} & When true, prefer augment-\/tier upgrades. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointers to matching upgrade definitions from the registry. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_a80718fe3cb4684443b27dded70179fb4}\index{ServerEngine@{ServerEngine}!explodeDecoy@{explodeDecoy}}
+\index{explodeDecoy@{explodeDecoy}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{explodeDecoy()}{explodeDecoy()}}
+{\footnotesize\ttfamily \label{class_server_engine_a80718fe3cb4684443b27dded70179fb4} 
+void Server\+Engine::\+explode\+Decoy (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{decoy\+Id}{, }\item[{const \doxymbox{\hyperlink{struct_decoy_data}{Decoy\+Data}} \&}]{decoy}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Damages enemies in a decoy explosion radius and notifies all clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em decoy\+Id} & Network ID of the exploding decoy. \\
+\hline
+{\em decoy} & \doxylink{class_decoy}{Decoy} snapshot used for position and owner context. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_accf47dd580be3e76be81947626403550}\index{ServerEngine@{ServerEngine}!findDroneByOwner@{findDroneByOwner}}
+\index{findDroneByOwner@{findDroneByOwner}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{findDroneByOwner()}{findDroneByOwner()}}
+{\footnotesize\ttfamily \label{class_server_engine_accf47dd580be3e76be81947626403550} 
+\doxymbox{\hyperlink{struct_medic_drone_data}{Medic\+Drone\+Data}} \texorpdfstring{$\ast$}{*} Server\+Engine::\+find\+Drone\+By\+Owner (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Finds the medic drone owned by a given player, if one exists. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_player}{Player} ID that owns the drone. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to live drone data, or nullptr if none exists. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_a6753ccadf75e55225dc523b9776690ad}\index{ServerEngine@{ServerEngine}!findNearestEnemyId@{findNearestEnemyId}}
+\index{findNearestEnemyId@{findNearestEnemyId}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{findNearestEnemyId()}{findNearestEnemyId()}}
+{\footnotesize\ttfamily \label{class_server_engine_a6753ccadf75e55225dc523b9776690ad} 
+std::\+uint32\+\_\+t Server\+Engine::\+find\+Nearest\+Enemy\+Id (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{from}{, }\item[{float}]{max\+Range}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Finds the nearest live enemy within a maximum range of a world position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em from} & Origin position for distance comparison. \\
+\hline
+{\em max\+Range} & Maximum search radius in world units. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{class_enemy}{Enemy} ID of the closest match, or 0 if none are in range. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_a22f4069d51a06e6cdd68e350c6452ed8}\index{ServerEngine@{ServerEngine}!getEffectiveMaxHp@{getEffectiveMaxHp}}
+\index{getEffectiveMaxHp@{getEffectiveMaxHp}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{getEffectiveMaxHp()}{getEffectiveMaxHp()}}
+{\footnotesize\ttfamily \label{class_server_engine_a22f4069d51a06e6cdd68e350c6452ed8} 
+float Server\+Engine::\+get\+Effective\+Max\+Hp (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&}]{client}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Computes a player\textquotesingle{}s maximum HP including upgrade multipliers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em client} & Client whose class and HP multiplier are applied. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Effective maximum hit points. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_ac1bd8bfafef8312323657bf8ba99aa9a}\index{ServerEngine@{ServerEngine}!handleAbilityHit@{handleAbilityHit}}
+\index{handleAbilityHit@{handleAbilityHit}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleAbilityHit()}{handleAbilityHit()}}
+{\footnotesize\ttfamily \label{class_server_engine_ac1bd8bfafef8312323657bf8ba99aa9a} 
+void Server\+Engine::\+handle\+Ability\+Hit (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Resolves ability contact hits for dash, repulsor, katana, and vanguard dash abilities. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with shooter ID, target ID, and ability type. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a06d9fdd8dea7c5d36a328351a32bb906}\index{ServerEngine@{ServerEngine}!handleAbilityUsed@{handleAbilityUsed}}
+\index{handleAbilityUsed@{handleAbilityUsed}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleAbilityUsed()}{handleAbilityUsed()}}
+{\footnotesize\ttfamily \label{class_server_engine_a06d9fdd8dea7c5d36a328351a32bb906} 
+void Server\+Engine::\+handle\+Ability\+Used (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Spawns ability world entities and relays movement abilities to other clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with player ID, ability type, and position or direction data. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a3cddf8f98f59a3bdeb30207cde9b6d54}\index{ServerEngine@{ServerEngine}!handleEntityHit@{handleEntityHit}}
+\index{handleEntityHit@{handleEntityHit}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleEntityHit()}{handleEntityHit()}}
+{\footnotesize\ttfamily \label{class_server_engine_a3cddf8f98f59a3bdeb30207cde9b6d54} 
+void Server\+Engine::\+handle\+Entity\+Hit (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Applies weapon damage to decoys, players, or enemies and handles kill rewards. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with shooter ID, target ID, and weapon type. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a2598e12bcc804d83c9ffacf1edb682aa}\index{ServerEngine@{ServerEngine}!handleJoinRequest@{handleJoinRequest}}
+\index{handleJoinRequest@{handleJoinRequest}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleJoinRequest()}{handleJoinRequest()}}
+{\footnotesize\ttfamily \label{class_server_engine_a2598e12bcc804d83c9ffacf1edb682aa} 
+void Server\+Engine::\+handle\+Join\+Request (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const sf::\+\+Ip\+Address \&}]{sender}{, }\item[{unsigned short}]{port}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Registers a new player, assigns an ID, and sends a join-\/accept reply. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with requested player class. \\
+\hline
+{\em sender} & Client IP address. \\
+\hline
+{\em port} & Client UDP port. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a0b58ec61cc55dfa4dfe531f5671b9187}\index{ServerEngine@{ServerEngine}!handleMedicDroneCommand@{handleMedicDroneCommand}}
+\index{handleMedicDroneCommand@{handleMedicDroneCommand}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleMedicDroneCommand()}{handleMedicDroneCommand()}}
+{\footnotesize\ttfamily \label{class_server_engine_a0b58ec61cc55dfa4dfe531f5671b9187} 
+void Server\+Engine::\+handle\+Medic\+Drone\+Command (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{player\+Id}{, }\item[{sf::\+\+Vector2f}]{target\+Pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Spawns or retasks a medic drone to orbit a nearby player or hold a sentry point. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+Id} & \doxylink{class_medic}{Medic} player issuing the ult command. \\
+\hline
+{\em target\+Pos} & World position clicked for orbit or sentry placement. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_ad356983248ccfa62b995ff39fe29ca40}\index{ServerEngine@{ServerEngine}!handlePing@{handlePing}}
+\index{handlePing@{handlePing}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handlePing()}{handlePing()}}
+{\footnotesize\ttfamily \label{class_server_engine_ad356983248ccfa62b995ff39fe29ca40} 
+void Server\+Engine::\+handle\+Ping (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const sf::\+\+Ip\+Address \&}]{sender}{, }\item[{unsigned short}]{port}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Responds to a client ping with a pong packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet containing the ping message string. \\
+\hline
+{\em sender} & Client IP address. \\
+\hline
+{\em port} & Client UDP port. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_aa60b2ee166251c6fa405ed7722f94934}\index{ServerEngine@{ServerEngine}!handlePlayerDisconnect@{handlePlayerDisconnect}}
+\index{handlePlayerDisconnect@{handlePlayerDisconnect}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handlePlayerDisconnect()}{handlePlayerDisconnect()}}
+{\footnotesize\ttfamily \label{class_server_engine_aa60b2ee166251c6fa405ed7722f94934} 
+void Server\+Engine::\+handle\+Player\+Disconnect (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Removes a disconnected player and cleans up their medic drone. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with the disconnecting player ID. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a8184fdf0a9e05b93566c0c9bec84da9e}\index{ServerEngine@{ServerEngine}!handlePlayerPosition@{handlePlayerPosition}}
+\index{handlePlayerPosition@{handlePlayerPosition}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handlePlayerPosition()}{handlePlayerPosition()}}
+{\footnotesize\ttfamily \label{class_server_engine_a8184fdf0a9e05b93566c0c9bec84da9e} 
+void Server\+Engine::\+handle\+Player\+Position (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Updates a connected player\textquotesingle{}s position and refreshes activity timestamp. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with player ID and position. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a4f0103253d7358f5a4d354914f645702}\index{ServerEngine@{ServerEngine}!handlePlayerShoots@{handlePlayerShoots}}
+\index{handlePlayerShoots@{handlePlayerShoots}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handlePlayerShoots()}{handlePlayerShoots()}}
+{\footnotesize\ttfamily \label{class_server_engine_a4f0103253d7358f5a4d354914f645702} 
+void Server\+Engine::\+handle\+Player\+Shoots (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Spawns server-\/authoritative medic needles and relays shoot events to other clients. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with shooter ID, weapon, start position, and target. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a13ca2c2a4961fca2dcdd312a4a8d6461}\index{ServerEngine@{ServerEngine}!handleUpgradeChosen@{handleUpgradeChosen}}
+\index{handleUpgradeChosen@{handleUpgradeChosen}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{handleUpgradeChosen()}{handleUpgradeChosen()}}
+{\footnotesize\ttfamily \label{class_server_engine_a13ca2c2a4961fca2dcdd312a4a8d6461} 
+void Server\+Engine::\+handle\+Upgrade\+Chosen (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Records a player\textquotesingle{}s upgrade selection during the level-\/up menu phase. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Incoming packet with player ID and chosen upgrade ID. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a90dca41c34da612e555e2f3d4c1f5a2c}\index{ServerEngine@{ServerEngine}!needsWorldReset@{needsWorldReset}}
+\index{needsWorldReset@{needsWorldReset}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{needsWorldReset()}{needsWorldReset()}}
+{\footnotesize\ttfamily \label{class_server_engine_a90dca41c34da612e555e2f3d4c1f5a2c} 
+bool Server\+Engine::\+needs\+World\+Reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Returns whether leftover world state requires a full reset after all players leave. 
+
+\begin{DoxyReturn}{Returns}
+True if any entities, progression, or upgrade state remains active. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_a0f5eede7fb3ad074ac85b17003319b40}\index{ServerEngine@{ServerEngine}!playerHasActiveDecoy@{playerHasActiveDecoy}}
+\index{playerHasActiveDecoy@{playerHasActiveDecoy}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{playerHasActiveDecoy()}{playerHasActiveDecoy()}}
+{\footnotesize\ttfamily \label{class_server_engine_a0f5eede7fb3ad074ac85b17003319b40} 
+bool Server\+Engine::\+player\+Has\+Active\+Decoy (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{player\+Id}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks whether a player currently owns an active decoy entity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+Id} & Owner player ID to query. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if any decoy is owned by the given player. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_afb88a17a062c88860cf076a4e26aa81d}\index{ServerEngine@{ServerEngine}!playerHasActiveOrb@{playerHasActiveOrb}}
+\index{playerHasActiveOrb@{playerHasActiveOrb}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{playerHasActiveOrb()}{playerHasActiveOrb()}}
+{\footnotesize\ttfamily \label{class_server_engine_afb88a17a062c88860cf076a4e26aa81d} 
+bool Server\+Engine::\+player\+Has\+Active\+Orb (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{player\+Id}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks whether a player currently owns an active medic orb. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+Id} & Owner player ID to query. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if any medic orb is owned by the given player. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_ad8225f95a7127ce4a58380dd22b82695}\index{ServerEngine@{ServerEngine}!rollUpgradeOffer@{rollUpgradeOffer}}
+\index{rollUpgradeOffer@{rollUpgradeOffer}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{rollUpgradeOffer()}{rollUpgradeOffer()}}
+{\footnotesize\ttfamily \label{class_server_engine_ad8225f95a7127ce4a58380dd22b82695} 
+std::\+vector$<$ std::\+string $>$ Server\+Engine::\+roll\+Upgrade\+Offer (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} \&}]{client}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Rolls three weighted random upgrade IDs for a client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em client} & Client whose class determines the upgrade pool. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Up to three upgrade ID strings offered to the player. 
+\end{DoxyReturn}
+\Hypertarget{class_server_engine_ab8fc3192bfbf4eb1e4ef068df065f4ca}\index{ServerEngine@{ServerEngine}!sendUpgradeMultipliers@{sendUpgradeMultipliers}}
+\index{sendUpgradeMultipliers@{sendUpgradeMultipliers}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{sendUpgradeMultipliers()}{sendUpgradeMultipliers()}}
+{\footnotesize\ttfamily \label{class_server_engine_ab8fc3192bfbf4eb1e4ef068df065f4ca} 
+void Server\+Engine::\+send\+Upgrade\+Multipliers (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{player\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Sends updated stat multipliers to a client after an upgrade is applied. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+Id} & ID of the client to notify. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a092d941fa9804f1cf990a7333742d104}\index{ServerEngine@{ServerEngine}!spawnDroneBlaster@{spawnDroneBlaster}}
+\index{spawnDroneBlaster@{spawnDroneBlaster}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{spawnDroneBlaster()}{spawnDroneBlaster()}}
+{\footnotesize\ttfamily \label{class_server_engine_a092d941fa9804f1cf990a7333742d104} 
+void Server\+Engine::\+spawn\+Drone\+Blaster (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{sf::\+\+Vector2f}]{start\+Pos}{, }\item[{sf::\+\+Vector2f}]{target\+Pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Creates a server-\/side drone blaster projectile and broadcasts the visual shot event. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_player}{Player} ID credited with the shot. \\
+\hline
+{\em start\+Pos} & \doxylink{class_projectile}{Projectile} spawn position. \\
+\hline
+{\em target\+Pos} & Aim point used to compute direction. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a73ff1807b5dcc91f476c1070a1907de4}\index{ServerEngine@{ServerEngine}!spawnMedicNeedle@{spawnMedicNeedle}}
+\index{spawnMedicNeedle@{spawnMedicNeedle}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{spawnMedicNeedle()}{spawnMedicNeedle()}}
+{\footnotesize\ttfamily \label{class_server_engine_a73ff1807b5dcc91f476c1070a1907de4} 
+void Server\+Engine::\+spawn\+Medic\+Needle (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{sf::\+\+Vector2f}]{start\+Pos}{, }\item[{sf::\+\+Vector2f}]{target\+Pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Adds an authoritative medic needle projectile to the server simulation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_player}{Player} ID credited with the shot. \\
+\hline
+{\em start\+Pos} & \doxylink{class_projectile}{Projectile} spawn position. \\
+\hline
+{\em target\+Pos} & Aim point used to compute direction. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a2c564289a82f5f22e0e55541641ee8de}\index{ServerEngine@{ServerEngine}!update@{update}}
+\index{update@{update}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_server_engine_a2c564289a82f5f22e0e55541641ee8de} 
+void Server\+Engine::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Advances one simulation tick:\+ AI, abilities, projectiles, deaths, and world broadcast. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Fixed tick duration (typically 1/\+60 second). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_aa12a44ae9aef700571f6e2a49502be24}\index{ServerEngine@{ServerEngine}!updateBlackHoles@{updateBlackHoles}}
+\index{updateBlackHoles@{updateBlackHoles}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateBlackHoles()}{updateBlackHoles()}}
+{\footnotesize\ttfamily \label{class_server_engine_aa12a44ae9aef700571f6e2a49502be24} 
+void Server\+Engine::\+update\+Black\+Holes (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Simulates black hole pull, core damage, enemy kills, and lifetime expiry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_abc15e8922b7b1f4ac3c279601bf30ea8}\index{ServerEngine@{ServerEngine}!updateEnergyCells@{updateEnergyCells}}
+\index{updateEnergyCells@{updateEnergyCells}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateEnergyCells()}{updateEnergyCells()}}
+{\footnotesize\ttfamily \label{class_server_engine_abc15e8922b7b1f4ac3c279601bf30ea8} 
+void Server\+Engine::\+update\+Energy\+Cells (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Updates energy cell magnet movement, pickup collection, and team level-\/up triggers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a98b77f6c6d903450cf8d902f74c584d2}\index{ServerEngine@{ServerEngine}!updateHealingFields@{updateHealingFields}}
+\index{updateHealingFields@{updateHealingFields}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateHealingFields()}{updateHealingFields()}}
+{\footnotesize\ttfamily \label{class_server_engine_a98b77f6c6d903450cf8d902f74c584d2} 
+void Server\+Engine::\+update\+Healing\+Fields (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Heals players inside active soldier heal fields and expires finished fields. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a93330d438e3f262c2c4293b88486e33a}\index{ServerEngine@{ServerEngine}!updateMedicBarriers@{updateMedicBarriers}}
+\index{updateMedicBarriers@{updateMedicBarriers}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateMedicBarriers()}{updateMedicBarriers()}}
+{\footnotesize\ttfamily \label{class_server_engine_a93330d438e3f262c2c4293b88486e33a} 
+void Server\+Engine::\+update\+Medic\+Barriers (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Knocks back enemies intersecting medic barriers and expires finished barriers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_aff1de40262f9d6514eaea4ef5657a357}\index{ServerEngine@{ServerEngine}!updateMedicDrones@{updateMedicDrones}}
+\index{updateMedicDrones@{updateMedicDrones}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateMedicDrones()}{updateMedicDrones()}}
+{\footnotesize\ttfamily \label{class_server_engine_aff1de40262f9d6514eaea4ef5657a357} 
+void Server\+Engine::\+update\+Medic\+Drones (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Updates medic drone movement, symbiotic healing, shooting, and lifetime expiry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a0b50443a96f66dcbc0ac5daf69ba0e6d}\index{ServerEngine@{ServerEngine}!updateMedicOrbs@{updateMedicOrbs}}
+\index{updateMedicOrbs@{updateMedicOrbs}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateMedicOrbs()}{updateMedicOrbs()}}
+{\footnotesize\ttfamily \label{class_server_engine_a0b50443a96f66dcbc0ac5daf69ba0e6d} 
+void Server\+Engine::\+update\+Medic\+Orbs (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Moves medic orbs with wall bounce, applies periodic heal/\+damage ticks, and expires orbs. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_acd4080cc00a132363b8325dacbb712ae}\index{ServerEngine@{ServerEngine}!updateMedicPassives@{updateMedicPassives}}
+\index{updateMedicPassives@{updateMedicPassives}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateMedicPassives()}{updateMedicPassives()}}
+{\footnotesize\ttfamily \label{class_server_engine_acd4080cc00a132363b8325dacbb712ae} 
+void Server\+Engine::\+update\+Medic\+Passives (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Applies medic class passive regeneration to all medic players below max HP. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_engine_a25f260977ff1dd32328e5652bbed0c60}\index{ServerEngine@{ServerEngine}!updateServerProjectiles@{updateServerProjectiles}}
+\index{updateServerProjectiles@{updateServerProjectiles}!ServerEngine@{ServerEngine}}
+\doxysubsubsection{\texorpdfstring{updateServerProjectiles()}{updateServerProjectiles()}}
+{\footnotesize\ttfamily \label{class_server_engine_a25f260977ff1dd32328e5652bbed0c60} 
+void Server\+Engine::\+update\+Server\+Projectiles (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Simulates medic needle and drone blaster projectiles with heal, damage, and poison effects. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+core/\+Server\+Engine.\+hpp\item 
+src/\+server/\+core/\+Server\+Engine.\+cpp\end{DoxyCompactItemize}

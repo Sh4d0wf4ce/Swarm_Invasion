@@ -15,11 +15,21 @@
 #include <vector>
 #include <string>
 
+/**
+ * @brief Phase of the team level-up upgrade selection menu.
+ */
 enum class UpgradeMenuPhase {
     None,
     Selecting,
     Reveal
 };
+
+/**
+ * @brief Authoritative UDP game server managing clients, combat, abilities, and world state.
+ *
+ * Runs a fixed 60 Hz tick loop, processes incoming packets, simulates enemies and ability
+ * entities, handles upgrade progression, and broadcasts world snapshots to connected clients.
+ */
 class ServerEngine{
 public:
     ServerEngine();

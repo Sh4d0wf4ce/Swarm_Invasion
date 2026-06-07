@@ -1,0 +1,151 @@
+\doxysection{Upgrade\+Registry.\+hpp}
+\hypertarget{_upgrade_registry_8hpp_source}{}\label{_upgrade_registry_8hpp_source}\index{src/shared/UpgradeRegistry.hpp@{src/shared/UpgradeRegistry.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{enum\ class}\ UpgradeStat\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ MaxHP,}
+\DoxyCodeLine{00018\ \ \ \ \ Speed,}
+\DoxyCodeLine{00019\ \ \ \ \ Damage,}
+\DoxyCodeLine{00020\ \ \ \ \ Cooldown}
+\DoxyCodeLine{00021\ \};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_upgrade_definition}{UpgradeDefinition}}\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ std::string\ id;}
+\DoxyCodeLine{00028\ \ \ \ \ std::string\ name;}
+\DoxyCodeLine{00029\ \ \ \ \ std::string\ description;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{float}\ weight\{1.0f\};}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{bool}\ isAugment\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00032\ \ \ \ \ std::optional<PlayerClass>\ targetClass;}
+\DoxyCodeLine{00033\ \ \ \ \ UpgradeStat\ stat\{UpgradeStat::MaxHP\};}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{float}\ modifierValue\{0.0f\};}
+\DoxyCodeLine{00035\ \};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_upgrade_registry}{UpgradeRegistry}}\ \{}
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ Config\ Loading\ \&\ Lookup}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_upgrade_registry_ab23d9b15d3b1863b568ab3eca52f4fa0}{loadConfig}}(\textcolor{keyword}{const}\ std::string\&\ filepath)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ std::ifstream\ file(filepath);}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!file.is\_open())\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Could\ not\ open\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}!\(\backslash\)n"{}};}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ nlohmann::json\ j;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ file\ >>\ j;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ m\_upgrades.clear();}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ PlayerClass>\ classMap\ =\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Soldier"{}},\ PlayerClass::Soldier\},}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Medic"{}},\ PlayerClass::Medic\},}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Juggernaut"{}},\ PlayerClass::Juggernaut\},}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Vanguard"{}},\ PlayerClass::Vanguard\}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ UpgradeStat>\ statMap\ =\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}MaxHP"{}},\ UpgradeStat::MaxHP\},}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Speed"{}},\ UpgradeStat::Speed\},}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Damage"{}},\ UpgradeStat::Damage\},}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Cooldown"{}},\ UpgradeStat::Cooldown\}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ j.items())\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_upgrade_definition}{UpgradeDefinition}}\ def;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ def.id\ =\ key;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ def.name\ =\ val[\textcolor{stringliteral}{"{}name"{}}];}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ def.description\ =\ val[\textcolor{stringliteral}{"{}description"{}}];}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ def.weight\ =\ val[\textcolor{stringliteral}{"{}weight"{}}];}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ def.isAugment\ =\ val.value(\textcolor{stringliteral}{"{}isAugment"{}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ def.modifierValue\ =\ val[\textcolor{stringliteral}{"{}modifierValue"{}}];}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (val.contains(\textcolor{stringliteral}{"{}targetClass"{}})\ \&\&\ !val[\textcolor{stringliteral}{"{}targetClass"{}}].is\_null())\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ classStr\ =\ val[\textcolor{stringliteral}{"{}targetClass"{}}];}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (classMap.count(classStr))\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ def.targetClass\ =\ classMap[classStr];}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ statStr\ =\ val[\textcolor{stringliteral}{"{}statToModify"{}}];}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (statMap.count(statStr))\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ def.stat\ =\ statMap[statStr];}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ m\_upgrades[key]\ =\ def;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}[REGISTRY]\ Successfully\ loaded\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}\ ("{}}\ <<\ m\_upgrades.size()\ <<\ \textcolor{stringliteral}{"{}\ upgrades)\(\backslash\)n"{}};}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_upgrade_definition}{UpgradeDefinition}}*\ \doxymbox{\hyperlink{class_upgrade_registry_a23f2505a81f6507bc498b26d4e299262}{getById}}(\textcolor{keyword}{const}\ std::string\&\ \textcolor{keywordtype}{id})\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ m\_upgrades.find(\textcolor{keywordtype}{id});}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ ==\ m\_upgrades.end())\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \&it-\/>second;}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_map<std::string,\ UpgradeDefinition>\&\ \doxymbox{\hyperlink{class_upgrade_registry_ad3ff859f461efcf9df58d99a35a49582}{getAll}}()\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_upgrades;}
+\DoxyCodeLine{00114\ \ \ \ \ \}}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{//\ Offer\ Selection}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<const\ UpgradeDefinition*>\ \doxymbox{\hyperlink{class_upgrade_registry_aaf1c18ea51a5aa9afafa65667bcb191c}{buildPool}}(}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ playerClass,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ wantAugment)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ std::vector<const\ UpgradeDefinition*>\ pool;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ [\textcolor{keywordtype}{id},\ def]\ :\ m\_upgrades)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ (void)\textcolor{keywordtype}{id};}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (def.isAugment\ !=\ wantAugment)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (def.targetClass.has\_value()\ \&\&\ def.targetClass.value()\ !=\ playerClass)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!def.isAugment\ \&\&\ def.targetClass.has\_value()\ \&\&\ def.targetClass.value()\ !=\ playerClass)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ pool.push\_back(\&def);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pool;}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{static}\ std::vector<std::string>\ \doxymbox{\hyperlink{class_upgrade_registry_a73c6fb7d0de31163d4733699da98741d}{pickWeightedRandom}}(}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<const\ UpgradeDefinition*>\&\ pool,}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count)\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ std::vector<std::string>\ result;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pool.empty()\ ||\ count\ <=\ 0)\ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ std::vector<const\ UpgradeDefinition*>\ remaining\ =\ pool;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ picks\ =\ std::min(count,\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(remaining.size()));}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ picks;\ ++i)\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ totalWeight\ =\ 0.0f;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}*\ def\ :\ remaining)\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ totalWeight\ +=\ def-\/>weight;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (totalWeight\ <=\ 0.0f)\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ roll\ =\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(std::rand())\ /\ RAND\_MAX)\ *\ totalWeight;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ cumulative\ =\ 0.0f;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ chosenIt\ =\ remaining.end();}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ =\ remaining.begin();\ it\ !=\ remaining.end();\ ++it)\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cumulative\ +=\ (*it)-\/>weight;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (roll\ <=\ cumulative)\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chosenIt\ =\ it;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (chosenIt\ ==\ remaining.end())\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ chosenIt\ =\ remaining.begin();}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ result.push\_back((*chosenIt)-\/>id);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ remaining.erase(chosenIt);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ std::unordered\_map<std::string,\ UpgradeDefinition>\ m\_upgrades;}
+\DoxyCodeLine{00179\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,71 @@
+\doxysection{Hero\+Registry.\+hpp}
+\hypertarget{_hero_registry_8hpp_source}{}\label{_hero_registry_8hpp_source}\index{src/shared/HeroRegistry.hpp@{src/shared/HeroRegistry.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/Color.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_hero_stats}{HeroStats}}\{}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{float}\ maxHp;}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{float}\ speed;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{float}\ radius;}
+\DoxyCodeLine{00016\ \ \ \ \ sf::Color\ color;}
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ defaultWeapon;}
+\DoxyCodeLine{00018\ \};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_hero_registry}{HeroRegistry}}\ \{}
+\DoxyCodeLine{00024\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_hero_registry_aa0a7fe0339308527fd4329e7ab566f04}{loadConfig}}(\textcolor{keyword}{const}\ std::string\&\ filepath)\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ std::ifstream\ file(filepath);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!file.is\_open())\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Could\ not\ open\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}!\(\backslash\)n"{}};}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ nlohmann::json\ j;}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ file\ >>\ j;}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ PlayerClass>\ classMap\ =\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Soldier"{}},\ PlayerClass::Soldier\},}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Medic"{}},\ PlayerClass::Medic\},}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Juggernaut"{}},\ PlayerClass::Juggernaut\},}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Vanguard"{}},\ PlayerClass::Vanguard\}}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ std::unordered\_map<std::string,\ WeaponType>\ weaponMap\ =\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Rifle"{}},\ WeaponType::Rifle\},}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Laser"{}},\ WeaponType::Laser\},}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Rocket"{}},\ WeaponType::Rocket\},}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}AcidSpit"{}},\ WeaponType::AcidSpit\},}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{"{}Shotgun"{}},\ WeaponType::Shotgun\}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ j.items())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (classMap.find(key)\ !=\ classMap.end())\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass\ =\ classMap[key];}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_hero_stats}{HeroStats}}\ stats;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.maxHp\ =\ val[\textcolor{stringliteral}{"{}maxHp"{}}];}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.speed\ =\ val[\textcolor{stringliteral}{"{}speed"{}}];}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.radius\ =\ val[\textcolor{stringliteral}{"{}radius"{}}];}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::string\ wepStr\ =\ val[\textcolor{stringliteral}{"{}defaultWeapon"{}}];}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.defaultWeapon\ =\ weaponMap.count(wepStr)\ ?\ weaponMap[wepStr]\ :\ WeaponType::Rifle;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ c\ =\ val[\textcolor{stringliteral}{"{}color"{}}];}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stats.color\ =\ sf::Color(c[0],\ c[1],\ c[2],\ c[3]);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[pClass]\ =\ stats;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}[REGISTRY]\ Successfully\ loaded\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}\ ("{}}\ <<\ m\_stats.size()\ <<\ \textcolor{stringliteral}{"{}\ heroes)\(\backslash\)n"{}};}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_hero_stats}{HeroStats}}\&\ \doxymbox{\hyperlink{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}{getStats}}(\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_stats.at(pClass);}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ std::unordered\_map<PlayerClass,\ HeroStats>\ m\_stats;}
+\DoxyCodeLine{00081\ \};}
+
+\end{DoxyCode}

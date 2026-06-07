@@ -1,0 +1,140 @@
+\doxysection{Medic\+Orb.\+hpp}
+\hypertarget{_medic_orb_8hpp_source}{}\label{_medic_orb_8hpp_source}\index{src/client/entities/MedicOrb.hpp@{src/client/entities/MedicOrb.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}AbilityRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <cstdlib>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_medic_orb_a0dcac93ab5061c00bfa2fbf0d7595206}{MedicOrb}}\ :\ \textcolor{keyword}{public}\ Entity\ \{}
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00023\ \ \ \ \ \doxymbox{\hyperlink{class_medic_orb_a0dcac93ab5061c00bfa2fbf0d7595206}{MedicOrb}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ direction)\ :\ Entity(id,\ startPos)\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ orbStats\ =\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Orb;}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ m\_hp\ =\ orbStats.lifetime;}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ orbStats.lifetime;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_serverPosition\ =\ startPos;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ lenSq\ =\ direction.lengthSquared();}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lenSq\ <\ 1e-\/4f)\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ m\_velocity\ =\ sf::Vector2f(orbStats.speed,\ 0.0f);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ m\_velocity\ =\ (direction\ /\ std::sqrt(lenSq))\ *\ orbStats.speed;}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ m\_innerShape.setRadius(12.0f);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ m\_innerShape.setOrigin(\{12.0f,\ 12.0f\});}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ m\_innerShape.setFillColor(sf::Color(50,\ 255,\ 120,\ 180));}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ m\_outerShape.setRadius(18.0f);}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ m\_outerShape.setOrigin(\{18.0f,\ 18.0f\});}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ m\_outerShape.setFillColor(sf::Color::Transparent);}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ m\_outerShape.setOutlineThickness(2.0f);}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ m\_outerShape.setOutlineColor(sf::Color(180,\ 50,\ 255,\ 200));}
+\DoxyCodeLine{00045\ \ \ \ \ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_orb_aba7a6f6707cdcbce18b856db4ad79eb0}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ dt\ =\ deltaTime.asSeconds();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ m\_hp\ -\/=\ dt;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ m\_animTime\ +=\ dt;}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ orbStats\ =\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Orb;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ sf::Vector2f\ velocity\ =\ m\_velocity\ *\ dt;}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ sf::Vector2f\ nextPosX\ =\ m\_position\ +\ sf::Vector2f(velocity.x,\ 0.0f);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map\ \&\&\ map-\/>checkCollision(nextPosX,\ orbStats.radius))\ m\_velocity.x\ =\ -\/m\_velocity.x;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ m\_position.x\ =\ nextPosX.x;}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ sf::Vector2f\ nextPosY\ =\ m\_position\ +\ sf::Vector2f(0.0f,\ velocity.y);}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map\ \&\&\ map-\/>checkCollision(nextPosY,\ orbStats.radius))\ m\_velocity.y\ =\ -\/m\_velocity.y;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ m\_position.y\ =\ nextPosY.y;}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ m\_position\ +=\ (m\_serverPosition\ -\/\ m\_position)\ *\ 0.3f;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ pulse\ =\ 0.5f\ +\ 0.5f\ *\ std::sin(m\_animTime\ *\ 8.0f);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ m\_outerShape.setOutlineThickness(2.0f\ +\ 2.0f\ *\ pulse);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ m\_outerShape.setOutlineColor(sf::Color(180,\ 50,\ 255,\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(150\ +\ 80\ *\ pulse)));}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ m\_innerShape.setPosition(m\_position);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ m\_outerShape.setPosition(m\_position);}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_orb_a8a75dff6d1b74255a75467b0a2806afb}{render}}(sf::RenderTarget\&\ target)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ effectRadius\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(\doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Orb,\ \textcolor{stringliteral}{"{}effectRadius"{}},\ 120.f);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ effectRadiusSq\ =\ effectRadius\ *\ effectRadius;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (Entity*\ ally\ :\ m\_allies)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ally)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ distSq\ =\ (ally-\/>getPosition()\ -\/\ m\_position).lengthSquared();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (distSq\ <=\ effectRadiusSq)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668}{drawTether}}(target,\ m\_position,\ ally-\/>getPosition(),\ sf::Color(0,\ 255,\ 100,\ 200));}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (Entity*\ enemy\ :\ m\_enemies)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!enemy)\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ distSq\ =\ (enemy-\/>getPosition()\ -\/\ m\_position).lengthSquared();}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (distSq\ <=\ effectRadiusSq)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668}{drawTether}}(target,\ m\_position,\ enemy-\/>getPosition(),\ sf::Color(200,\ 50,\ 255,\ 200));}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ target.draw(m\_outerShape);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ target.draw(m\_innerShape);}
+\DoxyCodeLine{00103\ \ \ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_orb_afd0550159dd1bd7243b201f1e0764143}{setServerPosition}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ pos)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ m\_serverPosition\ =\ pos;}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_orb_aa08e38914d3d13ab19f64fdece4c1169}{setNearbyEntities}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ allies,\ \textcolor{keyword}{const}\ std::vector<Entity*>\&\ enemies)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ m\_allies\ =\ allies;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ m\_enemies\ =\ enemies;}
+\DoxyCodeLine{00121\ \ \ \ \ \}}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00127\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_medic_orb_a8bbaf2377a0f90f4f408e0a9de9d41e2}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Players;\ \}}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_medic_orb_acdbccd895dff797aca513ef2f297554c}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Orb.radius;\ \}}
+\DoxyCodeLine{00134\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{comment}{//\ Rendering\ Helpers}}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668}{drawTether}}(sf::RenderTarget\&\ target,\ sf::Vector2f\ from,\ sf::Vector2f\ to,\ sf::Color\ color)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ segments\ =\ 6;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ sf::Vector2f\ delta\ =\ to\ -\/\ from;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ lenSq\ =\ delta.lengthSquared();}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lenSq\ <\ 1.0f)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ sf::Vector2f\ step\ =\ delta\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(segments);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ sf::Vector2f\ perp(-\/step.y,\ step.x);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ perpLen\ =\ std::sqrt(perp.x\ *\ perp.x\ +\ perp.y\ *\ perp.y);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (perpLen\ >\ 0.0f)\ perp\ /=\ perpLen;}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ sf::VertexArray\ line(sf::PrimitiveType::LineStrip,\ segments\ +\ 1);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ line[0]\ =\ sf::Vertex(from,\ color);}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 1;\ i\ <\ segments;\ ++i)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ jitter\ =\ ((std::rand()\ \%\ 100)\ /\ 100.0f\ -\/\ 0.5f)\ *\ 24.0f;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ sf::Vector2f\ point\ =\ from\ +\ step\ *\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(i)\ +\ perp\ *\ jitter;}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ line[i]\ =\ sf::Vertex(point,\ color);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ line[segments]\ =\ sf::Vertex(to,\ color);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ target.draw(line);}
+\DoxyCodeLine{00167\ \ \ \ \ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ sf::Vector2f\ m\_velocity;}
+\DoxyCodeLine{00171\ \ \ \ \ sf::Vector2f\ m\_serverPosition;}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_animTime\{0.0f\};}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ std::vector<Entity*>\ m\_allies;}
+\DoxyCodeLine{00175\ \ \ \ \ std::vector<Entity*>\ m\_enemies;}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ sf::CircleShape\ m\_innerShape;}
+\DoxyCodeLine{00178\ \ \ \ \ sf::CircleShape\ m\_outerShape;}
+\DoxyCodeLine{00179\ \};}
+
+\end{DoxyCode}

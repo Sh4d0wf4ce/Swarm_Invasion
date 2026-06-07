@@ -1,0 +1,49 @@
+\doxysection{Projectile.\+hpp}
+\hypertarget{_projectile_8hpp_source}{}\label{_projectile_8hpp_source}\index{src/client/projectiles/Projectile.hpp@{src/client/projectiles/Projectile.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once\ }}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}../entities/Enemy.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}../entities/Player.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}WeaponRegistry.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}\ \{}
+\DoxyCodeLine{00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ velocity,\ Faction\ faction,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ weapon);}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{\string~Projectile}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}{update}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_projectile_ac314a0afcb6937b668171376275715ff}{render}}(sf::RenderTarget\&\ target);}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{virtual}\ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_projectile_af7ea80495061bcff8628631dbfedcf5a}{checkCollisions}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map);}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{bool}\ isActive()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_active;\ \}}
+\DoxyCodeLine{00030\ \ \ \ \ std::uint32\_t\ getOwnerId()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_ownerId;\ \}}
+\DoxyCodeLine{00031\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ getWeaponType()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_weaponType;\ \}}
+\DoxyCodeLine{00032\ \ \ \ \ sf::Vector2f\ getPosition()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_position;\ \}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{float}\ getRadius()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_radius;\ \}}
+\DoxyCodeLine{00034\ \ \ \ \ Faction\ getFaction()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_faction;\ \}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ deactivate()\ \{\ m\_active\ =\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00038\ \ \ \ \ sf::CircleShape\ m\_shape;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ std::uint32\_t\ m\_ownerId;}
+\DoxyCodeLine{00041\ \ \ \ \ Faction\ m\_faction;}
+\DoxyCodeLine{00042\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ m\_weaponType;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ sf::Vector2f\ m\_position;}
+\DoxyCodeLine{00045\ \ \ \ \ sf::Vector2f\ m\_velocity;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_lifetime;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_radius;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_active\{\textcolor{keyword}{true}\};}
+\DoxyCodeLine{00049\ \};}
+
+\end{DoxyCode}

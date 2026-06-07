@@ -1,0 +1,75 @@
+\doxysection{Enemy\+Registry Class Reference}
+\hypertarget{class_enemy_registry}{}\label{class_enemy_registry}\index{EnemyRegistry@{EnemyRegistry}}
+
+
+Central registry that loads and exposes enemy tuning data from JSON files.  
+
+
+
+
+{\ttfamily \+\#include $<$Enemy\+Registry.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_enemy_registry_a75a65fe91552591eb4d6ba530b2e7a3a}{load\+Config}} (const std::\+string \&filepath)
+\begin{DoxyCompactList}\small\item\em Loads enemy configuration from a JSON file and populates the registry. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_enemy_stats}{Enemy\+Stats}} \& \doxymbox{\hyperlink{class_enemy_registry_ad132f41b3819e42e55837f591967e11d}{get\+Stats}} (\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} e\+Type)
+\begin{DoxyCompactList}\small\item\em Returns stats for a given enemy type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_enemy_registry_adbf9116720898760332f1025e31ca219}\label{class_enemy_registry_adbf9116720898760332f1025e31ca219} 
+static std::\+unordered\+\_\+map$<$ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}}, \doxymbox{\hyperlink{struct_enemy_stats}{Enemy\+Stats}} $>$ {\bfseries m\+\_\+stats}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central registry that loads and exposes enemy tuning data from JSON files. 
+
+\label{doc-func-members}
+\Hypertarget{class_enemy_registry_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_enemy_registry_ad132f41b3819e42e55837f591967e11d}\index{EnemyRegistry@{EnemyRegistry}!getStats@{getStats}}
+\index{getStats@{getStats}!EnemyRegistry@{EnemyRegistry}}
+\doxysubsubsection{\texorpdfstring{getStats()}{getStats()}}
+{\footnotesize\ttfamily \label{class_enemy_registry_ad132f41b3819e42e55837f591967e11d} 
+const \doxymbox{\hyperlink{struct_enemy_stats}{Enemy\+Stats}} \& Enemy\+Registry::\+get\+Stats (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}}}]{e\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns stats for a given enemy type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em e\+Type} & \doxylink{class_enemy}{Enemy} type identifier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the enemy stats for {\ttfamily e\+Type}. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std::\+out\+\_\+of\+\_\+range} & if {\ttfamily e\+Type} was not loaded. \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{class_enemy_registry_a75a65fe91552591eb4d6ba530b2e7a3a}\index{EnemyRegistry@{EnemyRegistry}!loadConfig@{loadConfig}}
+\index{loadConfig@{loadConfig}!EnemyRegistry@{EnemyRegistry}}
+\doxysubsubsection{\texorpdfstring{loadConfig()}{loadConfig()}}
+{\footnotesize\ttfamily \label{class_enemy_registry_a75a65fe91552591eb4d6ba530b2e7a3a} 
+void Enemy\+Registry::\+load\+Config (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{filepath}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Loads enemy configuration from a JSON file and populates the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & Path to the enemies JSON configuration file. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Enemy\+Registry.\+hpp\end{DoxyCompactItemize}

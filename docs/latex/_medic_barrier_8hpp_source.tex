@@ -1,0 +1,121 @@
+\doxysection{Medic\+Barrier.\+hpp}
+\hypertarget{_medic_barrier_8hpp_source}{}\label{_medic_barrier_8hpp_source}\index{src/client/entities/MedicBarrier.hpp@{src/client/entities/MedicBarrier.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}AbilityRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_medic_barrier_a66c7c0495b941cf143265e4c053c84cc}{MedicBarrier}}\ :\ \textcolor{keyword}{public}\ Entity\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{comment}{//\ Construction}}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{class_medic_barrier_a66c7c0495b941cf143265e4c053c84cc}{MedicBarrier}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ arcCenter,\ \textcolor{keywordtype}{float}\ facingAngle,\ \textcolor{keywordtype}{float}\ duration)}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ :\ Entity(id,\ arcCenter),\ m\_center(arcCenter),\ m\_facingAngle(facingAngle)\ \{}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_hp\ =\ duration;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ duration;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ m\_position\ =\ arcCenter;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_medic_barrier_a874cf004b8dcc6ad2ae7687a7c224d78}{buildArcMesh}}();}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ Entity\ Lifecycle}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_barrier_a733e1dbf8d7ea301a98c90fceb35d1c6}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ (void)map;}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ m\_hp\ -\/=\ deltaTime.asSeconds();}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ m\_animTime\ +=\ deltaTime.asSeconds();}
+\DoxyCodeLine{00045\ \ \ \ \ \}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_barrier_a68dcbba2403e8ca7d8c36c9fc80b0e1f}{render}}(sf::RenderTarget\&\ target)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ pulse\ =\ 0.5f\ +\ 0.5f\ *\ std::sin(m\_animTime\ *\ 6.0f);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::uint8\_t\ alpha\ =\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(100\ +\ 80\ *\ pulse);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ i\ =\ 0;\ i\ <\ m\_fillVertices.getVertexCount();\ ++i)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ m\_fillVertices[i].color.a\ =\ alpha;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (std::size\_t\ i\ =\ 0;\ i\ <\ m\_outlineVertices.getVertexCount();\ ++i)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ m\_outlineVertices[i].color.a\ =\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(std::min(255,\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(alpha)\ +\ 60));}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ target.draw(m\_fillVertices);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ target.draw(m\_outlineVertices);}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ Identity\ \&\ Collision}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00071\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_medic_barrier_ada4c8d81deb937af5639239fbb94c638}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::None;\ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_medic_barrier_acc0bd912877843229e95fb9378ad8e98}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ 0.0f;\ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{//\ Geometry\ Accessors}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00086\ \ \ \ \ sf::Vector2f\ \doxymbox{\hyperlink{class_medic_barrier_a3980c45995a7e65466c24972f8b1a644}{getCenter}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_center;\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_medic_barrier_adefe94e97e9b7ce72ca2ee9fb213e120}{getFacingAngle}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_facingAngle;\ \}}
+\DoxyCodeLine{00093\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{comment}{//\ Geometry\ \&\ Animation\ State}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00097\ \ \ \ \ sf::Vector2f\ m\_center;}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_facingAngle;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_animTime\{0.0f\};}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{comment}{//\ Visual\ Meshes}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00104\ \ \ \ \ sf::VertexArray\ m\_fillVertices;}
+\DoxyCodeLine{00105\ \ \ \ \ sf::VertexArray\ m\_outlineVertices;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ Mesh\ Construction}}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_barrier_a874cf004b8dcc6ad2ae7687a7c224d78}{buildArcMesh}}()\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ segments\ =\ 36;}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ barrier\ =\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Barrier;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ span\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(barrier,\ \textcolor{stringliteral}{"{}span"{}},\ 0.80f);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ arcRadius\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(barrier,\ \textcolor{stringliteral}{"{}arcRadius"{}},\ 280.f);}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ wallThickness\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(barrier,\ \textcolor{stringliteral}{"{}wallThickness"{}},\ 18.f);}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ halfSpan\ =\ span\ /\ 2.0f;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ innerR\ =\ arcRadius\ -\/\ wallThickness\ /\ 2.0f;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ outerR\ =\ arcRadius\ +\ wallThickness\ /\ 2.0f;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ startAngle\ =\ m\_facingAngle\ -\/\ halfSpan;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ endAngle\ =\ m\_facingAngle\ +\ halfSpan;}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ m\_fillVertices.setPrimitiveType(sf::PrimitiveType::TriangleStrip);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ m\_fillVertices.resize(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}((segments\ +\ 1)\ *\ 2));}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <=\ segments;\ ++i)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ t\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(i)\ /\ segments;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ angle\ =\ startAngle\ +\ t\ *\ (endAngle\ -\/\ startAngle);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ cosA\ =\ std::cos(angle);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ sinA\ =\ std::sin(angle);}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ sf::Vector2f\ inner(m\_center.x\ +\ cosA\ *\ innerR,\ m\_center.y\ +\ sinA\ *\ innerR);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ sf::Vector2f\ outer(m\_center.x\ +\ cosA\ *\ outerR,\ m\_center.y\ +\ sinA\ *\ outerR);}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ m\_fillVertices[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i\ *\ 2)]\ =\ sf::Vertex(inner,\ sf::Color(50,\ 255,\ 200,\ 180));}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ m\_fillVertices[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i\ *\ 2\ +\ 1)]\ =\ sf::Vertex(outer,\ sf::Color(100,\ 255,\ 255,\ 180));}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ m\_outlineVertices.setPrimitiveType(sf::PrimitiveType::LineStrip);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ m\_outlineVertices.resize(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(segments\ +\ 1));}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <=\ segments;\ ++i)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ t\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(i)\ /\ segments;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ angle\ =\ startAngle\ +\ t\ *\ (endAngle\ -\/\ startAngle);}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ sf::Vector2f\ outer(}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_center.x\ +\ std::cos(angle)\ *\ outerR,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_center.y\ +\ std::sin(angle)\ *\ outerR}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ m\_outlineVertices[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)]\ =\ sf::Vertex(outer,\ sf::Color(100,\ 255,\ 255,\ 255));}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \};}
+
+\end{DoxyCode}

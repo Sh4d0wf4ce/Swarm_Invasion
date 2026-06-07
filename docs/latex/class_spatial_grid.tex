@@ -1,0 +1,112 @@
+\doxysection{Spatial\+Grid Class Reference}
+\hypertarget{class_spatial_grid}{}\label{class_spatial_grid}\index{SpatialGrid@{SpatialGrid}}
+
+
+Uniform grid spatial hash for broad-\/phase entity neighbor queries.  
+
+
+
+
+{\ttfamily \+\#include $<$Spatial\+Grid.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_spatial_grid_a6e6203bedbaa6558c0ce1187e6abe627}{Spatial\+Grid}} (float map\+Width, float map\+Height, float cell\+Size)
+\begin{DoxyCompactList}\small\item\em Constructs a grid covering the given map dimensions. \end{DoxyCompactList}\item 
+\Hypertarget{class_spatial_grid_a362cc0445b7fc82d99455a4621594486}\label{class_spatial_grid_a362cc0445b7fc82d99455a4621594486} 
+void {\bfseries clear} ()
+\begin{DoxyCompactList}\small\item\em Removes all entity IDs from every cell without changing grid dimensions. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_spatial_grid_a97b495ba2454cb565daf5a200bf6770f}{insert}} (sf::\+\+Vector2f position, std::\+uint32\+\_\+t entity\+Id)
+\begin{DoxyCompactList}\small\item\em Inserts an entity ID into the cell containing the given position. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_spatial_grid_adc84dad774c1af1462f621aaf4c06ae9}{get\+Nearby}} (sf::\+\+Vector2f position) const
+\begin{DoxyCompactList}\small\item\em Returns entity IDs in the 3x3 neighborhood around a position. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_spatial_grid_a2e339bd67e8531213192106dc62f40e5}\label{class_spatial_grid_a2e339bd67e8531213192106dc62f40e5} 
+float {\bfseries m\+\_\+cell\+Size}
+\item 
+\Hypertarget{class_spatial_grid_af6088e8f2554e2eab2aeccfc80b4867d}\label{class_spatial_grid_af6088e8f2554e2eab2aeccfc80b4867d} 
+int {\bfseries m\+\_\+cols}
+\item 
+\Hypertarget{class_spatial_grid_a95e52f89c114a754c7c7a3fa752be800}\label{class_spatial_grid_a95e52f89c114a754c7c7a3fa752be800} 
+int {\bfseries m\+\_\+rows}
+\item 
+\Hypertarget{class_spatial_grid_a94d7f497b204377ffc1c22ebc01dc402}\label{class_spatial_grid_a94d7f497b204377ffc1c22ebc01dc402} 
+std::\+vector$<$ std::\+vector$<$ std::\+uint32\+\_\+t $>$ $>$ {\bfseries m\+\_\+cells}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Uniform grid spatial hash for broad-\/phase entity neighbor queries. 
+
+Divides the map into fixed-\/size cells and stores entity IDs per cell to avoid scanning all entities when computing local interactions. 
+
+\label{doc-constructors}
+\Hypertarget{class_spatial_grid_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_spatial_grid_a6e6203bedbaa6558c0ce1187e6abe627}\index{SpatialGrid@{SpatialGrid}!SpatialGrid@{SpatialGrid}}
+\index{SpatialGrid@{SpatialGrid}!SpatialGrid@{SpatialGrid}}
+\doxysubsubsection{\texorpdfstring{SpatialGrid()}{SpatialGrid()}}
+{\footnotesize\ttfamily \label{class_spatial_grid_a6e6203bedbaa6558c0ce1187e6abe627} 
+Spatial\+Grid::\+\+Spatial\+Grid (\begin{DoxyParamCaption}\item[{float}]{map\+Width}{, }\item[{float}]{map\+Height}{, }\item[{float}]{cell\+Size}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a grid covering the given map dimensions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map\+Width} & Map width in world units. \\
+\hline
+{\em map\+Height} & Map height in world units. \\
+\hline
+{\em cell\+Size} & Size of each grid cell in world units. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_spatial_grid_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_spatial_grid_adc84dad774c1af1462f621aaf4c06ae9}\index{SpatialGrid@{SpatialGrid}!getNearby@{getNearby}}
+\index{getNearby@{getNearby}!SpatialGrid@{SpatialGrid}}
+\doxysubsubsection{\texorpdfstring{getNearby()}{getNearby()}}
+{\footnotesize\ttfamily \label{class_spatial_grid_adc84dad774c1af1462f621aaf4c06ae9} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Spatial\+Grid::\+get\+Nearby (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{position}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns entity IDs in the 3x3 neighborhood around a position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & World position to query around. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Combined list of entity IDs from adjacent cells. 
+\end{DoxyReturn}
+\Hypertarget{class_spatial_grid_a97b495ba2454cb565daf5a200bf6770f}\index{SpatialGrid@{SpatialGrid}!insert@{insert}}
+\index{insert@{insert}!SpatialGrid@{SpatialGrid}}
+\doxysubsubsection{\texorpdfstring{insert()}{insert()}}
+{\footnotesize\ttfamily \label{class_spatial_grid_a97b495ba2454cb565daf5a200bf6770f} 
+void Spatial\+Grid::\+insert (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{position}{, }\item[{std::\+uint32\+\_\+t}]{entity\+Id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Inserts an entity ID into the cell containing the given position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em position} & World position of the entity. \\
+\hline
+{\em entity\+Id} & Unique entity identifier to store. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+core/\+Spatial\+Grid.\+hpp\end{DoxyCompactItemize}

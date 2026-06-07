@@ -1,0 +1,75 @@
+\doxysection{Weapon\+Registry Class Reference}
+\hypertarget{class_weapon_registry}{}\label{class_weapon_registry}\index{WeaponRegistry@{WeaponRegistry}}
+
+
+Central registry that loads and exposes weapon tuning data from JSON files.  
+
+
+
+
+{\ttfamily \+\#include $<$Weapon\+Registry.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_weapon_registry_a9cb013647c84a2799f84807d2b01f11a}{load\+Config}} (const std::\+string \&filepath)
+\begin{DoxyCompactList}\small\item\em Loads weapon configuration from a JSON file and populates the registry. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_weapon_stats}{Weapon\+Stats}} \& \doxymbox{\hyperlink{class_weapon_registry_a06c741c39e94c22594bce7440b1fc050}{get\+Stats}} (\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} w\+Type)
+\begin{DoxyCompactList}\small\item\em Returns stats for a given weapon type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_weapon_registry_a7cd40760df84fd4eb1d461909406eaf1}\label{class_weapon_registry_a7cd40760df84fd4eb1d461909406eaf1} 
+static std::\+unordered\+\_\+map$<$ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}}, \doxymbox{\hyperlink{struct_weapon_stats}{Weapon\+Stats}} $>$ {\bfseries m\+\_\+stats}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central registry that loads and exposes weapon tuning data from JSON files. 
+
+\label{doc-func-members}
+\Hypertarget{class_weapon_registry_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_weapon_registry_a06c741c39e94c22594bce7440b1fc050}\index{WeaponRegistry@{WeaponRegistry}!getStats@{getStats}}
+\index{getStats@{getStats}!WeaponRegistry@{WeaponRegistry}}
+\doxysubsubsection{\texorpdfstring{getStats()}{getStats()}}
+{\footnotesize\ttfamily \label{class_weapon_registry_a06c741c39e94c22594bce7440b1fc050} 
+const \doxymbox{\hyperlink{struct_weapon_stats}{Weapon\+Stats}} \& Weapon\+Registry::\+get\+Stats (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}}}]{w\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns stats for a given weapon type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em w\+Type} & Weapon type identifier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the weapon stats for {\ttfamily w\+Type}. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std::\+out\+\_\+of\+\_\+range} & if {\ttfamily w\+Type} was not loaded. \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{class_weapon_registry_a9cb013647c84a2799f84807d2b01f11a}\index{WeaponRegistry@{WeaponRegistry}!loadConfig@{loadConfig}}
+\index{loadConfig@{loadConfig}!WeaponRegistry@{WeaponRegistry}}
+\doxysubsubsection{\texorpdfstring{loadConfig()}{loadConfig()}}
+{\footnotesize\ttfamily \label{class_weapon_registry_a9cb013647c84a2799f84807d2b01f11a} 
+void Weapon\+Registry::\+load\+Config (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{filepath}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Loads weapon configuration from a JSON file and populates the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & Path to the weapons JSON configuration file. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Weapon\+Registry.\+hpp\end{DoxyCompactItemize}

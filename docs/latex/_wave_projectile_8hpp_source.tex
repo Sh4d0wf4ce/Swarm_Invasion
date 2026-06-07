@@ -1,0 +1,25 @@
+\doxysection{Wave\+Projectile.\+hpp}
+\hypertarget{_wave_projectile_8hpp_source}{}\label{_wave_projectile_8hpp_source}\index{src/client/projectiles/WaveProjectile.hpp@{src/client/projectiles/WaveProjectile.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Projectile.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/VertexArray.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_set>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_wave_projectile_a8b402d8b33c5ae037fec22d744058aa8}{WaveProjectile}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}\ \{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_wave_projectile_a8b402d8b33c5ae037fec22d744058aa8}{WaveProjectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ velocity,\ Faction\ faction);}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_wave_projectile_a7eb09a0651f8917f65da5c2fd11be50c}{update}}(sf::Time\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_wave_projectile_ad7f01e53e06d8f919060190ee5e73132}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_wave_projectile_a069fff796eb303b4b82081b34a12d44c}{checkCollisions}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00020\ \ \ \ \ std::unordered\_set<std::uint32\_t>\ m\_hitEntities;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ sf::VertexArray\ m\_mesh;}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_facingAngle;}
+\DoxyCodeLine{00024\ \};}
+
+\end{DoxyCode}

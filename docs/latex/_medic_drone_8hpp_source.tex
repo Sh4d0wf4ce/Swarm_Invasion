@@ -1,0 +1,101 @@
+\doxysection{Medic\+Drone.\+hpp}
+\hypertarget{_medic_drone_8hpp_source}{}\label{_medic_drone_8hpp_source}\index{src/client/entities/MedicDrone.hpp@{src/client/entities/MedicDrone.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}AbilityRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_medic_drone_aab4e5e1cab04cf0273f53376d4f15c91}{MedicDrone}}\ :\ \textcolor{keyword}{public}\ Entity\ \{}
+\DoxyCodeLine{00015\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00023\ \ \ \ \ \doxymbox{\hyperlink{class_medic_drone_aab4e5e1cab04cf0273f53376d4f15c91}{MedicDrone}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos)}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ :\ Entity(id,\ startPos),\ m\_ownerId(ownerId),\ m\_serverPosition(startPos)\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ m\_hp\ =\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Drone.lifetime;}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{AbilityRegistry::medic}}().Drone.lifetime;}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_position\ =\ startPos;}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ m\_coreShape.setRadius(10.0f);}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ m\_coreShape.setOrigin(\{10.0f,\ 10.0f\});}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ m\_coreShape.setFillColor(sf::Color(80,\ 220,\ 255,\ 140));}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ m\_coreShape.setOutlineThickness(2.0f);}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ m\_coreShape.setOutlineColor(sf::Color(180,\ 255,\ 255,\ 200));}
+\DoxyCodeLine{00033\ \ \ \ \ \}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_drone_abac7871758c305e21c19e3d9a8a29772}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ dt\ =\ deltaTime.asSeconds();}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ m\_animTime\ +=\ dt;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ m\_position\ +=\ (m\_serverPosition\ -\/\ m\_position)\ *\ std::min(1.0f,\ dt\ *\ 8.0f);}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ pulse\ =\ 0.5f\ +\ 0.5f\ *\ std::sin(m\_animTime\ *\ 5.0f);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ m\_coreShape.setRadius(10.0f\ +\ 1.5f\ *\ pulse);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ m\_coreShape.setOrigin(\{m\_coreShape.getRadius(),\ m\_coreShape.getRadius()\});}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ m\_coreShape.setPosition(m\_position);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ m\_coreShape.setFillColor(sf::Color(80,\ 220,\ 255,\ 140));}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ m\_coreShape.setOutlineThickness(2.0f);}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ m\_coreShape.setOutlineColor(sf::Color(180,\ 255,\ 255,\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(180\ +\ 60\ *\ pulse)));}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_medic_drone_a6d0e05d046669d31641cea2849cd92b8}{buildRingVertices}}();}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_drone_a28deed2aba8ab23ef4b6675546b81862}{render}}(sf::RenderTarget\&\ target)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ target.draw(m\_coreShape);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ target.draw(m\_ringVertices);}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ 3;\ ++i)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ angle\ =\ m\_animTime\ *\ (2.0f\ +\ i\ *\ 0.7f)\ +\ i\ *\ 2.094f;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ orbitR\ =\ 18.0f\ +\ i\ *\ 4.0f;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ sf::CircleShape\ node(3.0f\ +\ i\ *\ 0.5f);}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ node.setOrigin(\{node.getRadius(),\ node.getRadius()\});}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ node.setPosition(m\_position\ +\ sf::Vector2f(std::cos(angle)\ *\ orbitR,\ std::sin(angle)\ *\ orbitR));}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ node.setFillColor(sf::Color(100,\ 255,\ 220,\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(160\ +\ 40\ *\ i)));}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ target.draw(node);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_drone_a19c6e96da27502e70d34f73543cf13f1}{setServerPosition}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ pos)\ \{\ m\_serverPosition\ =\ pos;\ \}}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_drone_a6a11a2738f6d1b71280b15c8c336163c}{setDroneState}}(\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\ state)\ \{\ m\_state\ =\ state;\ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00091\ \ \ \ \ std::uint32\_t\ \doxymbox{\hyperlink{class_medic_drone_a402fb09433d00a3ab62d69d672709e96}{getOwnerId}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_ownerId;\ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00097\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\ \doxymbox{\hyperlink{class_medic_drone_a4b8299c0c35a6a7be06f5cf981c59622}{getDroneState}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_state;\ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00103\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_medic_drone_ac74ba6d5ba4c6cbd2068bccbcd432c0a}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::None;\ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_medic_drone_ae9b445ba187ffc70fb47ab486dfd3fbd}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ 0.0f;\ \}}
+\DoxyCodeLine{00110\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{//\ Ownership\ \&\ Sync\ State}}
+\DoxyCodeLine{00113\ \ \ \ \ std::uint32\_t\ m\_ownerId;}
+\DoxyCodeLine{00114\ \ \ \ \ sf::Vector2f\ m\_serverPosition;}
+\DoxyCodeLine{00115\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\ m\_state\{MedicDroneState::Orbit\};}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Animation\ State}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_animTime\{0.0f\};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{//\ Visual\ Shapes}}
+\DoxyCodeLine{00122\ \ \ \ \ sf::CircleShape\ m\_coreShape;}
+\DoxyCodeLine{00123\ \ \ \ \ sf::VertexArray\ m\_ringVertices\{sf::PrimitiveType::LineStrip\};}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{comment}{//\ Mesh\ Construction}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_drone_a6d0e05d046669d31641cea2849cd92b8}{buildRingVertices}}()\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{int}\ segments\ =\ 24;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ m\_ringVertices.resize(\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(segments\ +\ 1));}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ ringR\ =\ 16.0f;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <=\ segments;\ ++i)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ angle\ =\ m\_animTime\ *\ 1.5f\ +\ (\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(i)\ /\ segments)\ *\ 2\ *\ M\_PI;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ sf::Vector2f\ pt(}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_position.x\ +\ std::cos(angle)\ *\ ringR,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_position.y\ +\ std::sin(angle)\ *\ ringR}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ m\_ringVertices[\textcolor{keyword}{static\_cast<}std::size\_t\textcolor{keyword}{>}(i)]\ =\ sf::Vertex(pt,\ sf::Color(0,\ 200,\ 255,\ 120));}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \};}
+
+\end{DoxyCode}

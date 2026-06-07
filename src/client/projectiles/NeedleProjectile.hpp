@@ -1,6 +1,9 @@
 #pragma once
 #include "Projectile.hpp"
 
+/**
+ * @brief Medic needle projectile that heals allies and damages enemies on contact.
+ */
 class NeedleProjectile : public Projectile {
 public:
     NeedleProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction);

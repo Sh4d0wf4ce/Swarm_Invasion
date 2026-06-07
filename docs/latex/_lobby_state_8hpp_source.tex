@@ -1,0 +1,47 @@
+\doxysection{Lobby\+State.\+hpp}
+\hypertarget{_lobby_state_8hpp_source}{}\label{_lobby_state_8hpp_source}\index{src/client/states/LobbyState.hpp@{src/client/states/LobbyState.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}State.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}HeroRegistry.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <SFML/System/Clock.hpp>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_lobby_state_a099eb7862e4efcac63f458085df27aeb}{LobbyState}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}}\ \{}
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_lobby_state_a099eb7862e4efcac63f458085df27aeb}{LobbyState}}(\doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine)\ :\ \doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}}(engine)\ \{\}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00024\ \ \ \ \ \doxymbox{\hyperlink{class_lobby_state_ae241abd0dc3df9961eb1ed03ad8af45a}{\string~LobbyState}}()\ \textcolor{keyword}{override}\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{comment}{//\ State\ Interface}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a5f943ab150a77c0b943f0abeb2fafaea}{handlePacket}}(\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\ type,\ sf::Packet\&\ packet)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a61a006091c084aa2620828c34c35dc8a}{handleInput}}(\textcolor{keyword}{const}\ sf::Event\&\ event)\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a37f8aaf7ebb0b33cd71e4b30b89b2182}{update}}(sf::Time\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a34d12bde8ce40146356971190ed4b28b}{render}}()\textcolor{keyword}{\ override\ }\{\}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}{renderUI}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ Connection\ Helpers}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_ac951187dd730732620b12628d5863fad}{trySendJoinRequest}}();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_lobby_state_a7eebb67c1e1d5009f21f73fd88482d2e}{cancelConnecting}}();}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{//\ Lobby\ \&\ Connection\ State}}
+\DoxyCodeLine{00047\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ m\_selectedClass\ =\ PlayerClass::Soldier;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{char}\ m\_ipBuffer[64]\ =\ \textcolor{stringliteral}{"{}127.0.0.1"{}};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isConnecting\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_connectFailed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00051\ \ \ \ \ std::string\ m\_connectErrorMessage;}
+\DoxyCodeLine{00052\ \ \ \ \ sf::Clock\ m\_connectTimer;}
+\DoxyCodeLine{00053\ \ \ \ \ sf::Clock\ m\_retryTimer;}
+\DoxyCodeLine{00054\ \};}
+
+\end{DoxyCode}

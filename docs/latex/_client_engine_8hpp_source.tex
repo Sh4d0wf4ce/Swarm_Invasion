@@ -1,0 +1,58 @@
+\doxysection{Client\+Engine.\+hpp}
+\hypertarget{_client_engine_8hpp_source}{}\label{_client_engine_8hpp_source}\index{src/client/core/ClientEngine.hpp@{src/client/core/ClientEngine.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}../entities/Player.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}../entities/Enemy.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}MapRenderer.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}../projectiles/ProjectileManager.hpp"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}../states/State.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <SFML/Window.hpp>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <SFML/System.hpp>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <SFML/Network.hpp>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <imgui-\/SFML.h>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <imgui.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_client_engine_a00a864bc935cad2402ad6739156c3c60}{ClientEngine}}\{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ \ \ \ \ \doxymbox{\hyperlink{class_client_engine_a00a864bc935cad2402ad6739156c3c60}{ClientEngine}}();}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_a42e4bec747fca125cbdaec3f3940f6cb}{run}}();}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_aa2adb508fb7ebeff2396497da29bc867}{changeState}}(std::unique\_ptr<State>\ newState);}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ Engine\ Accessors}}
+\DoxyCodeLine{00036\ \ \ \ \ sf::RenderWindow\&\ \doxymbox{\hyperlink{class_client_engine_a3beffacf35f2567cf350d4b701cfbfb9}{getWindow}}()\ \{\ \textcolor{keywordflow}{return}\ m\_window;\ \}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00039\ \ \ \ \ sf::UdpSocket\&\ \doxymbox{\hyperlink{class_client_engine_a63e98c5b33bee493428e9824ee8a4959}{getSocket}}()\ \{\ \textcolor{keywordflow}{return}\ m\_socket;\ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00042\ \ \ \ \ std::optional<sf::IpAddress>\&\ \doxymbox{\hyperlink{class_client_engine_a2395c98558c3d1894d1da6c2bccf573d}{getServerAddress}}()\ \{\ \textcolor{keywordflow}{return}\ m\_serverAddress;\ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_aa43412a5bf4d97a5c031bd0d5b3ade69}{quit}}()\ \{\ m\_isRunning\ =\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00046\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ Main\ Loop}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_a7aaf42e87d178b1f95541f264e8b0403}{processEvent}}();}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_a53894b7d9c47239a587f094cdc1aace7}{processNetwork}}();}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ handleWorldState(sf::Packet\&\ packet);}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_a66f955d49284c1ce3802e9bc9b02a49e}{update}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_client_engine_a05ba859da8646e5b91f48282bbd8e9fc}{render}}();}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ renderUI();}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{//\ Engine\ State}}
+\DoxyCodeLine{00056\ \ \ \ \ sf::UdpSocket\ m\_socket;}
+\DoxyCodeLine{00057\ \ \ \ \ sf::RenderWindow\ m\_window;}
+\DoxyCodeLine{00058\ \ \ \ \ sf::View\ m\_camera;}
+\DoxyCodeLine{00059\ \ \ \ \ sf::Clock\ m\_clock;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isRunning;}
+\DoxyCodeLine{00061\ \ \ \ \ std::optional<sf::IpAddress>\ m\_serverAddress;}
+\DoxyCodeLine{00062\ \ \ \ \ std::unique\_ptr<State>\ m\_currentState;}
+\DoxyCodeLine{00063\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,529 @@
+\doxysection{Juggernaut Class Reference}
+\hypertarget{class_juggernaut}{}\label{class_juggernaut}\index{Juggernaut@{Juggernaut}}
+
+
+Heavy shotgun hero with charge dash, repulsor cone, and black hole.  
+
+
+
+
+{\ttfamily \+\#include $<$Juggernaut.\+hpp$>$}
+
+Inheritance diagram for Juggernaut:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_juggernaut}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_juggernaut_a58cd6c1edd0a1908ef86c20b1694e2a2}{Juggernaut}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\begin{DoxyCompactList}\small\item\em Initializes \doxylink{class_juggernaut}{Juggernaut} stats and ability tuning from the registry. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_ae320c01c6a7f65c75091d1124c8afa5b}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Updates charge movement, repulsor VFX, recoil, ult timer, and base state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a0f55e25ae23c38a2b929154051695e91}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the repulsor cone VFX and the base player representation. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a834e855e39645be1e0d1386c79b90bd8}{on\+Shift}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Starts a directional charge dash toward the cursor. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a9644a4df78b65057e6d1043a78fe2350}{onQ}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Activates the rapid-\/fire ultimate when fully charged. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a4a1932b70aca04b98f74f74460795187}{onE}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Requests a black hole spawn at the cursor, clamped to max range. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a9752ec4550e502534c5f054be0f0a813}{on\+RMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Fires the frontal repulsor cone toward the cursor. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a294c6b8d97f5a1f95339c75c0c7559c8}{on\+LMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&enemies) override
+\begin{DoxyCompactList}\small\item\em Fires the shotgun and applies recoil knockback during the ultimate. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_juggernaut_a2a1b0f95c7a96dc5fa2fb8529b3a3b64}{is\+Auto\+Firing}} () const override
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ \doxymbox{\hyperlink{class_juggernaut_abef1097265c4462d8d66d42518f7ac91}{check\+Ability\+Hits}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities) override
+\begin{DoxyCompactList}\small\item\em Detects charge dash and repulsor hits against nearby enemies. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a351a24a15b6addf7300ce1d5783a7844}{update\+Remote\+Visuals}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Updates repulsor VFX for a remotely controlled \doxylink{class_juggernaut}{Juggernaut}. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_juggernaut_a00f6c3b9231e37c9d6c935b644c5ea0f}{play\+Remote\+Ability}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} ability, const sf::\+\+Vector2f \&data) override
+\begin{DoxyCompactList}\small\item\em Replays remote charge dash or repulsor visuals from network data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Initializes a player with hero stats, shape, and default state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Advances reload and cooldown timers, then applies keyboard movement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the player circle and health bar. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+UI} ()
+\begin{DoxyCompactList}\small\item\em Renders both HUD panels for the local hero. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_af2793f057492e5fce5331fa036263cad}{set\+Focused}} (bool focused)
+\begin{DoxyCompactList}\small\item\em Sets whether this player accepts local keyboard input. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries get\+Class} () const
+\item 
+Faction \doxymbox{\hyperlink{class_player_a8ac884bfdd0202512ecef922a56990f0}{get\+Faction}} () const override
+\item 
+float \doxymbox{\hyperlink{class_player_a4337238654d5f36dd2a89f00f72d3960}{get\+Radius}} () const override
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a3b6f25b2227918ba499d48725bedc37d}{reload}} ()
+\begin{DoxyCompactList}\small\item\em Starts a reload if one is not already in progress. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_adf77ec30ad0615e3693a4d1f3a296937}{add\+Ult\+Charge}} (float amount)
+\begin{DoxyCompactList}\small\item\em Adds ultimate charge, clamped to the maximum while ult is inactive. \end{DoxyCompactList}\item 
+bool {\bfseries is\+Ult\+Active} () const
+\item 
+int {\bfseries get\+Ammo} () const
+\item 
+bool {\bfseries is\+Reloading} () const
+\item 
+void {\bfseries set\+Stealth\+Timer} (float timer)
+\item 
+float {\bfseries get\+Stealth\+Timer} () const
+\item 
+void \doxymbox{\hyperlink{class_player_af22ac0793705ba6fff981082a16af0d6}{set\+Upgrade\+Multipliers}} (float hp\+Mult, float speed\+Mult, float damage\+Mult, float cooldown\+Mult)
+\begin{DoxyCompactList}\small\item\em Applies run upgrade multipliers to HP, speed, damage, and cooldowns. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a2bea558d18cc033039b0fbbbff869c65}{get\+Upgrade\+Cooldown\+Scale}} () const
+\begin{DoxyCompactList}\small\item\em Returns the cooldown duration scale from upgrade multipliers. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a221a133c2c7e97b100f35c902e8fba62}{get\+Effective\+Max\+Cooldown}} (float base\+Cooldown) const
+\begin{DoxyCompactList}\small\item\em Scales a base cooldown by the current upgrade multiplier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_juggernaut_a12f25079c49f9329f87c99655c0f9ad1}\label{class_juggernaut_a12f25079c49f9329f87c99655c0f9ad1} 
+bool {\bfseries m\+\_\+is\+Charging} \{false\}
+\item 
+\Hypertarget{class_juggernaut_af8f6f4ff18e366e0e4503b6c7e5f0993}\label{class_juggernaut_af8f6f4ff18e366e0e4503b6c7e5f0993} 
+float {\bfseries m\+\_\+charge\+Distance\+Remaining} \{0.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_a4b11d825a32de065f4e4e38598bb0f31}\label{class_juggernaut_a4b11d825a32de065f4e4e38598bb0f31} 
+float {\bfseries m\+\_\+max\+Charge\+Distance} \{350.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_aefeeeb157830946629e580406e213a56}\label{class_juggernaut_aefeeeb157830946629e580406e213a56} 
+float {\bfseries m\+\_\+charge\+Speed\+Multiplier} \{3.\+5f\}
+\item 
+\Hypertarget{class_juggernaut_aefaeea58e672cd5db43ad3eccf8dd814}\label{class_juggernaut_aefaeea58e672cd5db43ad3eccf8dd814} 
+float {\bfseries m\+\_\+shift\+Cooldown} \{5.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_af1c743d5862d678daba8e09b6b788302}\label{class_juggernaut_af1c743d5862d678daba8e09b6b788302} 
+float {\bfseries m\+\_\+dash\+Collision\+Bonus} \{15.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_ada89b621233a29de9c7650a4a62e5ce2}\label{class_juggernaut_ada89b621233a29de9c7650a4a62e5ce2} 
+sf::\+\+Vector2f {\bfseries m\+\_\+charge\+Direction} \{0.\+0f, 0.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_a0917693d9772a5d9bcbd273998385000}\label{class_juggernaut_a0917693d9772a5d9bcbd273998385000} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ {\bfseries m\+\_\+dashed\+Enemies}
+\item 
+\Hypertarget{class_juggernaut_a8cde7cc8c86e20edf929e8ef298052c7}\label{class_juggernaut_a8cde7cc8c86e20edf929e8ef298052c7} 
+float {\bfseries m\+\_\+repulsor\+Range} \{250.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_a6b465d51915889815a8ee3b1f8eb4dcd}\label{class_juggernaut_a6b465d51915889815a8ee3b1f8eb4dcd} 
+float {\bfseries m\+\_\+repulsor\+Angle\+Span} \{70.\+0f \texorpdfstring{$\ast$}{*} (M\+\_\+\+PI /\+ 180.\+0f)\}
+\item 
+\Hypertarget{class_juggernaut_a7d6e1a34fc1f183a6179f49a95730cec}\label{class_juggernaut_a7d6e1a34fc1f183a6179f49a95730cec} 
+float {\bfseries m\+\_\+repulsor\+Vfx\+Duration} \{0.\+2f\}
+\item 
+\Hypertarget{class_juggernaut_a01f17b87bf7eb6e5bc1504e90d173678}\label{class_juggernaut_a01f17b87bf7eb6e5bc1504e90d173678} 
+bool {\bfseries m\+\_\+fire\+Repulsor} \{false\}
+\item 
+\Hypertarget{class_juggernaut_a5037cdd2ae0ab425158cff6d6444dd40}\label{class_juggernaut_a5037cdd2ae0ab425158cff6d6444dd40} 
+sf::\+\+Vector2f {\bfseries m\+\_\+repulsor\+Aim\+Dir} \{1.\+0f, 0.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_ad9b764546b14865a22b878d1e89b1d48}\label{class_juggernaut_ad9b764546b14865a22b878d1e89b1d48} 
+float {\bfseries m\+\_\+repulsor\+Vfx\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_af19f5d46e4be548670c8e050d633ab28}\label{class_juggernaut_af19f5d46e4be548670c8e050d633ab28} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+repulsor\+Vfx} \{sf::\+\+Primitive\+Type::\+\+Triangle\+Fan\}
+\item 
+\Hypertarget{class_juggernaut_a4b90d74d68c0cb641d6f7eeb4baacb78}\label{class_juggernaut_a4b90d74d68c0cb641d6f7eeb4baacb78} 
+float {\bfseries m\+\_\+black\+Hole\+Max\+Range} \{200.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_af2e40380874086420edeaa94c4c7d236}\label{class_juggernaut_af2e40380874086420edeaa94c4c7d236} 
+float {\bfseries m\+\_\+ult\+Duration} \{5.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_a063741d7b8e0f50b6ed264cdf46c9d1f}\label{class_juggernaut_a063741d7b8e0f50b6ed264cdf46c9d1f} 
+float {\bfseries m\+\_\+recoil\+Force} \{300.\+0f\}
+\item 
+\Hypertarget{class_juggernaut_a17ef115c52dff79d6922cd3d430df9de}\label{class_juggernaut_a17ef115c52dff79d6922cd3d430df9de} 
+sf::\+\+Vector2f {\bfseries m\+\_\+recoil\+Velocity} \{0.\+0f, 0.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Static Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ \doxymbox{\hyperlink{class_player_aab8a11adbac17c5c8ea94ec0203aa592}{create}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Factory that constructs the correct hero subclass for a player class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}{check\+Collision}} (const sf::\+\+Vector2f \&pos, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Tests whether a position overlaps a wall tile. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+Left\+Panel} ()
+\begin{DoxyCompactList}\small\item\em Renders the left HUD panel with ability cooldown indicators. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_aaf187efa0d73c6200da953e09d6470b9}{render\+Right\+Panel}} ()
+\begin{DoxyCompactList}\small\item\em Renders the right HUD panel with HP and ammo status. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a11a9f06b90f268689c3e5b931a17ea3c}{render\+Shift\+Skill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Shift ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}{render\+ESkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the E ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a884b262895cd0e45d1a61514bc1ea763}{render\+QSkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Q ultimate charge or active timer in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+RMBSkill} ()
+\begin{DoxyCompactList}\small\item\em Renders the right-\/mouse ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+bool {\bfseries m\+\_\+is\+Focused}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+class}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+last\+Move\+Direction} \{1.\+0f, 0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+Shift} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldownE} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+RMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+LMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+Shift} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+CooldownE} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+RMB} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate} \{0.\+15f\}
+\item 
+int {\bfseries m\+\_\+ammo} \{30\}
+\item 
+int {\bfseries m\+\_\+max\+Ammo} \{30\}
+\item 
+bool {\bfseries m\+\_\+is\+Reloading} \{false\}
+\item 
+float {\bfseries m\+\_\+reload\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+reload\+Time} \{1.\+5f\}
+\item 
+float {\bfseries m\+\_\+ult\+Charge} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Ult\+Charge} \{500.\+0f\}
+\item 
+float {\bfseries m\+\_\+ult\+Timer} \{0.\+0f\}
+\item 
+bool {\bfseries m\+\_\+is\+Ult\+Active} \{false\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+stealth\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+base\+Max\+Hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Hp\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Cooldown\+Multiplier} \{1.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Heavy shotgun hero with charge dash, repulsor cone, and black hole. 
+
+Uses limited shotgun ammo with reload, a directional charge on Shift, a frontal repulsor blast on right click, black hole placement on E, and rapid-\/fire recoil shooting during the ultimate. 
+
+\label{doc-constructors}
+\Hypertarget{class_juggernaut_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_juggernaut_a58cd6c1edd0a1908ef86c20b1694e2a2}\index{Juggernaut@{Juggernaut}!Juggernaut@{Juggernaut}}
+\index{Juggernaut@{Juggernaut}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{Juggernaut()}{Juggernaut()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a58cd6c1edd0a1908ef86c20b1694e2a2} 
+Juggernaut::\+\+Juggernaut (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{}\end{DoxyParamCaption})}
+
+
+
+Initializes \doxylink{class_juggernaut}{Juggernaut} stats and ability tuning from the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_juggernaut_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_juggernaut_abef1097265c4462d8d66d42518f7ac91}\index{Juggernaut@{Juggernaut}!checkAbilityHits@{checkAbilityHits}}
+\index{checkAbilityHits@{checkAbilityHits}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{checkAbilityHits()}{checkAbilityHits()}}
+{\footnotesize\ttfamily \label{class_juggernaut_abef1097265c4462d8d66d42518f7ac91} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ Juggernaut::\+check\+Ability\+Hits (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Detects charge dash and repulsor hits against nearby enemies. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & All entities to test for overlap or cone inclusion. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Records of enemies hit by active abilities this frame. 
+\end{DoxyReturn}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a2a1b0f95c7a96dc5fa2fb8529b3a3b64}\index{Juggernaut@{Juggernaut}!isAutoFiring@{isAutoFiring}}
+\index{isAutoFiring@{isAutoFiring}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{isAutoFiring()}{isAutoFiring()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a2a1b0f95c7a96dc5fa2fb8529b3a3b64} 
+bool Juggernaut::\+is\+Auto\+Firing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a4a1932b70aca04b98f74f74460795187}\index{Juggernaut@{Juggernaut}!onE@{onE}}
+\index{onE@{onE}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{onE()}{onE()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a4a1932b70aca04b98f74f74460795187} 
+void Juggernaut::\+onE (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Requests a black hole spawn at the cursor, clamped to max range. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Desired spawn position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a294c6b8d97f5a1f95339c75c0c7559c8}\index{Juggernaut@{Juggernaut}!onLMB@{onLMB}}
+\index{onLMB@{onLMB}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{onLMB()}{onLMB()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a294c6b8d97f5a1f95339c75c0c7559c8} 
+void Juggernaut::\+on\+LMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&}]{enemies}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Fires the shotgun and applies recoil knockback during the ultimate. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Target position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager that spawns shotgun pellets. \\
+\hline
+{\em enemies} & \doxylink{class_enemy}{Enemy} map. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a9644a4df78b65057e6d1043a78fe2350}\index{Juggernaut@{Juggernaut}!onQ@{onQ}}
+\index{onQ@{onQ}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{onQ()}{onQ()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a9644a4df78b65057e6d1043a78fe2350} 
+void Juggernaut::\+onQ (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Activates the rapid-\/fire ultimate when fully charged. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Cursor position in world space. \\
+\hline
+{\em engine} & Client engine. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a9752ec4550e502534c5f054be0f0a813}\index{Juggernaut@{Juggernaut}!onRMB@{onRMB}}
+\index{onRMB@{onRMB}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{onRMB()}{onRMB()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a9752ec4550e502534c5f054be0f0a813} 
+void Juggernaut::\+on\+RMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Fires the frontal repulsor cone toward the cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Aim direction in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a834e855e39645be1e0d1386c79b90bd8}\index{Juggernaut@{Juggernaut}!onShift@{onShift}}
+\index{onShift@{onShift}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{onShift()}{onShift()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a834e855e39645be1e0d1386c79b90bd8} 
+void Juggernaut::\+on\+Shift (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Starts a directional charge dash toward the cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Target direction in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a00f6c3b9231e37c9d6c935b644c5ea0f}\index{Juggernaut@{Juggernaut}!playRemoteAbility@{playRemoteAbility}}
+\index{playRemoteAbility@{playRemoteAbility}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{playRemoteAbility()}{playRemoteAbility()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a00f6c3b9231e37c9d6c935b644c5ea0f} 
+void Juggernaut::\+play\+Remote\+Ability (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}}]{ability}{, }\item[{const sf::\+\+Vector2f \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Replays remote charge dash or repulsor visuals from network data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ability} & Ability type that was used remotely. \\
+\hline
+{\em data} & Direction or aim vector supplied by the server. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_juggernaut_a0f55e25ae23c38a2b929154051695e91}\index{Juggernaut@{Juggernaut}!render@{render}}
+\index{render@{render}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a0f55e25ae23c38a2b929154051695e91} 
+void Juggernaut::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the repulsor cone VFX and the base player representation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_juggernaut_ae320c01c6a7f65c75091d1124c8afa5b}\index{Juggernaut@{Juggernaut}!update@{update}}
+\index{update@{update}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_juggernaut_ae320c01c6a7f65c75091d1124c8afa5b} 
+void Juggernaut::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Updates charge movement, repulsor VFX, recoil, ult timer, and base state. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map used for wall collision checks. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_juggernaut_a351a24a15b6addf7300ce1d5783a7844}\index{Juggernaut@{Juggernaut}!updateRemoteVisuals@{updateRemoteVisuals}}
+\index{updateRemoteVisuals@{updateRemoteVisuals}!Juggernaut@{Juggernaut}}
+\doxysubsubsection{\texorpdfstring{updateRemoteVisuals()}{updateRemoteVisuals()}}
+{\footnotesize\ttfamily \label{class_juggernaut_a351a24a15b6addf7300ce1d5783a7844} 
+void Juggernaut::\+update\+Remote\+Visuals (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Updates repulsor VFX for a remotely controlled \doxylink{class_juggernaut}{Juggernaut}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Juggernaut.\+hpp\item 
+src/\+client/\+entities/\+Juggernaut.\+cpp\end{DoxyCompactItemize}

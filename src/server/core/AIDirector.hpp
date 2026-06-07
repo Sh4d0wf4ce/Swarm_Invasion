@@ -9,6 +9,12 @@
 #include <vector>
 #include <queue>
 
+/**
+ * @brief Orchestrates enemy wave spawning, flow-field pathfinding, and behaviour updates.
+ *
+ * Maintains wave timers, spawn rates, a spatial grid for neighbour queries, and a
+ * BFS flow field rebuilt periodically toward visible player positions.
+ */
 class AIDirector{
 public:
     AIDirector();

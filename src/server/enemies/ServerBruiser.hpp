@@ -2,6 +2,9 @@
 
 #include "ServerEnemy.hpp"
 
+/**
+ * @brief Internal state machine phases for the bruiser charge attack.
+ */
 enum class BruiserState {
     Chasing,
     Preparing,
@@ -9,6 +12,9 @@ enum class BruiserState {
     Resting
 };
 
+/**
+ * @brief Heavy enemy that alternates between melee chase and a directional charge attack.
+ */
 class ServerBruiser : public ServerEnemy {
 public:
     using ServerEnemy::ServerEnemy;

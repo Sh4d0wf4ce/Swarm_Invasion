@@ -10,13 +10,19 @@
 #include <algorithm>
 
 
-// Upgrade Definitions
+/**
+ * @brief Hero stat fields that level-up upgrades can modify.
+ */
 enum class UpgradeStat {
     MaxHP,
     Speed,
     Damage,
     Cooldown
 };
+
+/**
+ * @brief Metadata and effect definition for a single level-up upgrade or augment card.
+ */
 struct UpgradeDefinition {
     std::string id;
     std::string name;
@@ -27,11 +33,19 @@ struct UpgradeDefinition {
     UpgradeStat stat{UpgradeStat::MaxHP};
     float modifierValue{0.0f};
 };
+
+/**
+ * @brief Central registry that loads upgrade definitions and selects weighted level-up offers.
+ */
 class UpgradeRegistry {
 public:
     // ==========================================
     // Config Loading & Lookup
     // ==========================================
+    /**
+     * @brief Loads upgrade definitions from a JSON file and populates the registry.
+     * @param filepath Path to the upgrades JSON configuration file.
+     */
     static void loadConfig(const std::string& filepath) {
         std::ifstream file(filepath);
         if (!file.is_open()) {
@@ -80,12 +94,21 @@ public:
         std::cout << "[REGISTRY] Successfully loaded " << filepath << " (" << m_upgrades.size() << " upgrades)\n";
     }
 
+    /**
+     * @brief Looks up an upgrade definition by its unique identifier.
+     * @param id Upgrade identifier string.
+     * @return Pointer to the definition, or nullptr if not found.
+     */
     static const UpgradeDefinition* getById(const std::string& id) {
         auto it = m_upgrades.find(id);
         if (it == m_upgrades.end()) return nullptr;
         return &it->second;
     }
 
+    /**
+     * @brief Returns the full map of loaded upgrade definitions.
+     * @return Reference to the internal upgrade definition map.
+     */
     static const std::unordered_map<std::string, UpgradeDefinition>& getAll() {
         return m_upgrades;
     }
@@ -93,6 +116,12 @@ public:
     // ==========================================
     // Offer Selection
     // ==========================================
+    /**
+     * @brief Builds a candidate pool of upgrades eligible for a level-up offer.
+     * @param playerClass Hero class receiving the offer.
+     * @param wantAugment True to include augments; false for standard stat upgrades.
+     * @return Vector of pointers to eligible upgrade definitions.
+     */
     static std::vector<const UpgradeDefinition*> buildPool(
         PlayerClass playerClass,
         bool wantAugment) {
@@ -107,6 +136,12 @@ public:
         return pool;
     }
 
+    /**
+     * @brief Selects a weighted random subset of upgrades from a candidate pool without replacement.
+     * @param pool Candidate upgrade definitions to draw from.
+     * @param count Maximum number of upgrades to pick.
+     * @return Vector of chosen upgrade identifier strings.
+     */
     static std::vector<std::string> pickWeightedRandom(
         const std::vector<const UpgradeDefinition*>& pool,
         int count) {

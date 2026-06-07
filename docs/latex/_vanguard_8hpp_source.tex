@@ -1,0 +1,108 @@
+\doxysection{Vanguard.\+hpp}
+\hypertarget{_vanguard_8hpp_source}{}\label{_vanguard_8hpp_source}\index{src/client/entities/Vanguard.hpp@{src/client/entities/Vanguard.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Player.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_set>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_vanguard_a7ec3882af8b9f89714120afd49607cd6}{Vanguard}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}\ \{}
+\DoxyCodeLine{00015\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00016\ \ \ \ \ \doxymbox{\hyperlink{class_vanguard_a7ec3882af8b9f89714120afd49607cd6}{Vanguard}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos);}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a4606aa4dbfd9f4746618601454040c41}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a4c917e62bbd1a21880075e78d608f763}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a76aa4d080d46f3ae3ea7c7529ab98428}{reload}}()\textcolor{keyword}{\ override\ }\{\}\ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a456f6809ab9691a670335e6ec8927522}{renderRightPanel}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{comment}{//\ Ability\ Input\ Hooks}}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a309294736f92ba52e926ee6b4076094b}{onShift}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_af6b87a6955ceed066cda4c4dd343b486}{onQ}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_af738bb203fa0f2bd56a6e1757f721843}{onE}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_ae2da4baeac3a40f8e6470f8a3d2cf733}{onRMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a1ed7baec181d11e3cfe311e2f1c5c713}{onLMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\&\ enemies)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{comment}{//\ Combat\ \&\ Remote\ Sync}}
+\DoxyCodeLine{00031\ \ \ \ \ std::vector<AbilityHitRecord>\ \doxymbox{\hyperlink{class_vanguard_a25ed1c85775610932107e175c1bd168e}{checkAbilityHits}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_aca1aa3297801e56c7243fd32161d7bf8}{updateRemoteVisuals}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a89ccb8d5f2609e3d9df9724e572efadb}{playRemoteAbility}}(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ ability,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{//\ HUD\ Overrides}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a3f80ace6b4fd349cd6f4b19cac64e65a}{renderShiftSkill}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a8651ac45a92c3f254592f4f4c4025808}{renderESkill}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ Katana\ Geometry\ Helpers}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_vanguard_1_1_slash_trail_frame}{SlashTrailFrame}}\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ angle\{0.0f\};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ age\{0.0f\};}
+\DoxyCodeLine{00045\ \ \ \ \ \};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_vanguard_a544d5efa5cb158b11d523f270c9e1fd5}{getBladeAngleAt}}(\textcolor{keywordtype}{float}\ progress)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00048\ \ \ \ \ sf::Vector2f\ \doxymbox{\hyperlink{class_vanguard_a8d31ff5a86bfe49faf9bce560fa87ebe}{getBladePoint}}(\textcolor{keywordtype}{float}\ angle,\ \textcolor{keywordtype}{float}\ radiusProgress)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_vanguard_acd1392269258fdd095382ee5f57d925d}{normalizeAngle}}(\textcolor{keywordtype}{float}\ angle)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_vanguard_ab384c73f6cf2ca5314c46c23cdd1b6fc}{isAngleBetween}}(\textcolor{keywordtype}{float}\ target,\ \textcolor{keywordtype}{float}\ angle1,\ \textcolor{keywordtype}{float}\ angle2)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{comment}{//\ Dash\ Mechanics}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_vanguard_1_1_dash_trail}{DashTrail}}\{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ sf::Vector2f\ start;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ sf::Vector2f\ end;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ age\{0.0f\};}
+\DoxyCodeLine{00058\ \ \ \ \ \};}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isDashing\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00060\ \ \ \ \ sf::Vector2f\ m\_dashDir\{0.0f,\ 0.0f\};}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashDistanceRemaining\{0.0f\};}
+\DoxyCodeLine{00062\ \ \ \ \ sf::Vector2f\ m\_dashStartPos;}
+\DoxyCodeLine{00063\ \ \ \ \ std::unordered\_set<std::uint32\_t>\ m\_hitDuringDash;}
+\DoxyCodeLine{00064\ \ \ \ \ std::vector<DashTrail>\ m\_dashTrails;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_dashCharges\{0\};}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_maxDashCharges\{0\};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashRechargeTimer\{0.0f\};}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashRechargeTime\{2.5f\};}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashDistance\{220.0f\};}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashSpeed\{2500.0f\};}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashHitRadiusBonus\{25.0f\};}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashTrailFade\{0.35f\};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{comment}{//\ Shuriken\ Burst}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_shurikensToFire\{0\};}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_shurikenBurstTimer\{0.0f\};}
+\DoxyCodeLine{00078\ \ \ \ \ sf::Vector2f\ m\_shurikenAimDir\{1.0f,\ 0.0f\};}
+\DoxyCodeLine{00079\ \ \ \ \ ClientEngine*\ m\_engineRef\{\textcolor{keyword}{nullptr}\};}
+\DoxyCodeLine{00080\ \ \ \ \ ProjectileManager*\ m\_projMgrRef\{\textcolor{keyword}{nullptr}\};}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{//\ Katana\ Sweep\ Mechanics}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_attackActive\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_swingRight\{\textcolor{keyword}{true}\};}
+\DoxyCodeLine{00086\ \ \ \ \ sf::Vector2f\ m\_aimDir\{1.0f,\ 0.0f\};}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_attackTime\{0.0f\};}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_bladeAngle\{0.0f\};}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_prevBladeAngle\{0.0f\};}
+\DoxyCodeLine{00090\ \ \ \ \ std::unordered\_set<std::uint32\_t>\ m\_hitThisSwing;}
+\DoxyCodeLine{00091\ \ \ \ \ std::vector<SlashTrailFrame>\ m\_trail;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_swingDuration\{0.25f\};}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_halfArcRad\{55.0f\ *\ (M\_PI\ /\ 180.0f)\};}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_innerRadius\{20.0f\};}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_outerRadius\{95.0f\};}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_katanaWidth\{4.0f\};}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ \ \ m\_radialSegments\{10\};}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//\ Decoy\ \&\ Stealth\ Tuning}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_stealthDuration\{4.0f\};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{comment}{//\ Rendering\ Helpers}}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_aad07b246c1171461280db23656ca99f8}{updateTrail}}(\textcolor{keywordtype}{float}\ dt);}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a2a9aecb55a02ae6d8b22d965a6656821}{drawDashTrails}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a596340fa122ced90aceb87dba5ca0cac}{drawTrail}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_vanguard_a176f54faa310b2bc11b05aa15d88bf61}{drawKatana}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00109\ \};}
+
+\end{DoxyCode}

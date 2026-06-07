@@ -5,13 +5,25 @@
 #include "NetworkProtocol.hpp"
 #include <algorithm>
 
+/**
+ * @brief Records a single ability hit against a target entity.
+ */
 struct AbilityHitRecord{
     std::uint32_t targetId;
     AbilityType ability;
 };
+
 class ClientEngine;
 class ProjectileManager;
 class Enemy;
+
+/**
+ * @brief Base class for locally controlled hero entities.
+ *
+ * Handles movement, cooldowns, ammo, ultimate charge, upgrade multipliers,
+ * and ImGui HUD panels. Subclasses override ability input hooks and
+ * class-specific combat behavior.
+ */
 class Player : public Entity{
 public:
 

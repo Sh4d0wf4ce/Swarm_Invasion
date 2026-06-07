@@ -5,6 +5,11 @@
 #include "imgui.h"
 
 
+/**
+ * @brief Initializes Medic ability cooldowns and ultimate charge requirement.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ */
 Medic::Medic(std::uint32_t id, const sf::Vector2f& startPos): Player(id, startPos, PlayerClass::Medic) {
     m_maxAmmo = 0;
     m_ammo = 0;
@@ -20,6 +25,13 @@ Medic::Medic(std::uint32_t id, const sf::Vector2f& startPos): Player(id, startPo
 // Teleport system
 // ==========================================
 
+/**
+ * @brief Computes a valid teleport destination clamped to ability range.
+ * @param mouseWorldPos Desired cursor position in world space.
+ * @param map Tile map used to reject wall collisions.
+ * @param outTarget Receives the resolved teleport position on success.
+ * @return True when the target position is collision-free.
+ */
 bool Medic::computeTeleportTarget(const sf::Vector2f& mouseWorldPos, const std::shared_ptr<MapGenerator>& map, sf::Vector2f& outTarget) {
     const float teleportRange = AbilityRegistry::medic().Teleport.range;
     sf::Vector2f dir = mouseWorldPos - m_position;
@@ -36,6 +48,10 @@ bool Medic::computeTeleportTarget(const sf::Vector2f& mouseWorldPos, const std::
     return true;
 }
 
+/**
+ * @brief Begins the teleport fade-out animation when Shift input is valid.
+ * @param map Tile map used to validate the destination.
+ */
 void Medic::tryStartTeleport(const std::shared_ptr<MapGenerator>& map) {
     if (m_cooldownShift > 0.0f || m_teleportPhase != TeleportPhase::None) return;
 
@@ -57,6 +73,10 @@ void Medic::tryStartTeleport(const std::shared_ptr<MapGenerator>& map) {
     }
 }
 
+/**
+ * @brief Advances the fade-out and fade-in teleport animation phases.
+ * @param dt Elapsed time in seconds since the last update.
+ */
 void Medic::advanceTeleportAnimation(float dt) {
     m_teleportAnimTime += dt;
     const float half = AbilityRegistry::param(AbilityRegistry::medic().Teleport, "fadeTotal", 0.4f) / 2.0f;
@@ -89,6 +109,11 @@ void Medic::advanceTeleportAnimation(float dt) {
 }
 
 
+/**
+ * @brief Processes deferred teleport input and animation, otherwise updates movement.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map used for teleport validation and collision.
+ */
 void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
 
     // --- Shift teleport ---
@@ -112,6 +137,10 @@ void Medic::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map)
 }
 
 
+/**
+ * @brief Draws the Medic using the base player renderer.
+ * @param target Render target to draw into.
+ */
 void Medic::render(sf::RenderTarget& target) {
     Player::render(target);
 }
@@ -121,6 +150,13 @@ void Medic::render(sf::RenderTarget& target) {
 // Ability inputs
 // ==========================================
 
+/**
+ * @brief Fires a healing needle projectile toward the cursor.
+ * @param mouseWorldPos Target position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager that spawns the needle.
+ * @param enemies Enemy map.
+ */
 void Medic::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) {
     if (m_cooldownLMB > 0.0f) return;
 
@@ -135,6 +171,12 @@ void Medic::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
     }
 }
 
+/**
+ * @brief Launches a healing orb in the cursor direction.
+ * @param mouseWorldPos Aim direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Medic::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownRMB > 0.0f) return;
     m_cooldownRMB = m_maxCooldownRMB;
@@ -155,6 +197,12 @@ void Medic::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
     }
 }
 
+/**
+ * @brief Queues a teleport request to be processed on the next update.
+ * @param mouseWorldPos Desired destination in world space.
+ * @param engine Client engine stored for deferred network dispatch.
+ * @param projMgr Projectile manager.
+ */
 void Medic::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownShift > 0.0f || m_teleportPhase != TeleportPhase::None) return;
 
@@ -163,6 +211,12 @@ void Medic::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pro
     m_shiftEngine = &engine;
 }
 
+/**
+ * @brief Places a directional barrier wall facing the cursor.
+ * @param mouseWorldPos Aim direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Medic::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownE > 0.0f) return;
     m_cooldownE = m_maxCooldownE;
@@ -177,6 +231,12 @@ void Medic::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Project
     }
 }
 
+/**
+ * @brief Deploys or commands the healing drone ultimate.
+ * @param mouseWorldPos Command target position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Medic::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     const float droneLifetime = AbilityRegistry::medic().Drone.lifetime;
 
@@ -199,6 +259,11 @@ void Medic::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Project
 // Drone state
 // ==========================================
 
+/**
+ * @brief Synchronizes local drone active state and remaining lifetime.
+ * @param active True when the drone is currently deployed.
+ * @param lifetime Remaining drone duration in seconds.
+ */
 void Medic::setDroneState(bool active, float lifetime) {
     m_droneActive = active;
     m_droneLifetime = lifetime;
@@ -209,6 +274,9 @@ void Medic::setDroneState(bool active, float lifetime) {
     }
 }
 
+/**
+ * @brief Renders the drone lifetime or ultimate charge bar in the HUD.
+ */
 void Medic::renderQSkill() {
     ImGui::Text("Q");
     const float droneLifetime = AbilityRegistry::medic().Drone.lifetime;
@@ -237,6 +305,11 @@ void Medic::renderQSkill() {
 }
 
 
+/**
+ * @brief Medic abilities do not register local hit detection on the client.
+ * @param entities All entities to test.
+ * @return Empty hit list.
+ */
 std::vector<AbilityHitRecord> Medic::checkAbilityHits(const std::vector<Entity*>& entities) {
     return {};
 }
@@ -245,6 +318,11 @@ std::vector<AbilityHitRecord> Medic::checkAbilityHits(const std::vector<Entity*>
 // Remote sync
 // ==========================================
 
+/**
+ * @brief Starts the teleport fade animation for a remote Medic.
+ * @param ability Ability type that was used remotely.
+ * @param data Teleport destination supplied by the server.
+ */
 void Medic::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
     if (ability != AbilityType::MedicTeleport) return;
 
@@ -256,6 +334,11 @@ void Medic::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
     m_teleportAnimTime = 0.0f;
 }
 
+/**
+ * @brief Advances teleport animation for a remotely controlled Medic.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map reference.
+ */
 void Medic::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     if (m_teleportPhase != TeleportPhase::None) {
         advanceTeleportAnimation(deltaTime.asSeconds());

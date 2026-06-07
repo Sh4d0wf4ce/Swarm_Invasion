@@ -6,6 +6,11 @@
 #include "AbilityRegistry.hpp"
 #include <iostream>
 
+/**
+ * @brief Server entry point: loads game data registries and runs the UDP game loop.
+ * @return 0 on success, 1 if an unhandled exception occurs during startup or execution.
+ * @throws None Exceptions are caught internally and reported to stderr.
+ */
 int main(){
     try{
         // --- Load game data registries ---

@@ -1,0 +1,231 @@
+\doxysection{Decoy Class Reference}
+\hypertarget{class_decoy}{}\label{class_decoy}\index{Decoy@{Decoy}}
+
+
+\doxylink{class_vanguard}{Vanguard} decoy entity that mimics the hero and explodes on destruction.  
+
+
+
+
+{\ttfamily \+\#include $<$Decoy.\+hpp$>$}
+
+Inheritance diagram for Decoy:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_decoy}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}{Decoy}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, float max\+Hp=-\/1.f)
+\begin{DoxyCompactList}\small\item\em Constructs a decoy with \doxylink{class_vanguard}{Vanguard} appearance and configurable HP. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_decoy_a4044a739b43bac719cf2ccc4de717380}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Updates pulse animation and explosion expansion VFX. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_decoy_aa8da74b057eb0f06cf923545f415b0be}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the decoy shape or its explosion effect. \end{DoxyCompactList}\item 
+\Hypertarget{class_decoy_a416e997cdd1b98daa55b6a80ceb990ec}\label{class_decoy_a416e997cdd1b98daa55b6a80ceb990ec} 
+void {\bfseries trigger\+Explosion} ()
+\begin{DoxyCompactList}\small\item\em Switches the decoy into its explosion animation state. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_decoy_a662d30ec9d695de88d4378d9922724e2}{is\+Exploding}} () const
+\begin{DoxyCompactList}\small\item\em Reports whether the decoy is currently exploding. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_decoy_a971c9cedaf4205a27e5b9191c0161e87}{is\+Finished}} () const
+\begin{DoxyCompactList}\small\item\em Reports whether the explosion animation has completed. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_decoy_ab049910b3dfa7b2f93cbd1f7ba143509}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the player faction for combat filtering. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_decoy_a783e17fc3790a1a479cebcb50db674ff}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the \doxylink{class_vanguard}{Vanguard} hero collision radius. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_decoy_a4830de89fdbd4cdc804d55cd1d9f2e3f}\label{class_decoy_a4830de89fdbd4cdc804d55cd1d9f2e3f} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+\Hypertarget{class_decoy_a280a684dbfc0b600d7582f1f55d624d2}\label{class_decoy_a280a684dbfc0b600d7582f1f55d624d2} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+explosion\+Shape}
+\item 
+\Hypertarget{class_decoy_a484c50d6d73a437c90acfbc1a146c9b7}\label{class_decoy_a484c50d6d73a437c90acfbc1a146c9b7} 
+bool {\bfseries m\+\_\+is\+Exploding} \{false\}
+\item 
+\Hypertarget{class_decoy_a075577530406b85d6283b87a593564f5}\label{class_decoy_a075577530406b85d6283b87a593564f5} 
+float {\bfseries m\+\_\+explosion\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_decoy_ad10272b39ca62a0e88fab0b975fba7e9}\label{class_decoy_ad10272b39ca62a0e88fab0b975fba7e9} 
+const float {\bfseries m\+\_\+max\+Explosion\+Time} \{0.\+4f\}
+\item 
+\Hypertarget{class_decoy_afca9d9595f0e315b2ae2df75ce21cba1}\label{class_decoy_afca9d9595f0e315b2ae2df75ce21cba1} 
+float {\bfseries m\+\_\+time\+Alive} \{0.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_vanguard}{Vanguard} decoy entity that mimics the hero and explodes on destruction. 
+
+Pulses its outline while alive, then plays an expanding cyan explosion VFX when triggered. Uses \doxylink{class_vanguard}{Vanguard} hero visuals and player faction alignment. 
+
+\label{doc-constructors}
+\Hypertarget{class_decoy_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}\index{Decoy@{Decoy}!Decoy@{Decoy}}
+\index{Decoy@{Decoy}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{Decoy()}{Decoy()}}
+{\footnotesize\ttfamily \label{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e} 
+Decoy::\+\+Decoy (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{float}]{max\+Hp}{ = {\ttfamily -\/1.f}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a decoy with \doxylink{class_vanguard}{Vanguard} appearance and configurable HP. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+{\em max\+Hp} & Maximum hit points; uses registry default when negative. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_decoy_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_decoy_ab049910b3dfa7b2f93cbd1f7ba143509}\index{Decoy@{Decoy}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_decoy_ab049910b3dfa7b2f93cbd1f7ba143509} 
+Faction Decoy::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the player faction for combat filtering. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+Players. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_decoy_a783e17fc3790a1a479cebcb50db674ff}\index{Decoy@{Decoy}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_decoy_a783e17fc3790a1a479cebcb50db674ff} 
+float Decoy::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the \doxylink{class_vanguard}{Vanguard} hero collision radius. 
+
+\begin{DoxyReturn}{Returns}
+Radius from \doxylink{class_hero_registry}{Hero\+Registry} for Player\+Class::\+\+Vanguard. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_decoy_a662d30ec9d695de88d4378d9922724e2}\index{Decoy@{Decoy}!isExploding@{isExploding}}
+\index{isExploding@{isExploding}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{isExploding()}{isExploding()}}
+{\footnotesize\ttfamily \label{class_decoy_a662d30ec9d695de88d4378d9922724e2} 
+bool Decoy::\+is\+Exploding (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reports whether the decoy is currently exploding. 
+
+\begin{DoxyReturn}{Returns}
+True while the explosion VFX is active. 
+\end{DoxyReturn}
+\Hypertarget{class_decoy_a971c9cedaf4205a27e5b9191c0161e87}\index{Decoy@{Decoy}!isFinished@{isFinished}}
+\index{isFinished@{isFinished}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{isFinished()}{isFinished()}}
+{\footnotesize\ttfamily \label{class_decoy_a971c9cedaf4205a27e5b9191c0161e87} 
+bool Decoy::\+is\+Finished (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Reports whether the explosion animation has completed. 
+
+\begin{DoxyReturn}{Returns}
+True when exploding and the timer has elapsed. 
+\end{DoxyReturn}
+\Hypertarget{class_decoy_aa8da74b057eb0f06cf923545f415b0be}\index{Decoy@{Decoy}!render@{render}}
+\index{render@{render}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_decoy_aa8da74b057eb0f06cf923545f415b0be} 
+void Decoy::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the decoy shape or its explosion effect. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_decoy_a4044a739b43bac719cf2ccc4de717380}\index{Decoy@{Decoy}!update@{update}}
+\index{update@{update}!Decoy@{Decoy}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_decoy_a4044a739b43bac719cf2ccc4de717380} 
+void Decoy::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Updates pulse animation and explosion expansion VFX. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference (unused). \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Decoy.\+hpp\end{DoxyCompactItemize}

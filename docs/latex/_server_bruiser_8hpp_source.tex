@@ -1,0 +1,39 @@
+\doxysection{Server\+Bruiser.\+hpp}
+\hypertarget{_server_bruiser_8hpp_source}{}\label{_server_bruiser_8hpp_source}\index{src/server/enemies/ServerBruiser.hpp@{src/server/enemies/ServerBruiser.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once\ }}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}ServerEnemy.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{enum\ class}\ BruiserState\ \{}
+\DoxyCodeLine{00009\ \ \ \ \ Chasing,}
+\DoxyCodeLine{00010\ \ \ \ \ Preparing,}
+\DoxyCodeLine{00011\ \ \ \ \ Charging,}
+\DoxyCodeLine{00012\ \ \ \ \ Resting}
+\DoxyCodeLine{00013\ \};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_server_bruiser}{ServerBruiser}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_server_bruiser_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy}}\ \{}
+\DoxyCodeLine{00019\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy::ServerEnemy}};}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_server_bruiser_a62a9245371a32b2811b40758e5c3cfd9}{update}}(}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ sf::Time\ deltaTime,}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_client_info}{ClientInfo}}>\&\ clients,\ }
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ std::shared\_ptr<MapGenerator>\ map,\ }
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<int>>\&\ flowField,\ }
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ std::vector<EnemyShootEvent>\&\ outShootEvents,\ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ allEnemies,}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\&\ grid}
+\DoxyCodeLine{00031\ \ \ \ \ )\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ Charge\ State\ Machine}}
+\DoxyCodeLine{00035\ \ \ \ \ BruiserState\ m\_state\{BruiserState::Chasing\};}
+\DoxyCodeLine{00036\ \ \ \ \ sf::Vector2f\ m\_chargeDirection;}
+\DoxyCodeLine{00037\ \ \ \ \ sf::Clock\ m\_stateTimer;}
+\DoxyCodeLine{00038\ \ \ \ \ sf::Clock\ m\_cooldownTimer;}
+\DoxyCodeLine{00039\ \};}
+
+\end{DoxyCode}

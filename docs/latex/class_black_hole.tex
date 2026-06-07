@@ -1,0 +1,186 @@
+\doxysection{Black\+Hole Class Reference}
+\hypertarget{class_black_hole}{}\label{class_black_hole}\index{BlackHole@{BlackHole}}
+
+
+\doxylink{class_juggernaut}{Juggernaut} black hole ability entity with pull-\/radius visualization.  
+
+
+
+
+{\ttfamily \+\#include $<$Black\+Hole.\+hpp$>$}
+
+Inheritance diagram for Black\+Hole:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_black_hole}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_black_hole_a33815cf1bd8881713098562629cfe28e}{Black\+Hole}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, float duration)
+\begin{DoxyCompactList}\small\item\em Constructs a black hole with core and pull-\/radius visuals. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_black_hole_adfb33fd3cb2653a9e88d840453a87f4a}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Ticks down lifetime and pulses the pull ring outline color. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_black_hole_ab8e87dba93d8d680614118aabebb5e77}{render}} (sf::\+\+Render\+Target \&target)
+\begin{DoxyCompactList}\small\item\em Draws the pull ring and dark core. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_black_hole_a1615545b1a172698516e5a2cd3c2a078}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the player faction for combat filtering. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_black_hole_a3a6629c83e1121502e3ca6bfe395dae1}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the gravitational pull radius. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_black_hole_afbd5b905d239de16cc77639e8d529f58}\label{class_black_hole_afbd5b905d239de16cc77639e8d529f58} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+core\+Shape}
+\item 
+\Hypertarget{class_black_hole_a7bee178ff062fec2810245d875dccdc4}\label{class_black_hole_a7bee178ff062fec2810245d875dccdc4} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+pull\+Shape}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_juggernaut}{Juggernaut} black hole ability entity with pull-\/radius visualization. 
+
+Uses remaining lifetime as HP and renders a pulsing purple pull ring around a dark core. Belongs to the player faction for friendly ability filtering. 
+
+\label{doc-constructors}
+\Hypertarget{class_black_hole_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_black_hole_a33815cf1bd8881713098562629cfe28e}\index{BlackHole@{BlackHole}!BlackHole@{BlackHole}}
+\index{BlackHole@{BlackHole}!BlackHole@{BlackHole}}
+\doxysubsubsection{\texorpdfstring{BlackHole()}{BlackHole()}}
+{\footnotesize\ttfamily \label{class_black_hole_a33815cf1bd8881713098562629cfe28e} 
+Black\+Hole::\+\+Black\+Hole (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{float}]{duration}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a black hole with core and pull-\/radius visuals. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & World position of the black hole center. \\
+\hline
+{\em duration} & Total lifetime in seconds stored as HP. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_black_hole_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_black_hole_a1615545b1a172698516e5a2cd3c2a078}\index{BlackHole@{BlackHole}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!BlackHole@{BlackHole}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_black_hole_a1615545b1a172698516e5a2cd3c2a078} 
+Faction Black\+Hole::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the player faction for combat filtering. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+Players. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_black_hole_a3a6629c83e1121502e3ca6bfe395dae1}\index{BlackHole@{BlackHole}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!BlackHole@{BlackHole}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_black_hole_a3a6629c83e1121502e3ca6bfe395dae1} 
+float Black\+Hole::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the gravitational pull radius. 
+
+\begin{DoxyReturn}{Returns}
+Pull radius in world units (300.\+0f). 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_black_hole_ab8e87dba93d8d680614118aabebb5e77}\index{BlackHole@{BlackHole}!render@{render}}
+\index{render@{render}!BlackHole@{BlackHole}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_black_hole_ab8e87dba93d8d680614118aabebb5e77} 
+void Black\+Hole::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Draws the pull ring and dark core. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_black_hole_adfb33fd3cb2653a9e88d840453a87f4a}\index{BlackHole@{BlackHole}!update@{update}}
+\index{update@{update}!BlackHole@{BlackHole}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_black_hole_adfb33fd3cb2653a9e88d840453a87f4a} 
+void Black\+Hole::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Ticks down lifetime and pulses the pull ring outline color. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Black\+Hole.\+hpp\end{DoxyCompactItemize}

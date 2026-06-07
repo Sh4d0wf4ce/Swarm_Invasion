@@ -1,0 +1,42 @@
+\doxysection{Map\+Generator.\+hpp}
+\hypertarget{_map_generator_8hpp_source}{}\label{_map_generator_8hpp_source}\index{src/shared/MapGenerator.hpp@{src/shared/MapGenerator.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/System.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{enum\ class}\ TileType\{}
+\DoxyCodeLine{00012\ \ \ \ \ Floor,}
+\DoxyCodeLine{00013\ \ \ \ \ Wall}
+\DoxyCodeLine{00014\ \};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_map_generator_a7c13719f899356c5c6a58aafd4b26f40}{MapGenerator}}\{}
+\DoxyCodeLine{00020\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00026\ \ \ \ \ \doxymbox{\hyperlink{class_map_generator_a7c13719f899356c5c6a58aafd4b26f40}{MapGenerator}}(\textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height);}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_map_generator_a5990c5d9c86209b2c996ced7e4aec639}{generate}}(\textcolor{keywordtype}{int}\ seed);}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00040\ \ \ \ \ TileType\ \doxymbox{\hyperlink{class_map_generator_a454524339a7b77a343b8a02c4798aa56}{getTile}}(\textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_map_generator_a20f631ba77f8cb4e1444812a8cc5c0df}{getWidth}}()\textcolor{keyword}{\ const\ }\{\textcolor{keywordflow}{return}\ m\_width;\}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_map_generator_a6265de7d35d74a20ef3d9132c4dd3c95}{getHeight}}()\textcolor{keyword}{\ const\ }\{\textcolor{keywordflow}{return}\ m\_height;\}}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_map_generator_a7200856b9050c19629ad5f96ae0e86e0}{checkCollision}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ pos,\ \textcolor{keywordtype}{float}\ radius)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_map_generator_ac500f009bf2fa8a0cdf0b20edaac728c}{smoothMap}}();}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_map_generator_a0fcf013307cd23260e91e58714dbd227}{getSurroundingWallCount}}(\textcolor{keywordtype}{int}\ gridX,\ \textcolor{keywordtype}{int}\ gridY)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_width;}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_height;}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_fillPercent;}
+\DoxyCodeLine{00077\ \ \ \ \ std::vector<std::vector<TileType>>\ m\_map;}
+\DoxyCodeLine{00078\ \};}
+
+\end{DoxyCode}

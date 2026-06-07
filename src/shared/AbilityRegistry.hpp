@@ -10,6 +10,9 @@
 // ==========================================
 // Ability Stat Definitions
 // ==========================================
+/**
+ * @brief Numeric tuning data for a single ability loaded from JSON configuration.
+ */
 struct AbilityStats {
     float cooldown{0.f};
     float damage{0.f};
@@ -22,6 +25,10 @@ struct AbilityStats {
     float heal{0.f};
     std::unordered_map<std::string, float> customParams;
 };
+
+/**
+ * @brief Grouped ability stats for all Vanguard hero skills.
+ */
 struct VanguardAbilities {
     AbilityStats Decoy;
     AbilityStats Dash;
@@ -29,6 +36,10 @@ struct VanguardAbilities {
     AbilityStats Ult;
     AbilityStats ShurikenBurst;
 };
+
+/**
+ * @brief Grouped ability stats for all Medic hero skills.
+ */
 struct MedicAbilities {
     AbilityStats Teleport;
     AbilityStats Orb;
@@ -37,12 +48,20 @@ struct MedicAbilities {
     AbilityStats Passive;
     AbilityStats Drone;
 };
+
+/**
+ * @brief Grouped ability stats for all Juggernaut hero skills.
+ */
 struct JuggernautAbilities {
     AbilityStats Dash;
     AbilityStats Repulsor;
     AbilityStats BlackHole;
     AbilityStats Ult;
 };
+
+/**
+ * @brief Grouped ability stats for all Soldier hero skills.
+ */
 struct SoldierAbilities {
     AbilityStats HealField;
     AbilityStats Ult;
@@ -51,8 +70,15 @@ struct SoldierAbilities {
     AbilityStats AutoAim;
 };
 
+/**
+ * @brief Central registry that loads and exposes hero ability tuning data from JSON files.
+ */
 class AbilityRegistry {
 public:
+    /**
+     * @brief Loads ability configuration from a JSON file and populates all class registries.
+     * @param filepath Path to the abilities JSON configuration file.
+     */
     static void loadConfig(const std::string& filepath) {
         std::ifstream file(filepath);
         if (!file.is_open()) {
@@ -92,20 +118,60 @@ public:
         std::cout << "[REGISTRY] Successfully loaded " << filepath
                   << " (4 classes, " << abilityCount << " abilities)\n";
     }
+
+    /**
+     * @brief Returns the loaded Vanguard ability stats bundle.
+     * @return Reference to Vanguard ability stats.
+     */
     static const VanguardAbilities& vanguard() { return m_vanguard; }
+
+    /**
+     * @brief Returns the loaded Medic ability stats bundle.
+     * @return Reference to Medic ability stats.
+     */
     static const MedicAbilities& medic() { return m_medic; }
+
+    /**
+     * @brief Returns the loaded Juggernaut ability stats bundle.
+     * @return Reference to Juggernaut ability stats.
+     */
     static const JuggernautAbilities& juggernaut() { return m_juggernaut; }
+
+    /**
+     * @brief Returns the loaded Soldier ability stats bundle.
+     * @return Reference to Soldier ability stats.
+     */
     static const SoldierAbilities& soldier() { return m_soldier; }
+
+    /**
+     * @brief Looks up ability stats by network ability type.
+     * @param type Ability type identifier.
+     * @return Stats for @p type, or a static empty stats object if not found.
+     */
     static const AbilityStats& getStats(AbilityType type) {
         auto it = m_stats.find(type);
         if (it != m_stats.end()) return it->second;
         return emptyStats();
     }
 
+    /**
+     * @brief Retrieves a named numeric parameter for an ability type.
+     * @param type Ability type identifier.
+     * @param key Parameter name (standard field or custom JSON key).
+     * @param defaultVal Value returned when the parameter is missing.
+     * @return Parameter value or @p defaultVal if not found.
+     */
     static float param(AbilityType type, const std::string& key, float defaultVal = 0.f) {
         return param(getStats(type), key, defaultVal);
     }
 
+    /**
+     * @brief Retrieves a named numeric parameter from an ability stats object.
+     * @param stats Ability stats to query.
+     * @param key Parameter name (standard field or custom JSON key).
+     * @param defaultVal Value returned when the parameter is missing.
+     * @return Parameter value or @p defaultVal if not found.
+     */
     static float param(const AbilityStats& stats, const std::string& key, float defaultVal = 0.f) {
         return paramFromStats(stats, key, defaultVal);
     }
@@ -114,6 +180,12 @@ private:
     // ==========================================
     // Per-Class JSON Loaders
     // ==========================================
+    /**
+     * @brief Parses Vanguard ability entries from a JSON class object.
+     * @param classVal JSON object containing Vanguard ability definitions.
+     * @param out Output structure populated with parsed stats.
+     * @return Number of ability entries successfully loaded.
+     */
     static int loadClass(const nlohmann::json& classVal, VanguardAbilities& out) {
         int count = 0;
         for (auto& [key, val] : classVal.items()) {
@@ -140,6 +212,12 @@ private:
         return count;
     }
 
+    /**
+     * @brief Parses Medic ability entries from a JSON class object.
+     * @param classVal JSON object containing Medic ability definitions.
+     * @param out Output structure populated with parsed stats.
+     * @return Number of ability entries successfully loaded.
+     */
     static int loadClass(const nlohmann::json& classVal, MedicAbilities& out) {
         int count = 0;
         for (auto& [key, val] : classVal.items()) {
@@ -168,6 +246,12 @@ private:
         return count;
     }
 
+    /**
+     * @brief Parses Juggernaut ability entries from a JSON class object.
+     * @param classVal JSON object containing Juggernaut ability definitions.
+     * @param out Output structure populated with parsed stats.
+     * @return Number of ability entries successfully loaded.
+     */
     static int loadClass(const nlohmann::json& classVal, JuggernautAbilities& out) {
         int count = 0;
         for (auto& [key, val] : classVal.items()) {
@@ -192,6 +276,12 @@ private:
         return count;
     }
 
+    /**
+     * @brief Parses Soldier ability entries from a JSON class object.
+     * @param classVal JSON object containing Soldier ability definitions.
+     * @param out Output structure populated with parsed stats.
+     * @return Number of ability entries successfully loaded.
+     */
     static int loadClass(const nlohmann::json& classVal, SoldierAbilities& out) {
         int count = 0;
         for (auto& [key, val] : classVal.items()) {
@@ -219,6 +309,11 @@ private:
     // ==========================================
     // Parsing Helpers
     // ==========================================
+    /**
+     * @brief Converts a single JSON ability entry into an AbilityStats object.
+     * @param val JSON object containing ability field values.
+     * @return Parsed ability stats with known and custom parameters.
+     */
     static AbilityStats parseEntry(const nlohmann::json& val) {
         AbilityStats stats;
         stats.cooldown = val.value("cooldown", 0.f);
@@ -241,6 +336,13 @@ private:
         return stats;
     }
 
+    /**
+     * @brief Resolves a parameter value from standard fields or custom parameters.
+     * @param stats Ability stats to query.
+     * @param key Parameter name to look up.
+     * @param defaultVal Value returned when the parameter is missing.
+     * @return Parameter value or @p defaultVal if not found.
+     */
     static float paramFromStats(const AbilityStats& stats, const std::string& key, float defaultVal) {
         auto it = stats.customParams.find(key);
         if (it != stats.customParams.end()) return it->second;
@@ -255,6 +357,11 @@ private:
         if (key == "heal") return stats.heal;
         return defaultVal;
     }
+
+    /**
+     * @brief Returns a shared empty stats object used as a fallback for unknown abilities.
+     * @return Reference to a static zero-initialized AbilityStats instance.
+     */
     static const AbilityStats& emptyStats() {
         static const AbilityStats empty{};
         return empty;

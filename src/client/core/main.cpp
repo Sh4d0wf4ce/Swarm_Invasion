@@ -6,6 +6,10 @@
 #include "AbilityRegistry.hpp"
 #include <iostream>
 
+/**
+ * @brief Application entry point for the Swarm Invasion client.
+ * @return 0 on normal exit, 1 if an unhandled exception occurs.
+ */
 int main(){
     try{
         // --- Load game data registries ---

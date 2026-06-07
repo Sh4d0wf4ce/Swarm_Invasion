@@ -1,0 +1,340 @@
+\doxysection{Ability\+Registry Class Reference}
+\hypertarget{class_ability_registry}{}\label{class_ability_registry}\index{AbilityRegistry@{AbilityRegistry}}
+
+
+Central registry that loads and exposes hero ability tuning data from JSON files.  
+
+
+
+
+{\ttfamily \+\#include $<$Ability\+Registry.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_ability_registry_a0857abe7485242fc057d6ffac63c31b3}{load\+Config}} (const std::\+string \&filepath)
+\begin{DoxyCompactList}\small\item\em Loads ability configuration from a JSON file and populates all class registries. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_vanguard_abilities}{Vanguard\+Abilities}} \& \doxymbox{\hyperlink{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5}{vanguard}} ()
+\begin{DoxyCompactList}\small\item\em Returns the loaded \doxylink{class_vanguard}{Vanguard} ability stats bundle. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_medic_abilities}{Medic\+Abilities}} \& \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{medic}} ()
+\begin{DoxyCompactList}\small\item\em Returns the loaded \doxylink{class_medic}{Medic} ability stats bundle. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_juggernaut_abilities}{Juggernaut\+Abilities}} \& \doxymbox{\hyperlink{class_ability_registry_a082ad4482918f04f4ea9980700643bb5}{juggernaut}} ()
+\begin{DoxyCompactList}\small\item\em Returns the loaded \doxylink{class_juggernaut}{Juggernaut} ability stats bundle. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_soldier_abilities}{Soldier\+Abilities}} \& \doxymbox{\hyperlink{class_ability_registry_adc8db79da25b4661a79e9a404ca112e6}{soldier}} ()
+\begin{DoxyCompactList}\small\item\em Returns the loaded \doxylink{class_soldier}{Soldier} ability stats bundle. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \& \doxymbox{\hyperlink{class_ability_registry_ab5474cde4f68cc8106abdefa0e1396a9}{get\+Stats}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Looks up ability stats by network ability type. \end{DoxyCompactList}\item 
+static float \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{param}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} type, const std::\+string \&key, float default\+Val=0.f)
+\begin{DoxyCompactList}\small\item\em Retrieves a named numeric parameter for an ability type. \end{DoxyCompactList}\item 
+static float \doxymbox{\hyperlink{class_ability_registry_aeced2d47acd0062b35ec932168906974}{param}} (const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \&stats, const std::\+string \&key, float default\+Val=0.f)
+\begin{DoxyCompactList}\small\item\em Retrieves a named numeric parameter from an ability stats object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static int \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{load\+Class}} (const nlohmann::\+json \&class\+Val, \doxymbox{\hyperlink{struct_vanguard_abilities}{Vanguard\+Abilities}} \&out)
+\begin{DoxyCompactList}\small\item\em Parses \doxylink{class_vanguard}{Vanguard} ability entries from a JSON class object. \end{DoxyCompactList}\item 
+static int \doxymbox{\hyperlink{class_ability_registry_a58ea3a5eb1a0228ff4f90f80413c838a}{load\+Class}} (const nlohmann::\+json \&class\+Val, \doxymbox{\hyperlink{struct_medic_abilities}{Medic\+Abilities}} \&out)
+\begin{DoxyCompactList}\small\item\em Parses \doxylink{class_medic}{Medic} ability entries from a JSON class object. \end{DoxyCompactList}\item 
+static int \doxymbox{\hyperlink{class_ability_registry_a30bcc6563cf2ca555bd178be9b35ecc8}{load\+Class}} (const nlohmann::\+json \&class\+Val, \doxymbox{\hyperlink{struct_juggernaut_abilities}{Juggernaut\+Abilities}} \&out)
+\begin{DoxyCompactList}\small\item\em Parses \doxylink{class_juggernaut}{Juggernaut} ability entries from a JSON class object. \end{DoxyCompactList}\item 
+static int \doxymbox{\hyperlink{class_ability_registry_a2876dd8f38effbbc4fd3e28cdc2b24ab}{load\+Class}} (const nlohmann::\+json \&class\+Val, \doxymbox{\hyperlink{struct_soldier_abilities}{Soldier\+Abilities}} \&out)
+\begin{DoxyCompactList}\small\item\em Parses \doxylink{class_soldier}{Soldier} ability entries from a JSON class object. \end{DoxyCompactList}\item 
+static \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parse\+Entry}} (const nlohmann::\+json \&val)
+\begin{DoxyCompactList}\small\item\em Converts a single JSON ability entry into an \doxylink{struct_ability_stats}{Ability\+Stats} object. \end{DoxyCompactList}\item 
+static float \doxymbox{\hyperlink{class_ability_registry_a9de8ace03bd81fe8a768186eacb1d9d3}{param\+From\+Stats}} (const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \&stats, const std::\+string \&key, float default\+Val)
+\begin{DoxyCompactList}\small\item\em Resolves a parameter value from standard fields or custom parameters. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \& \doxymbox{\hyperlink{class_ability_registry_a49df53b229ac1a51986b5367e924be3e}{empty\+Stats}} ()
+\begin{DoxyCompactList}\small\item\em Returns a shared empty stats object used as a fallback for unknown abilities. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_ability_registry_a799c588df55b4c0270956a74fe166d35}\label{class_ability_registry_a799c588df55b4c0270956a74fe166d35} 
+static std::\+unordered\+\_\+map$<$ \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}, \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} $>$ {\bfseries m\+\_\+stats}
+\item 
+\Hypertarget{class_ability_registry_a3aa36f270704f40810c6037f574ef594}\label{class_ability_registry_a3aa36f270704f40810c6037f574ef594} 
+static \doxymbox{\hyperlink{struct_vanguard_abilities}{Vanguard\+Abilities}} {\bfseries m\+\_\+vanguard}
+\item 
+\Hypertarget{class_ability_registry_a9bc9a42e8efb47c7902eab3633be0bf2}\label{class_ability_registry_a9bc9a42e8efb47c7902eab3633be0bf2} 
+static \doxymbox{\hyperlink{struct_medic_abilities}{Medic\+Abilities}} {\bfseries m\+\_\+medic}
+\item 
+\Hypertarget{class_ability_registry_acc9e8798f2f037e10abaa468fc571092}\label{class_ability_registry_acc9e8798f2f037e10abaa468fc571092} 
+static \doxymbox{\hyperlink{struct_juggernaut_abilities}{Juggernaut\+Abilities}} {\bfseries m\+\_\+juggernaut}
+\item 
+\Hypertarget{class_ability_registry_acecdb223ccdcd5ca3e6872ef8462f09d}\label{class_ability_registry_acecdb223ccdcd5ca3e6872ef8462f09d} 
+static \doxymbox{\hyperlink{struct_soldier_abilities}{Soldier\+Abilities}} {\bfseries m\+\_\+soldier}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central registry that loads and exposes hero ability tuning data from JSON files. 
+
+\label{doc-func-members}
+\Hypertarget{class_ability_registry_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_ability_registry_a49df53b229ac1a51986b5367e924be3e}\index{AbilityRegistry@{AbilityRegistry}!emptyStats@{emptyStats}}
+\index{emptyStats@{emptyStats}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{emptyStats()}{emptyStats()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a49df53b229ac1a51986b5367e924be3e} 
+const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \& Ability\+Registry::\+empty\+Stats (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Returns a shared empty stats object used as a fallback for unknown abilities. 
+
+\begin{DoxyReturn}{Returns}
+Reference to a static zero-\/initialized \doxylink{struct_ability_stats}{Ability\+Stats} instance. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_ab5474cde4f68cc8106abdefa0e1396a9}\index{AbilityRegistry@{AbilityRegistry}!getStats@{getStats}}
+\index{getStats@{getStats}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{getStats()}{getStats()}}
+{\footnotesize\ttfamily \label{class_ability_registry_ab5474cde4f68cc8106abdefa0e1396a9} 
+const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \& Ability\+Registry::\+get\+Stats (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}}]{type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Looks up ability stats by network ability type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Ability type identifier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Stats for {\ttfamily type}, or a static empty stats object if not found. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a082ad4482918f04f4ea9980700643bb5}\index{AbilityRegistry@{AbilityRegistry}!juggernaut@{juggernaut}}
+\index{juggernaut@{juggernaut}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{juggernaut()}{juggernaut()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a082ad4482918f04f4ea9980700643bb5} 
+const \doxymbox{\hyperlink{struct_juggernaut_abilities}{Juggernaut\+Abilities}} \& Ability\+Registry::\+juggernaut (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the loaded \doxylink{class_juggernaut}{Juggernaut} ability stats bundle. 
+
+\begin{DoxyReturn}{Returns}
+Reference to \doxylink{class_juggernaut}{Juggernaut} ability stats. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a30bcc6563cf2ca555bd178be9b35ecc8}\index{AbilityRegistry@{AbilityRegistry}!loadClass@{loadClass}}
+\index{loadClass@{loadClass}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{loadClass()}{loadClass()}\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily \label{class_ability_registry_a30bcc6563cf2ca555bd178be9b35ecc8} 
+int Ability\+Registry::\+load\+Class (\begin{DoxyParamCaption}\item[{const nlohmann::\+json \&}]{class\+Val}{, }\item[{\doxymbox{\hyperlink{struct_juggernaut_abilities}{Juggernaut\+Abilities}} \&}]{out}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Parses \doxylink{class_juggernaut}{Juggernaut} ability entries from a JSON class object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em class\+Val} & JSON object containing \doxylink{class_juggernaut}{Juggernaut} ability definitions. \\
+\hline
+{\em out} & Output structure populated with parsed stats. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Number of ability entries successfully loaded. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a58ea3a5eb1a0228ff4f90f80413c838a}\index{AbilityRegistry@{AbilityRegistry}!loadClass@{loadClass}}
+\index{loadClass@{loadClass}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{loadClass()}{loadClass()}\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily \label{class_ability_registry_a58ea3a5eb1a0228ff4f90f80413c838a} 
+int Ability\+Registry::\+load\+Class (\begin{DoxyParamCaption}\item[{const nlohmann::\+json \&}]{class\+Val}{, }\item[{\doxymbox{\hyperlink{struct_medic_abilities}{Medic\+Abilities}} \&}]{out}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Parses \doxylink{class_medic}{Medic} ability entries from a JSON class object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em class\+Val} & JSON object containing \doxylink{class_medic}{Medic} ability definitions. \\
+\hline
+{\em out} & Output structure populated with parsed stats. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Number of ability entries successfully loaded. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a2876dd8f38effbbc4fd3e28cdc2b24ab}\index{AbilityRegistry@{AbilityRegistry}!loadClass@{loadClass}}
+\index{loadClass@{loadClass}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{loadClass()}{loadClass()}\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily \label{class_ability_registry_a2876dd8f38effbbc4fd3e28cdc2b24ab} 
+int Ability\+Registry::\+load\+Class (\begin{DoxyParamCaption}\item[{const nlohmann::\+json \&}]{class\+Val}{, }\item[{\doxymbox{\hyperlink{struct_soldier_abilities}{Soldier\+Abilities}} \&}]{out}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Parses \doxylink{class_soldier}{Soldier} ability entries from a JSON class object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em class\+Val} & JSON object containing \doxylink{class_soldier}{Soldier} ability definitions. \\
+\hline
+{\em out} & Output structure populated with parsed stats. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Number of ability entries successfully loaded. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}\index{AbilityRegistry@{AbilityRegistry}!loadClass@{loadClass}}
+\index{loadClass@{loadClass}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{loadClass()}{loadClass()}\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily \label{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9} 
+int Ability\+Registry::\+load\+Class (\begin{DoxyParamCaption}\item[{const nlohmann::\+json \&}]{class\+Val}{, }\item[{\doxymbox{\hyperlink{struct_vanguard_abilities}{Vanguard\+Abilities}} \&}]{out}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Parses \doxylink{class_vanguard}{Vanguard} ability entries from a JSON class object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em class\+Val} & JSON object containing \doxylink{class_vanguard}{Vanguard} ability definitions. \\
+\hline
+{\em out} & Output structure populated with parsed stats. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Number of ability entries successfully loaded. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a0857abe7485242fc057d6ffac63c31b3}\index{AbilityRegistry@{AbilityRegistry}!loadConfig@{loadConfig}}
+\index{loadConfig@{loadConfig}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{loadConfig()}{loadConfig()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a0857abe7485242fc057d6ffac63c31b3} 
+void Ability\+Registry::\+load\+Config (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{filepath}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Loads ability configuration from a JSON file and populates all class registries. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & Path to the abilities JSON configuration file. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}\index{AbilityRegistry@{AbilityRegistry}!medic@{medic}}
+\index{medic@{medic}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{medic()}{medic()}}
+{\footnotesize\ttfamily \label{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5} 
+const \doxymbox{\hyperlink{struct_medic_abilities}{Medic\+Abilities}} \& Ability\+Registry::\+medic (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the loaded \doxylink{class_medic}{Medic} ability stats bundle. 
+
+\begin{DoxyReturn}{Returns}
+Reference to \doxylink{class_medic}{Medic} ability stats. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_ac792e022429728e205ba6d37da575d7f}\index{AbilityRegistry@{AbilityRegistry}!param@{param}}
+\index{param@{param}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{param()}{param()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_ability_registry_ac792e022429728e205ba6d37da575d7f} 
+float Ability\+Registry::\+param (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}}]{type}{, }\item[{const std::\+string \&}]{key}{, }\item[{float}]{default\+Val}{ = {\ttfamily 0.f}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Retrieves a named numeric parameter for an ability type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Ability type identifier. \\
+\hline
+{\em key} & Parameter name (standard field or custom JSON key). \\
+\hline
+{\em default\+Val} & Value returned when the parameter is missing. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Parameter value or {\ttfamily default\+Val} if not found. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_aeced2d47acd0062b35ec932168906974}\index{AbilityRegistry@{AbilityRegistry}!param@{param}}
+\index{param@{param}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{param()}{param()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_ability_registry_aeced2d47acd0062b35ec932168906974} 
+float Ability\+Registry::\+param (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \&}]{stats}{, }\item[{const std::\+string \&}]{key}{, }\item[{float}]{default\+Val}{ = {\ttfamily 0.f}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Retrieves a named numeric parameter from an ability stats object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em stats} & Ability stats to query. \\
+\hline
+{\em key} & Parameter name (standard field or custom JSON key). \\
+\hline
+{\em default\+Val} & Value returned when the parameter is missing. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Parameter value or {\ttfamily default\+Val} if not found. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a9de8ace03bd81fe8a768186eacb1d9d3}\index{AbilityRegistry@{AbilityRegistry}!paramFromStats@{paramFromStats}}
+\index{paramFromStats@{paramFromStats}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{paramFromStats()}{paramFromStats()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a9de8ace03bd81fe8a768186eacb1d9d3} 
+float Ability\+Registry::\+param\+From\+Stats (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} \&}]{stats}{, }\item[{const std::\+string \&}]{key}{, }\item[{float}]{default\+Val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Resolves a parameter value from standard fields or custom parameters. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em stats} & Ability stats to query. \\
+\hline
+{\em key} & Parameter name to look up. \\
+\hline
+{\em default\+Val} & Value returned when the parameter is missing. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Parameter value or {\ttfamily default\+Val} if not found. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}\index{AbilityRegistry@{AbilityRegistry}!parseEntry@{parseEntry}}
+\index{parseEntry@{parseEntry}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{parseEntry()}{parseEntry()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c} 
+\doxymbox{\hyperlink{struct_ability_stats}{Ability\+Stats}} Ability\+Registry::\+parse\+Entry (\begin{DoxyParamCaption}\item[{const nlohmann::\+json \&}]{val}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Converts a single JSON ability entry into an \doxylink{struct_ability_stats}{Ability\+Stats} object. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & JSON object containing ability field values. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Parsed ability stats with known and custom parameters. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_adc8db79da25b4661a79e9a404ca112e6}\index{AbilityRegistry@{AbilityRegistry}!soldier@{soldier}}
+\index{soldier@{soldier}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{soldier()}{soldier()}}
+{\footnotesize\ttfamily \label{class_ability_registry_adc8db79da25b4661a79e9a404ca112e6} 
+const \doxymbox{\hyperlink{struct_soldier_abilities}{Soldier\+Abilities}} \& Ability\+Registry::\+soldier (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the loaded \doxylink{class_soldier}{Soldier} ability stats bundle. 
+
+\begin{DoxyReturn}{Returns}
+Reference to \doxylink{class_soldier}{Soldier} ability stats. 
+\end{DoxyReturn}
+\Hypertarget{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5}\index{AbilityRegistry@{AbilityRegistry}!vanguard@{vanguard}}
+\index{vanguard@{vanguard}!AbilityRegistry@{AbilityRegistry}}
+\doxysubsubsection{\texorpdfstring{vanguard()}{vanguard()}}
+{\footnotesize\ttfamily \label{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5} 
+const \doxymbox{\hyperlink{struct_vanguard_abilities}{Vanguard\+Abilities}} \& Ability\+Registry::\+vanguard (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the loaded \doxylink{class_vanguard}{Vanguard} ability stats bundle. 
+
+\begin{DoxyReturn}{Returns}
+Reference to \doxylink{class_vanguard}{Vanguard} ability stats. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Ability\+Registry.\+hpp\end{DoxyCompactItemize}

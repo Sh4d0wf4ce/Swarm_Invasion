@@ -1,6 +1,17 @@
 #include "ServerKamikaze.hpp"
 #include "HeroRegistry.hpp"
 
+/**
+ * @brief Rushes toward the closest visible player and explodes on proximity.
+ * @param deltaTime Elapsed time since the last update.
+ * @param clients Mutable player targets for explosion damage.
+ * @param map Map used for collision and line-of-sight checks.
+ * @param flowField Precomputed BFS cost field used when target is not visible.
+ * @param outShootEvents Unused; kamikazes do not shoot.
+ * @param allEnemies All enemies used when falling back to melee chase.
+ * @param grid Spatial grid for neighbour queries during chase.
+ * @return Player IDs killed by the explosion this tick.
+ */
 std::vector<std::uint32_t> ServerKamikaze::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     std::vector<std::uint32_t> deadPlayers;
     if(clients.empty() || m_exploded) return deadPlayers;
@@ -8,7 +19,7 @@ std::vector<std::uint32_t> ServerKamikaze::update(sf::Time deltaTime, std::map<s
     float minDistanceSq;
     std::uint32_t targetId = getClosestPlayerId(clients, minDistanceSq);
     float explosionRadius = eStats.radius + 20.0f;
-    
+
     // --- Detonate when within blast range of a player ---
     if(minDistanceSq < explosionRadius * explosionRadius){
         m_exploded = true;

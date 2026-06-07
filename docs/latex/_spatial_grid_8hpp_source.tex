@@ -1,0 +1,56 @@
+\doxysection{Spatial\+Grid.\+hpp}
+\hypertarget{_spatial_grid_8hpp_source}{}\label{_spatial_grid_8hpp_source}\index{src/server/core/SpatialGrid.hpp@{src/server/core/SpatialGrid.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/System/Vector2.hpp>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_spatial_grid_a6e6203bedbaa6558c0ce1187e6abe627}{SpatialGrid}}\{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \doxymbox{\hyperlink{class_spatial_grid_a6e6203bedbaa6558c0ce1187e6abe627}{SpatialGrid}}(\textcolor{keywordtype}{float}\ mapWidth,\ \textcolor{keywordtype}{float}\ mapHeight,\ \textcolor{keywordtype}{float}\ cellSize)\ :\ m\_cellSize(cellSize)\{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ m\_cols\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(std::ceil(mapWidth\ /\ cellSize));}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ m\_rows\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(std::ceil(mapHeight\ /\ cellSize));}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ m\_cells.resize(m\_cols\ *\ m\_rows);}
+\DoxyCodeLine{00024\ \ \ \ \ \}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_spatial_grid_a362cc0445b7fc82d99455a4621594486}{clear}}()\{}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}\&\ cell\ :\ m\_cells)\{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ cell.clear();}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00033\ \ \ \ \ \}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_spatial_grid_a97b495ba2454cb565daf5a200bf6770f}{insert}}(sf::Vector2f\ position,\ std::uint32\_t\ entityId)\{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(position.x\ /\ m\_cellSize);}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(position.y\ /\ m\_cellSize);}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(x\ >=\ 0\ \&\&\ x\ <\ m\_cols\ \&\&\ y\ >=\ 0\ \&\&\ y\ <\ m\_rows)\{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ m\_cells[y\ *\ m\_cols\ +\ x].push\_back(entityId);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \ \ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00054\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_spatial_grid_adc84dad774c1af1462f621aaf4c06ae9}{getNearby}}(sf::Vector2f\ position)\textcolor{keyword}{\ const\ }\{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ std::vector<std::uint32\_t>\ result;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ result.reserve(16);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cx\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(position.x\ /\ m\_cellSize);}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cy\ =\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{int}\textcolor{keyword}{>}(position.y\ /\ m\_cellSize);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ y\ =\ cy\ -\/\ 1;\ y\ <=\ cy\ +\ 1;\ ++y)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ x\ =\ cx\ -\/\ 1;\ x\ <=\ cx\ +\ 1;\ ++x)\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x\ >=\ 0\ \&\&\ x\ <\ m\_cols\ \&\&\ y\ >=\ 0\ \&\&\ y\ <\ m\_rows)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ cell\ =\ m\_cells[y\ *\ m\_cols\ +\ x];}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ result.insert(result.end(),\ cell.begin(),\ cell.end());}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ result;}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_cellSize;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_cols;}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_rows;}
+\DoxyCodeLine{00074\ \ \ \ \ std::vector<std::vector<std::uint32\_t>>\ m\_cells;}
+\DoxyCodeLine{00075\ \};}
+
+\end{DoxyCode}

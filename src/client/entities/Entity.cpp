@@ -1,5 +1,10 @@
 #include "Entity.hpp"
 
+/**
+ * @brief Draws a health bar above the entity when below maximum HP.
+ * @param target Render target to draw into.
+ * @param yOffset Vertical offset above the entity position in pixels.
+ */
 void Entity::drawHealthBar(sf::RenderTarget& target, float yOffset){
     if(m_hp >= m_maxHp) return;
 

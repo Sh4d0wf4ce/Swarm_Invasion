@@ -5,6 +5,14 @@
 #include "NeedleProjectile.hpp"
 #include "DroneBlasterProjectile.hpp"
 
+/**
+ * @brief Creates one or more projectiles aimed at a target with optional pellet spread.
+ * @param ownerId Entity ID of the shooter.
+ * @param startPos World position where projectiles spawn.
+ * @param targetPos Aim point used to compute direction.
+ * @param weapon Weapon type determining stats and derived projectile class.
+ * @param faction Faction assigned to spawned projectiles.
+ */
 void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& targetPos, WeaponType weapon, Faction faction){
     const auto& stats = WeaponRegistry::getStats(weapon);
 
@@ -45,6 +53,15 @@ void ProjectileManager::spawnProjectile(std::uint32_t ownerId, const sf::Vector2
     }
 }
 
+/**
+ * @brief Updates all projectiles, applies barrier blocking, and collects local hits.
+ * @param deltaTime Elapsed time since the last update.
+ * @param entities Entities available for collision tests.
+ * @param map Map used for wall collision checks.
+ * @param barriers Active medic barrier snapshots that block enemy projectiles.
+ * @param localPlayerId Local player ID; only their shots generate hit records.
+ * @return Hit records for projectiles owned by the local player.
+ */
 std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map, const std::vector<SectorBarrierSnapshot>& barriers, std::uint32_t localPlayerId){
     std::vector<HitRecord> allHits;
 
@@ -85,11 +102,15 @@ std::vector<HitRecord> ProjectileManager::update(sf::Time deltaTime, const std::
     m_projectiles.erase(
         std::remove_if(m_projectiles.begin(), m_projectiles.end(), 
             [](const std::unique_ptr<Projectile>& p) { return !p->isActive();}),
-            m_projectiles.end()
+        m_projectiles.end()
     );
     return allHits;
 }
 
+/**
+ * @brief Renders all active projectiles.
+ * @param target Render target to draw into.
+ */
 void ProjectileManager::render(sf::RenderTarget& target){
     for(const auto& proj: m_projectiles){
         if(!proj->isActive()) continue;

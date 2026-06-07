@@ -5,6 +5,11 @@
 #include <cmath>
 #include <algorithm>
 
+/**
+ * @brief Initializes Vanguard ability tuning and disables ranged ammo.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ */
 Vanguard::Vanguard(std::uint32_t id, const sf::Vector2f& startPos)
     : Player(id, startPos, PlayerClass::Vanguard) {
     const auto& a = AbilityRegistry::vanguard();
@@ -29,6 +34,11 @@ Vanguard::Vanguard(std::uint32_t id, const sf::Vector2f& startPos)
 }
 
 
+/**
+ * @brief Updates stealth visuals, ult timer, shuriken burst, dash, and katana swing.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map used for dash collision checks.
+ */
 void Vanguard::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     Player::update(deltaTime, map);
     float dt = deltaTime.asSeconds();
@@ -144,6 +154,11 @@ void Vanguard::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& m
 // Ability hit detection
 // ==========================================
 
+/**
+ * @brief Detects katana slash and dash hits against nearby enemies.
+ * @param entities All entities to test for arc or radius overlap.
+ * @return Records of enemies hit by active abilities this frame.
+ */
 std::vector<AbilityHitRecord> Vanguard::checkAbilityHits(const std::vector<Entity*>& entities) {
     std::vector<AbilityHitRecord> hits;
     if (m_attackActive){
@@ -190,6 +205,10 @@ std::vector<AbilityHitRecord> Vanguard::checkAbilityHits(const std::vector<Entit
 }
 
 
+/**
+ * @brief Draws katana trail, dash trails, blade, and the base player shape.
+ * @param target Render target to draw into.
+ */
 void Vanguard::render(sf::RenderTarget& target) {
     drawTrail(target);
     drawDashTrails(target);
@@ -201,12 +220,20 @@ void Vanguard::render(sf::RenderTarget& target) {
 // Katana trail
 // ==========================================
 
+/**
+ * @brief Ages and removes expired katana slash trail frames.
+ * @param dt Elapsed time in seconds since the last update.
+ */
 void Vanguard::updateTrail(float dt) {
     for (auto& frame : m_trail) frame.age += dt;
     m_trail.erase(std::remove_if(m_trail.begin(), m_trail.end(),
         [this](const SlashTrailFrame& f) { return f.age > m_swingDuration; }), m_trail.end());
 }
 
+/**
+ * @brief Draws the additive mesh trail left by the katana swing.
+ * @param target Render target to draw into.
+ */
 void Vanguard::drawTrail(sf::RenderTarget& target) const {
     if (m_trail.size() < 2) return;
     sf::VertexArray mesh(sf::PrimitiveType::Triangles);
@@ -251,6 +278,10 @@ void Vanguard::drawTrail(sf::RenderTarget& target) const {
 // Katana blade
 // ==========================================
 
+/**
+ * @brief Draws the active katana blade as a tapered quad strip.
+ * @param target Render target to draw into.
+ */
 void Vanguard::drawKatana(sf::RenderTarget& target) const {
     if (!m_attackActive) return;
 
@@ -278,6 +309,11 @@ void Vanguard::drawKatana(sf::RenderTarget& target) const {
 // Katana geometry helpers
 // ==========================================
 
+/**
+ * @brief Returns the blade angle at a normalized swing progress value.
+ * @param progress Swing progress from 0.0 (start) to 1.0 (end).
+ * @return Blade angle in radians.
+ */
 float Vanguard::getBladeAngleAt(float progress) const {
     float base = std::atan2(m_aimDir.y, m_aimDir.x);
     float left = base - m_halfArcRad;
@@ -285,15 +321,33 @@ float Vanguard::getBladeAngleAt(float progress) const {
     return m_swingRight ? left + (right - left) * progress : right + (left - right) * progress;
 }
 
+/**
+ * @brief Returns a world-space point along the blade at a given radius fraction.
+ * @param angle Blade angle in radians.
+ * @param radiusProgress Interpolation from inner (0.0) to outer (1.0) radius.
+ * @return World position on the blade arc.
+ */
 sf::Vector2f Vanguard::getBladePoint(float angle, float radiusProgress) const {
     float radius = m_innerRadius + (m_outerRadius - m_innerRadius) * radiusProgress;
     return m_position + sf::Vector2f(std::cos(angle) * radius, std::sin(angle) * radius);
 }
 
+/**
+ * @brief Wraps an angle to the range [0, 2*pi].
+ * @param angle Input angle in radians.
+ * @return Normalized angle in radians.
+ */
 float Vanguard::normalizeAngle(float angle) const {
     return std::remainder(angle, 2.0f * M_PI);
 }
 
+/**
+ * @brief Tests whether an angle lies between two boundary angles.
+ * @param target Angle to test in radians.
+ * @param angle1 First boundary angle in radians.
+ * @param angle2 Second boundary angle in radians.
+ * @return True when target falls within the swept arc.
+ */
 bool Vanguard::isAngleBetween(float target, float angle1, float angle2) const {
     float diff1 = normalizeAngle(target - angle1);
     float diff2 = normalizeAngle(angle2 - angle1);
@@ -308,6 +362,10 @@ bool Vanguard::isAngleBetween(float target, float angle1, float angle2) const {
 // Dash trails
 // ==========================================
 
+/**
+ * @brief Draws active and fading cyan dash motion trails.
+ * @param target Render target to draw into.
+ */
 void Vanguard::drawDashTrails(sf::RenderTarget& target) const {
     sf::RenderStates addBlend;
     addBlend.blendMode = sf::BlendAdd;
@@ -353,6 +411,12 @@ void Vanguard::drawDashTrails(sf::RenderTarget& target) const {
 // Ability inputs
 // ==========================================
 
+/**
+ * @brief Consumes a dash charge and dashes toward the cursor.
+ * @param mouseWorldPos Dash direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Vanguard::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_dashCharges > 0 && !m_isDashing) {
         sf::Vector2f dir = mouseWorldPos - m_position;
@@ -376,6 +440,12 @@ void Vanguard::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
     }
 }
 
+/**
+ * @brief Activates the speed-boost ultimate when fully charged.
+ * @param mouseWorldPos Cursor position in world space.
+ * @param engine Client engine.
+ * @param projMgr Projectile manager.
+ */
 void Vanguard::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (!m_isUltActive && m_ultCharge >= m_maxUltCharge) {
         m_isUltActive = true;
@@ -385,6 +455,12 @@ void Vanguard::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proj
     }
 }
 
+/**
+ * @brief Activates decoy stealth and notifies the server to spawn a decoy.
+ * @param mouseWorldPos Cursor position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Vanguard::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownE > 0.0f || getStealthTimer() > 0.0f) return;
 
@@ -398,6 +474,12 @@ void Vanguard::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proj
     }
 }
 
+/**
+ * @brief Starts a staggered shuriken burst toward the cursor.
+ * @param mouseWorldPos Aim direction in world space.
+ * @param engine Client engine stored for deferred network dispatch.
+ * @param projMgr Projectile manager stored for deferred spawning.
+ */
 void Vanguard::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr) {
     if (m_cooldownRMB <= 0.0f && m_shurikensToFire == 0) {
         m_cooldownRMB = m_maxCooldownRMB;
@@ -418,6 +500,13 @@ void Vanguard::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
     }
 }
 
+/**
+ * @brief Starts a katana slash and optionally fires an ultimate wave projectile.
+ * @param mouseWorldPos Aim direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager that spawns the ultimate wave.
+ * @param enemies Enemy map.
+ */
 void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies) {
     if (m_attackActive || m_cooldownLMB > 0.0f) return;
 
@@ -453,6 +542,11 @@ void Vanguard::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
 // Remote visuals
 // ==========================================
 
+/**
+ * @brief Updates stealth, dash, and katana visuals for a remote Vanguard.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map reference.
+ */
 void Vanguard::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     float dt = deltaTime.asSeconds();
 
@@ -495,6 +589,11 @@ void Vanguard::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<Map
     m_trail.push_back({m_bladeAngle, 0.0f});
 }
 
+/**
+ * @brief Replays remote dash or katana slash visuals from network data.
+ * @param ability Ability type that was used remotely.
+ * @param data Direction vector supplied by the server.
+ */
 void Vanguard::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
     if (ability == AbilityType::VanguardDash) {
         m_dashDir = data;
@@ -528,6 +627,9 @@ void Vanguard::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) 
 // UI panel
 // ==========================================
 
+/**
+ * @brief Renders dash charge pips and recharge progress in the HUD.
+ */
 void Vanguard::renderShiftSkill() {
     ImGui::Text("SHIFT");
     for (int i = 0; i < m_maxDashCharges; ++i) {
@@ -551,6 +653,9 @@ void Vanguard::renderShiftSkill() {
     }
 }
 
+/**
+ * @brief Renders stealth duration or decoy cooldown in the HUD.
+ */
 void Vanguard::renderESkill() {
     ImGui::Text("E");
     if (getStealthTimer() > 0.0f) {
@@ -570,6 +675,9 @@ void Vanguard::renderESkill() {
     }
 }
 
+/**
+ * @brief Renders a Vanguard-specific right panel showing HP only.
+ */
 void Vanguard::renderRightPanel() {
     ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH - 320.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);

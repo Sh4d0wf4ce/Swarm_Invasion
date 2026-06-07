@@ -5,6 +5,13 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
+/**
+ * @brief GPU-cached tile map renderer.
+ *
+ * Builds a vertex array from a MapGenerator and draws the visible map
+ * tiles as colored triangles. Call rebuild() when the underlying map data
+ * changes.
+ */
 class MapRenderer{
 public:
     MapRenderer(std::shared_ptr<MapGenerator> mapGen, float tileSize);

@@ -1,0 +1,176 @@
+\doxysection{Enemy Class Reference}
+\hypertarget{class_enemy}{}\label{class_enemy}\index{Enemy@{Enemy}}
+
+
+Client-\/side representation of a hostile enemy unit.  
+
+
+
+
+{\ttfamily \+\#include $<$Enemy.\+hpp$>$}
+
+Inheritance diagram for Enemy:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_enemy}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_enemy_a69d764e36b019c78bd7864f830f2720b}{Enemy}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Constructs an enemy with registry-\/defined stats and appearance. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_enemy_a1c5464a51870dacc74f541f948504c90}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Syncs the drawable shape to the current entity position. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_enemy_a5f02011e333d7e5639f13ce43c26f9e8}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the enemy shape and its health bar. \end{DoxyCompactList}\item 
+\Hypertarget{class_enemy_a17f71f62204d065bd6902fb0321a8edf}\label{class_enemy_a17f71f62204d065bd6902fb0321a8edf} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries get\+Type} () const
+\item 
+Faction \doxymbox{\hyperlink{class_enemy_a36afc8db59dd4628861fef1c5eb1fcaa}{get\+Faction}} () const override
+\item 
+float \doxymbox{\hyperlink{class_enemy_afaa6969354faa94d1e6a1180bd866f91}{get\+Radius}} () const override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_enemy_a8c6f3103ffb37de6ccd6eea0aab0f8db}\label{class_enemy_a8c6f3103ffb37de6ccd6eea0aab0f8db} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+\Hypertarget{class_enemy_a5fbc5b6223ae7d59df9eb707a963b1dc}\label{class_enemy_a5fbc5b6223ae7d59df9eb707a963b1dc} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries m\+\_\+type}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Client-\/side representation of a hostile enemy unit. 
+
+Visualizes server-\/authoritative enemy state with type-\/specific stats from \doxylink{class_enemy_registry}{Enemy\+Registry}. Position updates are driven externally; the local update step only syncs the drawable shape to the current position. 
+
+\label{doc-constructors}
+\Hypertarget{class_enemy_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_enemy_a69d764e36b019c78bd7864f830f2720b}\index{Enemy@{Enemy}!Enemy@{Enemy}}
+\index{Enemy@{Enemy}!Enemy@{Enemy}}
+\doxysubsubsection{\texorpdfstring{Enemy()}{Enemy()}}
+{\footnotesize\ttfamily \label{class_enemy_a69d764e36b019c78bd7864f830f2720b} 
+Enemy::\+\+Enemy (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}}}]{type}{}\end{DoxyParamCaption})}
+
+
+
+Constructs an enemy with registry-\/defined stats and appearance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+{\em type} & \doxylink{class_enemy}{Enemy} archetype used to look up stats and color. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_enemy_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_enemy_a36afc8db59dd4628861fef1c5eb1fcaa}\index{Enemy@{Enemy}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!Enemy@{Enemy}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_enemy_a36afc8db59dd4628861fef1c5eb1fcaa} 
+Faction Enemy::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_enemy_afaa6969354faa94d1e6a1180bd866f91}\index{Enemy@{Enemy}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!Enemy@{Enemy}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_enemy_afaa6969354faa94d1e6a1180bd866f91} 
+float Enemy::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_enemy_a5f02011e333d7e5639f13ce43c26f9e8}\index{Enemy@{Enemy}!render@{render}}
+\index{render@{render}!Enemy@{Enemy}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_enemy_a5f02011e333d7e5639f13ce43c26f9e8} 
+void Enemy::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the enemy shape and its health bar. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_enemy_a1c5464a51870dacc74f541f948504c90}\index{Enemy@{Enemy}!update@{update}}
+\index{update@{update}!Enemy@{Enemy}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_enemy_a1c5464a51870dacc74f541f948504c90} 
+void Enemy::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Syncs the drawable shape to the current entity position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Enemy.\+hpp\item 
+src/\+client/\+entities/\+Enemy.\+cpp\end{DoxyCompactItemize}

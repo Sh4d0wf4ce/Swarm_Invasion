@@ -6,7 +6,9 @@
 #include <fstream>
 #include <iostream>
 
-// Hero Stat Definition
+/**
+ * @brief Base combat and presentation stats for a playable hero class.
+ */
 struct HeroStats{
     float maxHp;
     float speed;
@@ -14,8 +16,16 @@ struct HeroStats{
     sf::Color color;
     WeaponType defaultWeapon;
 };
+
+/**
+ * @brief Central registry that loads and exposes hero class tuning data from JSON files.
+ */
 class HeroRegistry {
 public:
+    /**
+     * @brief Loads hero configuration from a JSON file and populates the registry.
+     * @param filepath Path to the heroes JSON configuration file.
+     */
     static void loadConfig(const std::string& filepath) {
         std::ifstream file(filepath);
         if (!file.is_open()) {
@@ -55,6 +65,13 @@ public:
         }
         std::cout << "[REGISTRY] Successfully loaded " << filepath << " (" << m_stats.size() << " heroes)\n";
     }
+
+    /**
+     * @brief Returns stats for a given hero class.
+     * @param pClass Player class identifier.
+     * @return Reference to the hero stats for @p pClass.
+     * @throws std::out_of_range if @p pClass was not loaded.
+     */
     static const HeroStats& getStats(PlayerClass pClass) {
         return m_stats.at(pClass);
     }

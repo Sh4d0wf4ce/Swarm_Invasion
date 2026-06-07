@@ -1,0 +1,286 @@
+\doxysection{Ability\+Registry.\+hpp}
+\hypertarget{_ability_registry_8hpp_source}{}\label{_ability_registry_8hpp_source}\index{src/shared/AbilityRegistry.hpp@{src/shared/AbilityRegistry.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <nlohmann/json.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <fstream>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <unordered\_set>}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ Ability\ Stat\ Definitions}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00016\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ \{}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{float}\ cooldown\{0.f\};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{float}\ damage\{0.f\};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{float}\ knockback\{0.f\};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{float}\ radius\{0.f\};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ range\{0.f\};}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ duration\{0.f\};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{float}\ speed\{0.f\};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime\{0.f\};}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{float}\ heal\{0.f\};}
+\DoxyCodeLine{00026\ \ \ \ \ std::unordered\_map<std::string,\ float>\ customParams;}
+\DoxyCodeLine{00027\ \};}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_vanguard_abilities}{VanguardAbilities}}\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Decoy;}
+\DoxyCodeLine{00034\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Dash;}
+\DoxyCodeLine{00035\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ KatanaSlash;}
+\DoxyCodeLine{00036\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Ult;}
+\DoxyCodeLine{00037\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ ShurikenBurst;}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_medic_abilities}{MedicAbilities}}\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Teleport;}
+\DoxyCodeLine{00045\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Orb;}
+\DoxyCodeLine{00046\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Needle;}
+\DoxyCodeLine{00047\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Barrier;}
+\DoxyCodeLine{00048\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Passive;}
+\DoxyCodeLine{00049\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Drone;}
+\DoxyCodeLine{00050\ \};}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00055\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_juggernaut_abilities}{JuggernautAbilities}}\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Dash;}
+\DoxyCodeLine{00057\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Repulsor;}
+\DoxyCodeLine{00058\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ BlackHole;}
+\DoxyCodeLine{00059\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Ult;}
+\DoxyCodeLine{00060\ \};}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_soldier_abilities}{SoldierAbilities}}\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ HealField;}
+\DoxyCodeLine{00067\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Ult;}
+\DoxyCodeLine{00068\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Sprint;}
+\DoxyCodeLine{00069\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ Rocket;}
+\DoxyCodeLine{00070\ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ AutoAim;}
+\DoxyCodeLine{00071\ \};}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00076\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_ability_registry}{AbilityRegistry}}\ \{}
+\DoxyCodeLine{00077\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_ability_registry_a0857abe7485242fc057d6ffac63c31b3}{loadConfig}}(\textcolor{keyword}{const}\ std::string\&\ filepath)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ std::ifstream\ file(filepath);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!file.is\_open())\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Could\ not\ open\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}!\(\backslash\)n"{}};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ nlohmann::json\ json;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ file\ >>\ json;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\textcolor{keyword}{const}\ std::exception\&\ e)\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ ERROR]\ Failed\ to\ parse\ "{}}\ <<\ filepath\ <<\ \textcolor{stringliteral}{"{}:\ "{}}\ <<\ e.what()\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ file.close();}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ m\_stats.clear();}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ m\_vanguard\ =\ \{\};}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ m\_medic\ =\ \{\};}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ m\_juggernaut\ =\ \{\};}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ m\_soldier\ =\ \{\};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ abilityCount\ =\ 0;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [classKey,\ classVal]\ :\ json.items())\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!classVal.is\_object())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (classKey\ ==\ \textcolor{stringliteral}{"{}Vanguard"{}})\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abilityCount\ +=\ \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{loadClass}}(classVal,\ m\_vanguard);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (classKey\ ==\ \textcolor{stringliteral}{"{}Medic"{}})\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abilityCount\ +=\ \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{loadClass}}(classVal,\ m\_medic);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (classKey\ ==\ \textcolor{stringliteral}{"{}Juggernaut"{}})\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abilityCount\ +=\ \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{loadClass}}(classVal,\ m\_juggernaut);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (classKey\ ==\ \textcolor{stringliteral}{"{}Soldier"{}})\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ abilityCount\ +=\ \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{loadClass}}(classVal,\ m\_soldier);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ WARNING]\ Unknown\ class\ key:\ "{}}\ <<\ classKey\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ std::cout\ <<\ \textcolor{stringliteral}{"{}[REGISTRY]\ Successfully\ loaded\ "{}}\ <<\ filepath}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ <<\ \textcolor{stringliteral}{"{}\ (4\ classes,\ "{}}\ <<\ abilityCount\ <<\ \textcolor{stringliteral}{"{}\ abilities)\(\backslash\)n"{}};}
+\DoxyCodeLine{00120\ \ \ \ \ \}}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_vanguard_abilities}{VanguardAbilities}}\&\ \doxymbox{\hyperlink{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5}{vanguard}}()\ \{\ \textcolor{keywordflow}{return}\ m\_vanguard;\ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_medic_abilities}{MedicAbilities}}\&\ \doxymbox{\hyperlink{class_ability_registry_aee96af5d34cf5904cee7065d7c3dbbe5}{medic}}()\ \{\ \textcolor{keywordflow}{return}\ m\_medic;\ \}}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_juggernaut_abilities}{JuggernautAbilities}}\&\ \doxymbox{\hyperlink{class_ability_registry_a082ad4482918f04f4ea9980700643bb5}{juggernaut}}()\ \{\ \textcolor{keywordflow}{return}\ m\_juggernaut;\ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_soldier_abilities}{SoldierAbilities}}\&\ \doxymbox{\hyperlink{class_ability_registry_adc8db79da25b4661a79e9a404ca112e6}{soldier}}()\ \{\ \textcolor{keywordflow}{return}\ m\_soldier;\ \}}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\&\ \doxymbox{\hyperlink{class_ability_registry_ab5474cde4f68cc8106abdefa0e1396a9}{getStats}}(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ type)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ m\_stats.find(type);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ m\_stats.end())\ \textcolor{keywordflow}{return}\ it-\/>second;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_ability_registry_a49df53b229ac1a51986b5367e924be3e}{emptyStats}}();}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{param}}(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ type,\ \textcolor{keyword}{const}\ std::string\&\ key,\ \textcolor{keywordtype}{float}\ defaultVal\ =\ 0.f)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{param}}(\doxymbox{\hyperlink{class_ability_registry_ab5474cde4f68cc8106abdefa0e1396a9}{getStats}}(type),\ key,\ defaultVal);}
+\DoxyCodeLine{00166\ \ \ \ \ \}}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_ability_registry_aeced2d47acd0062b35ec932168906974}{param}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\&\ stats,\ \textcolor{keyword}{const}\ std::string\&\ key,\ \textcolor{keywordtype}{float}\ defaultVal\ =\ 0.f)\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_ability_registry_a9de8ace03bd81fe8a768186eacb1d9d3}{paramFromStats}}(stats,\ key,\ defaultVal);}
+\DoxyCodeLine{00177\ \ \ \ \ \}}
+\DoxyCodeLine{00178\ }
+\DoxyCodeLine{00179\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{comment}{//\ Per-\/Class\ JSON\ Loaders}}
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_ability_registry_ac36a35b7400b624a8def9cdbfff70ba9}{loadClass}}(\textcolor{keyword}{const}\ nlohmann::json\&\ classVal,\ \doxymbox{\hyperlink{struct_vanguard_abilities}{VanguardAbilities}}\&\ out)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ classVal.items())\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!val.is\_object())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ stats\ =\ \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parseEntry}}(val);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Decoy"{}})\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Decoy\ =\ stats;}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::VanguardDecoy]\ =\ stats;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Dash"{}})\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Dash\ =\ stats;}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::VanguardDash]\ =\ stats;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}KatanaSlash"{}})\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.KatanaSlash\ =\ stats;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::VanguardKatanaSlash]\ =\ stats;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Ult"{}})\ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Ult\ =\ stats;}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}ShurikenBurst"{}})\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.ShurikenBurst\ =\ stats;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ WARNING]\ Unknown\ Vanguard\ ability:\ "{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00213\ \ \ \ \ \}}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_ability_registry_a58ea3a5eb1a0228ff4f90f80413c838a}{loadClass}}(\textcolor{keyword}{const}\ nlohmann::json\&\ classVal,\ \doxymbox{\hyperlink{struct_medic_abilities}{MedicAbilities}}\&\ out)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ classVal.items())\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!val.is\_object())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ stats\ =\ \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parseEntry}}(val);}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Teleport"{}})\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Teleport\ =\ stats;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::MedicTeleport]\ =\ stats;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Orb"{}})\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Orb\ =\ stats;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::MedicOrb]\ =\ stats;}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Needle"{}})\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Needle\ =\ stats;}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Barrier"{}})\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Barrier\ =\ stats;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::MedicBarrier]\ =\ stats;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Passive"{}})\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Passive\ =\ stats;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Drone"{}})\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Drone\ =\ stats;}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ WARNING]\ Unknown\ Medic\ ability:\ "{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00247\ \ \ \ \ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_ability_registry_a30bcc6563cf2ca555bd178be9b35ecc8}{loadClass}}(\textcolor{keyword}{const}\ nlohmann::json\&\ classVal,\ \doxymbox{\hyperlink{struct_juggernaut_abilities}{JuggernautAbilities}}\&\ out)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ classVal.items())\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!val.is\_object())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ stats\ =\ \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parseEntry}}(val);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Dash"{}})\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Dash\ =\ stats;}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::JuggernautDash]\ =\ stats;}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Repulsor"{}})\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Repulsor\ =\ stats;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::JuggernautRepulsor]\ =\ stats;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}BlackHole"{}})\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.BlackHole\ =\ stats;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::JuggernautBlackHole]\ =\ stats;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Ult"{}})\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Ult\ =\ stats;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ WARNING]\ Unknown\ Juggernaut\ ability:\ "{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00277\ \ \ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_ability_registry_a2876dd8f38effbbc4fd3e28cdc2b24ab}{loadClass}}(\textcolor{keyword}{const}\ nlohmann::json\&\ classVal,\ \doxymbox{\hyperlink{struct_soldier_abilities}{SoldierAbilities}}\&\ out)\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ val]\ :\ classVal.items())\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!val.is\_object())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ stats\ =\ \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parseEntry}}(val);}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}HealField"{}})\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.HealField\ =\ stats;}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_stats[AbilityType::SoldierHealField]\ =\ stats;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Ult"{}})\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Ult\ =\ stats;}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Sprint"{}})\ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Sprint\ =\ stats;}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}Rocket"{}})\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.Rocket\ =\ stats;}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}AutoAim"{}})\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ out.AutoAim\ =\ stats;}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}[REGISTRY\ WARNING]\ Unknown\ Soldier\ ability:\ "{}}\ <<\ key\ <<\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{comment}{//\ Parsing\ Helpers}}
+\DoxyCodeLine{00311\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ \doxymbox{\hyperlink{class_ability_registry_a03a91980b3c53b756a635353c53b6f1c}{parseEntry}}(\textcolor{keyword}{const}\ nlohmann::json\&\ val)\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ stats;}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ stats.cooldown\ =\ val.value(\textcolor{stringliteral}{"{}cooldown"{}},\ 0.f);}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ stats.damage\ =\ val.value(\textcolor{stringliteral}{"{}damage"{}},\ 0.f);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ stats.knockback\ =\ val.value(\textcolor{stringliteral}{"{}knockback"{}},\ 0.f);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ stats.radius\ =\ val.value(\textcolor{stringliteral}{"{}radius"{}},\ 0.f);}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ stats.range\ =\ val.value(\textcolor{stringliteral}{"{}range"{}},\ 0.f);}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ stats.duration\ =\ val.value(\textcolor{stringliteral}{"{}duration"{}},\ 0.f);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ stats.speed\ =\ val.value(\textcolor{stringliteral}{"{}speed"{}},\ 0.f);}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ stats.lifetime\ =\ val.value(\textcolor{stringliteral}{"{}lifetime"{}},\ 0.f);}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ stats.heal\ =\ val.value(\textcolor{stringliteral}{"{}heal"{}},\ 0.f);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ std::unordered\_set<std::string>\ knownFields\ =\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}cooldown"{}},\ \textcolor{stringliteral}{"{}damage"{}},\ \textcolor{stringliteral}{"{}knockback"{}},\ \textcolor{stringliteral}{"{}radius"{}},\ \textcolor{stringliteral}{"{}range"{}},}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}duration"{}},\ \textcolor{stringliteral}{"{}speed"{}},\ \textcolor{stringliteral}{"{}lifetime"{}},\ \textcolor{stringliteral}{"{}heal"{}}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\&\ [key,\ value]\ :\ val.items())\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (knownFields.count(key)\ ||\ !value.is\_number())\ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ stats.customParams[key]\ =\ value.get<\textcolor{keywordtype}{float}>();}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stats;}
+\DoxyCodeLine{00337\ \ \ \ \ \}}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00346\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_ability_registry_a9de8ace03bd81fe8a768186eacb1d9d3}{paramFromStats}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\&\ stats,\ \textcolor{keyword}{const}\ std::string\&\ key,\ \textcolor{keywordtype}{float}\ defaultVal)\ \{}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ it\ =\ stats.customParams.find(key);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ !=\ stats.customParams.end())\ \textcolor{keywordflow}{return}\ it-\/>second;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}cooldown"{}})\ \textcolor{keywordflow}{return}\ stats.cooldown;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}damage"{}})\ \textcolor{keywordflow}{return}\ stats.damage;}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}knockback"{}})\ \textcolor{keywordflow}{return}\ stats.knockback;}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}radius"{}})\ \textcolor{keywordflow}{return}\ stats.radius;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}range"{}})\ \textcolor{keywordflow}{return}\ stats.range;}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}duration"{}})\ \textcolor{keywordflow}{return}\ stats.duration;}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}speed"{}})\ \textcolor{keywordflow}{return}\ stats.speed;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}lifetime"{}})\ \textcolor{keywordflow}{return}\ stats.lifetime;}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ ==\ \textcolor{stringliteral}{"{}heal"{}})\ \textcolor{keywordflow}{return}\ stats.heal;}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ defaultVal;}
+\DoxyCodeLine{00359\ \ \ \ \ \}}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00365\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\&\ \doxymbox{\hyperlink{class_ability_registry_a49df53b229ac1a51986b5367e924be3e}{emptyStats}}()\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_ability_stats}{AbilityStats}}\ empty\{\};}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ empty;}
+\DoxyCodeLine{00368\ \ \ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \ \ }
+\DoxyCodeLine{00371\ \ \ \ \ \textcolor{comment}{//\ Static\ Storage}}
+\DoxyCodeLine{00372\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ std::unordered\_map<AbilityType,\ AbilityStats>\ m\_stats;}
+\DoxyCodeLine{00373\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{struct_vanguard_abilities}{VanguardAbilities}}\ m\_vanguard;}
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{struct_medic_abilities}{MedicAbilities}}\ m\_medic;}
+\DoxyCodeLine{00375\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{struct_juggernaut_abilities}{JuggernautAbilities}}\ m\_juggernaut;}
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{struct_soldier_abilities}{SoldierAbilities}}\ m\_soldier;}
+\DoxyCodeLine{00377\ \};}
+
+\end{DoxyCode}

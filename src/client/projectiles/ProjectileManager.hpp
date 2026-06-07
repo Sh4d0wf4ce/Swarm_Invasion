@@ -11,11 +11,19 @@
 // ==========================================
 // Collision & Barrier Data
 // ==========================================
+
+/**
+ * @brief Records a confirmed hit between a shooter and a target.
+ */
 struct HitRecord {
     std::uint32_t shooterId;
     std::uint32_t targetId;
     WeaponType weapon;
 };
+
+/**
+ * @brief Snapshot of a medic barrier arc used for server-side collision blocking on the client.
+ */
 struct SectorBarrierSnapshot {
     sf::Vector2f center;
     float facingAngle;
@@ -23,6 +31,13 @@ struct SectorBarrierSnapshot {
     float halfSpan;
     float wallThickness;
 };
+
+/**
+ * @brief Spawns, updates, and renders all active client projectiles.
+ *
+ * Factory-selects derived projectile types from weapon enum values and collects
+ * hit records for locally owned shots.
+ */
 class ProjectileManager{
 public:
     ProjectileManager() = default;

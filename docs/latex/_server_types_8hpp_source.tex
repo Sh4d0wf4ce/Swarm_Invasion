@@ -1,0 +1,109 @@
+\doxysection{Server\+Types.\+hpp}
+\hypertarget{_server_types_8hpp_source}{}\label{_server_types_8hpp_source}\index{src/server/core/ServerTypes.hpp@{src/server/core/ServerTypes.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Network.hpp>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/System.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ Pickups\ \&\ Ability\ Fields}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_energy_cell_info}{EnergyCellInfo}}\ \{}
+\DoxyCodeLine{00016\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{int}\ expValue;}
+\DoxyCodeLine{00018\ \ \ \ \ std::uint32\_t\ targetPlayerId\{0\};}
+\DoxyCodeLine{00019\ \};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_heal_field_info}{HealFieldInfo}}\{}
+\DoxyCodeLine{00025\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{float}\ radius\{100.0f\};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{float}\ duration\{5.0f\};}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{float}\ healPerSecond\{10.0f\};}
+\DoxyCodeLine{00029\ \};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_black_hole_data}{BlackHoleData}}\{}
+\DoxyCodeLine{00035\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{float}\ duration;}
+\DoxyCodeLine{00037\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00038\ \};}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00041\ \textcolor{comment}{//\ Vanguard\ \&\ Medic\ World\ Objects}}
+\DoxyCodeLine{00042\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_decoy_data}{DecoyData}}\{}
+\DoxyCodeLine{00048\ \ \ \ \ sf::Vector2f\ pos;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{float}\ hp;}
+\DoxyCodeLine{00050\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00052\ \};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00057\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_medic_orb_data}{MedicOrbData}}\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00059\ \ \ \ \ sf::Vector2f\ velocity;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{float}\ tickAccumulator\{0.0f\};}
+\DoxyCodeLine{00062\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00063\ \};}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_medic_barrier_data}{MedicBarrierData}}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ sf::Vector2f\ center;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{float}\ facingAngle;}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00072\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00073\ \};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00078\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_medic_drone_data}{MedicDroneData}}\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00081\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00082\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\ state\{MedicDroneState::Orbit\};}
+\DoxyCodeLine{00083\ \ \ \ \ std::uint32\_t\ orbitTargetId\{0\};}
+\DoxyCodeLine{00084\ \ \ \ \ sf::Vector2f\ sentryPos;}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{float}\ orbitAngle\{0.0f\};}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{float}\ healTimer\{0.0f\};}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{float}\ shootTimer\{0.0f\};}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{bool}\ atSentry\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00089\ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00092\ \textcolor{comment}{//\ Server\ Projectiles}}
+\DoxyCodeLine{00093\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00098\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_server_projectile_data}{ServerProjectileData}}\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ std::uint32\_t\ ownerId;}
+\DoxyCodeLine{00100\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00101\ \ \ \ \ sf::Vector2f\ velocity;}
+\DoxyCodeLine{00102\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ weapon;}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{float}\ lifetime;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{float}\ radius;}
+\DoxyCodeLine{00105\ \ \ \ \ std::vector<std::uint32\_t>\ hitEnemies;}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00109\ \textcolor{comment}{//\ Connected\ Player\ State}}
+\DoxyCodeLine{00110\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00115\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_client_info}{ClientInfo}}\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ sf::IpAddress\ ip;}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port;}
+\DoxyCodeLine{00118\ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00119\ \ \ \ \ sf::Clock\ lastActivity;}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{float}\ hp;}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordtype}{float}\ speed;}
+\DoxyCodeLine{00122\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass;}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keywordtype}{float}\ invTimer\{0.0f\};}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{float}\ stealthTimer\{0.0f\};}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordtype}{float}\ hpMultiplier\{1.0f\};}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordtype}{float}\ speedMultiplier\{1.0f\};}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keywordtype}{float}\ damageMultiplier\{1.0f\};}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keywordtype}{float}\ cooldownMultiplier\{1.0f\};}
+\DoxyCodeLine{00129\ \ \ \ \ std::vector<std::string>\ ownedAugments;}
+\DoxyCodeLine{00130\ \};}
+
+\end{DoxyCode}

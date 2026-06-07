@@ -14,17 +14,30 @@
 // ==========================================
 // Combat Events & Status Effects
 // ==========================================
+/**
+ * @brief Active poison damage-over-time effect applied to a server enemy.
+ */
 struct PoisonEffect {
     float remainingTime;
     float damagePerSecond;
 };
 
+/**
+ * @brief Ranged attack event emitted by an enemy for client-side projectile relay.
+ */
 struct EnemyShootEvent{
     sf::Vector2f startPos;
     sf::Vector2f targetPos;
     WeaponType weapon;
 };
 
+
+/**
+ * @brief Abstract authoritative server enemy with shared movement, combat, and status helpers.
+ *
+ * Derived classes implement update() with type-specific behaviour while reusing flow-field
+ * chase, separation, line-of-sight checks, knockback, and poison handling.
+ */
 class ServerEnemy{
 public:
     ServerEnemy(std::uint32_t id, const sf::Vector2f& startPos, EnemyType type);
@@ -40,7 +53,6 @@ public:
         const SpatialGrid& grid
     ) = 0;
 
-    
     std::uint32_t getId() const { return m_id; }
     sf::Vector2f getPosition() const { return m_position; }
     EnemyType getType() const { return m_type; }

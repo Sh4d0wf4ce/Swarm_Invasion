@@ -2,6 +2,9 @@
 
 #include "ServerEnemy.hpp"
 
+/**
+ * @brief Basic melee enemy that chases players using shared flow-field pursuit.
+ */
 class ServerCrawler : public ServerEnemy {
 public:
     using ServerEnemy::ServerEnemy;

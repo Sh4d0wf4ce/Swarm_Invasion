@@ -10,6 +10,12 @@
 #include <map>
 #include <vector>
 
+/**
+ * @brief Base client-side projectile with movement, lifetime, and collision handling.
+ *
+ * Uses weapon registry stats for radius, lifetime, and appearance. Derived classes
+ * override update, render, and collision behavior for weapon-specific effects.
+ */
 class Projectile {
 public:
     Projectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction, WeaponType weapon);

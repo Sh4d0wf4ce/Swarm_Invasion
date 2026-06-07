@@ -4,6 +4,11 @@
 #include "AbilityRegistry.hpp"
 #include <imgui.h>
 
+/**
+ * @brief Initializes Soldier ability cooldowns from the ability registry.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ */
 Soldier::Soldier(std::uint32_t id, const sf::Vector2f& startPos) : Player(id, startPos, PlayerClass::Soldier){
     const auto& a = AbilityRegistry::soldier();
     m_maxCooldownRMB = a.Rocket.cooldown;
@@ -11,6 +16,11 @@ Soldier::Soldier(std::uint32_t id, const sf::Vector2f& startPos) : Player(id, st
 }
 
 
+/**
+ * @brief Updates sprint stamina, ultimate timer, and base player movement.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map used for wall collision checks.
+ */
 void Soldier::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
     const auto& sprint = AbilityRegistry::soldier().Sprint;
     const float sprintMult = AbilityRegistry::param(sprint, "speedMultiplier", 1.6f);
@@ -62,6 +72,12 @@ void Soldier::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& ma
 // Ability inputs
 // ==========================================
 
+/**
+ * @brief Activates the rapid-fire auto-aim ultimate when fully charged.
+ * @param mouseWorldPos Cursor position in world space.
+ * @param engine Client engine for network dispatch.
+ * @param projMgr Projectile manager.
+ */
 void Soldier::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if (m_ultCharge >= m_maxUltCharge) {
         m_isUltActive = true;
@@ -73,6 +89,12 @@ void Soldier::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
     }
 }
 
+/**
+ * @brief Spawns a heal field at the player's position when off cooldown.
+ * @param mouseWorldPos Cursor position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Soldier::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if (m_cooldownE <= 0.0f) {
         m_cooldownE = m_maxCooldownE;
@@ -84,6 +106,12 @@ void Soldier::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Proje
     }
 }
 
+/**
+ * @brief Fires a rocket toward the cursor when off cooldown.
+ * @param mouseWorldPos Target position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager that spawns the rocket.
+ */
 void Soldier::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if(m_cooldownRMB <= 0.0f){
         m_cooldownRMB = m_maxCooldownRMB;
@@ -97,6 +125,13 @@ void Soldier::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pro
     }
 }
 
+/**
+ * @brief Fires the default weapon or triggers reload when out of ammo.
+ * @param mouseWorldPos Target position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager that spawns bullets.
+ * @param enemies Live enemy map used for ultimate auto-aim targeting.
+ */
 void Soldier::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies){
     if(m_ammo > 0 && !m_isReloading &&  m_cooldownLMB <= 0.0f){
         m_cooldownLMB = m_fireRate * m_fireRateMultiplier;
@@ -130,6 +165,10 @@ void Soldier::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pro
 // ==========================================
 // UI panel
 // ==========================================
+
+/**
+ * @brief Renders the sprint stamina bar in the left HUD panel.
+ */
 void Soldier::renderShiftSkill(){
     ImGui::Text("SHIFT");
     float staminaProgress = m_stamina / m_maxStamina;

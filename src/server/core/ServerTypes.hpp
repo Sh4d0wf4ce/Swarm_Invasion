@@ -8,12 +8,19 @@
 // ==========================================
 // Pickups & Ability Fields
 // ==========================================
+
+/**
+ * @brief Experience pickup that magnetizes toward a nearby player.
+ */
 struct EnergyCellInfo {
     sf::Vector2f position;
     int expValue;
     std::uint32_t targetPlayerId{0};
 };
 
+/**
+ * @brief Temporary area that heals players standing inside its radius.
+ */
 struct HealFieldInfo{
     sf::Vector2f position;
     float radius{100.0f};
@@ -21,6 +28,9 @@ struct HealFieldInfo{
     float healPerSecond{10.0f};
 };
 
+/**
+ * @brief Juggernaut black hole that pulls and damages enemies over time.
+ */
 struct BlackHoleData{
     sf::Vector2f position;
     float duration;
@@ -30,6 +40,10 @@ struct BlackHoleData{
 // ==========================================
 // Vanguard & Medic World Objects
 // ==========================================
+
+/**
+ * @brief Vanguard decoy entity that mimics a player target for enemy AI.
+ */
 struct DecoyData{
     sf::Vector2f pos;
     float hp;
@@ -37,6 +51,9 @@ struct DecoyData{
     float lifetime;
 };
 
+/**
+ * @brief Medic orb that bounces off walls and applies periodic heal/damage ticks.
+ */
 struct MedicOrbData {
     sf::Vector2f position;
     sf::Vector2f velocity;
@@ -45,6 +62,9 @@ struct MedicOrbData {
     std::uint32_t ownerId;
 };
 
+/**
+ * @brief Medic arc barrier that knocks back enemies intersecting its wall segment.
+ */
 struct MedicBarrierData {
     sf::Vector2f center;
     float facingAngle;
@@ -52,6 +72,9 @@ struct MedicBarrierData {
     std::uint32_t ownerId;
 };
 
+/**
+ * @brief Medic support drone that orbits allies or holds a sentry position.
+ */
 struct MedicDroneData {
     sf::Vector2f position;
     float lifetime;
@@ -68,6 +91,10 @@ struct MedicDroneData {
 // ==========================================
 // Server Projectiles
 // ==========================================
+
+/**
+ * @brief Authoritative server-side projectile used for medic needle and drone blaster simulation.
+ */
 struct ServerProjectileData {
     std::uint32_t ownerId;
     sf::Vector2f position;
@@ -81,6 +108,10 @@ struct ServerProjectileData {
 // ==========================================
 // Connected Player State
 // ==========================================
+
+/**
+ * @brief Runtime state for a connected client tracked by the server.
+ */
 struct ClientInfo {
     sf::IpAddress ip;
     unsigned short port;

@@ -2,6 +2,9 @@
 
 #include "ServerEnemy.hpp"
 
+/**
+ * @brief Ranged enemy that fires acid spit at distance and falls back to melee when blocked.
+ */
 class ServerSpitter : public ServerEnemy {
 public:
     using ServerEnemy::ServerEnemy;

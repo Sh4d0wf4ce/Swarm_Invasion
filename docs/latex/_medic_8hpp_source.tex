@@ -1,0 +1,58 @@
+\doxysection{Medic.\+hpp}
+\hypertarget{_medic_8hpp_source}{}\label{_medic_8hpp_source}\index{src/client/entities/Medic.hpp@{src/client/entities/Medic.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Player.hpp"{}}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_medic_a03225a444f361b792f0b67b6f8200bc7}{Medic}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}\ \{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_medic_a03225a444f361b792f0b67b6f8200bc7}{Medic}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_adc9d64e9ed40f90c4fa643ed42fe880a}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_ad3cf1e5436ef6a07526e6d25716d19f1}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{comment}{//\ Ability\ Input\ Hooks}}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a6002addbbaac2d57609632b9c78205fe}{onLMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\&\ enemies)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a61f123c9c4468d32569eea1cccbfe285}{onRMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_ad967370498efb89a6300685aabddc682}{onShift}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a585b6e8fd973d882bb88398b73118413}{onE}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_ac271dedc199f960c3e81244aafdcbf22}{onQ}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{comment}{//\ Drone\ Ultimate\ State}}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_addcc68336844a4e8d18b213efcd28792}{setDroneState}}(\textcolor{keywordtype}{bool}\ active,\ \textcolor{keywordtype}{float}\ lifetime);}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ hasActiveDrone()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_droneActive;\ \}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{bool}\ isTeleportAnimating()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_teleportPhase\ !=\ TeleportPhase::None;\ \}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ Remote\ Sync\ \&\ Combat}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_ad9af4567482ec131b99810acb271e122}{updateRemoteVisuals}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a68c3ef5e6c32156590849f7a33cea16f}{playRemoteAbility}}(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ ability,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_aaa55240f226b147da7f82aa5d4f9e373}{renderQSkill}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00036\ \ \ \ \ std::vector<AbilityHitRecord>\ \doxymbox{\hyperlink{class_medic_a8912d566cb0b9af5017dbace35f25ee7}{checkAbilityHits}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//\ Teleport\ System}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{enum\ class}\ TeleportPhase\ \{\ None,\ FadeOut,\ FadeIn\ \};}
+\DoxyCodeLine{00041\ \ \ \ \ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_medic_a4d3b9f9ee697d99dbcdccc6860304f20}{computeTeleportTarget}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map,\ sf::Vector2f\&\ outTarget);}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a7831d95830764dc47853ece4c14c1df1}{tryStartTeleport}}(\textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map);}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_medic_a0dedca166b64360294df6eb1ab69a5a7}{advanceTeleportAnimation}}(\textcolor{keywordtype}{float}\ dt);}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ TeleportPhase\ m\_teleportPhase\{TeleportPhase::None\};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_teleportAnimTime\{0.0f\};}
+\DoxyCodeLine{00048\ \ \ \ \ sf::Vector2f\ m\_teleportTarget;}
+\DoxyCodeLine{00049\ \ \ \ \ sf::Color\ m\_baseFillColor;}
+\DoxyCodeLine{00050\ \ \ \ \ sf::Color\ m\_baseOutlineColor;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_shiftRequested\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00052\ \ \ \ \ sf::Vector2f\ m\_shiftMousePos;}
+\DoxyCodeLine{00053\ \ \ \ \ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}*\ m\_shiftEngine\{\textcolor{keyword}{nullptr}\};}
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Drone\ Runtime\ State}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_droneActive\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_droneLifetime\{0.0f\};}
+\DoxyCodeLine{00059\ \};}
+
+\end{DoxyCode}

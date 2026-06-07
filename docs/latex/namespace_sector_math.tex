@@ -1,0 +1,98 @@
+\doxysection{Sector\+Math Namespace Reference}
+\hypertarget{namespace_sector_math}{}\label{namespace_sector_math}\index{SectorMath@{SectorMath}}
+
+
+Utility functions for angle normalization and arc-\/based collision geometry.  
+
+
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+float \doxymbox{\hyperlink{namespace_sector_math_a519943d6d8bf724360104788da66a474}{normalize\+Angle}} (float radians)
+\begin{DoxyCompactList}\small\item\em Wraps a radian angle into the range \+[-\/pi, pi]\+. \end{DoxyCompactList}\item 
+sf::\+\+Vector2f \doxymbox{\hyperlink{namespace_sector_math_a28f62f8579f3d28236f20dedeaf6b596}{arc\+Circle\+Center}} (sf::\+\+Vector2f origin, float facing\+Angle, float arc\+Radius, float standoff)
+\begin{DoxyCompactList}\small\item\em Computes the center of an arc circle given an origin, facing direction, and standoff distance. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{namespace_sector_math_a8761564265c0639095a70b29e2b4d775}{is\+In\+Arc\+Wall}} (sf::\+\+Vector2f center, float facing\+Angle, float arc\+Radius, float half\+Span, float wall\+Thickness, sf::\+\+Vector2f point, float point\+Radius)
+\begin{DoxyCompactList}\small\item\em Tests whether a circular point intersects a thick arc wall segment. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Utility functions for angle normalization and arc-\/based collision geometry. 
+
+Used by abilities and barriers that test whether entities lie within a curved wall segment. 
+
+\label{doc-func-members}
+\Hypertarget{namespace_sector_math_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_sector_math_a28f62f8579f3d28236f20dedeaf6b596}\index{SectorMath@{SectorMath}!arcCircleCenter@{arcCircleCenter}}
+\index{arcCircleCenter@{arcCircleCenter}!SectorMath@{SectorMath}}
+\doxysubsubsection{\texorpdfstring{arcCircleCenter()}{arcCircleCenter()}}
+{\footnotesize\ttfamily \label{namespace_sector_math_a28f62f8579f3d28236f20dedeaf6b596} 
+sf::\+\+Vector2f Sector\+Math::\+arc\+Circle\+Center (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{origin}{, }\item[{float}]{facing\+Angle}{, }\item[{float}]{arc\+Radius}{, }\item[{float}]{standoff}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Computes the center of an arc circle given an origin, facing direction, and standoff distance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em origin} & World-\/space origin point of the arc owner. \\
+\hline
+{\em facing\+Angle} & Direction the arc faces, in radians. \\
+\hline
+{\em arc\+Radius} & Outer radius of the arc. \\
+\hline
+{\em standoff} & Distance from the arc edge back toward the origin. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+World-\/space center of the arc circle. 
+\end{DoxyReturn}
+\Hypertarget{namespace_sector_math_a8761564265c0639095a70b29e2b4d775}\index{SectorMath@{SectorMath}!isInArcWall@{isInArcWall}}
+\index{isInArcWall@{isInArcWall}!SectorMath@{SectorMath}}
+\doxysubsubsection{\texorpdfstring{isInArcWall()}{isInArcWall()}}
+{\footnotesize\ttfamily \label{namespace_sector_math_a8761564265c0639095a70b29e2b4d775} 
+bool Sector\+Math::\+is\+In\+Arc\+Wall (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{center}{, }\item[{float}]{facing\+Angle}{, }\item[{float}]{arc\+Radius}{, }\item[{float}]{half\+Span}{, }\item[{float}]{wall\+Thickness}{, }\item[{sf::\+\+Vector2f}]{point}{, }\item[{float}]{point\+Radius}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Tests whether a circular point intersects a thick arc wall segment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em center} & World-\/space center of the arc circle. \\
+\hline
+{\em facing\+Angle} & Direction the arc faces, in radians. \\
+\hline
+{\em arc\+Radius} & Outer radius of the arc. \\
+\hline
+{\em half\+Span} & Half angular span of the arc, in radians. \\
+\hline
+{\em wall\+Thickness} & Thickness of the arc wall. \\
+\hline
+{\em point} & World-\/space center of the tested point. \\
+\hline
+{\em point\+Radius} & Collision radius of the tested point. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if {\ttfamily point} overlaps the arc wall; false otherwise. 
+\end{DoxyReturn}
+\Hypertarget{namespace_sector_math_a519943d6d8bf724360104788da66a474}\index{SectorMath@{SectorMath}!normalizeAngle@{normalizeAngle}}
+\index{normalizeAngle@{normalizeAngle}!SectorMath@{SectorMath}}
+\doxysubsubsection{\texorpdfstring{normalizeAngle()}{normalizeAngle()}}
+{\footnotesize\ttfamily \label{namespace_sector_math_a519943d6d8bf724360104788da66a474} 
+float Sector\+Math::\+normalize\+Angle (\begin{DoxyParamCaption}\item[{float}]{radians}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Wraps a radian angle into the range \+[-\/pi, pi]\+. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em radians} & Input angle in radians. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Normalized angle in radians. 
+\end{DoxyReturn}

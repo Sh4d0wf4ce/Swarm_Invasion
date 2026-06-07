@@ -7,7 +7,9 @@
 #include <iostream>
 
 
-// Enemy Stat Definition
+/**
+ * @brief Combat and presentation stats for an enemy archetype.
+ */
 struct EnemyStats{
     float maxHp;
     float speed;
@@ -16,8 +18,16 @@ struct EnemyStats{
     float attackCooldown;
     sf::Color color;
 };
+
+/**
+ * @brief Central registry that loads and exposes enemy tuning data from JSON files.
+ */
 class EnemyRegistry {
 public:
+    /**
+     * @brief Loads enemy configuration from a JSON file and populates the registry.
+     * @param filepath Path to the enemies JSON configuration file.
+     */
     static void loadConfig(const std::string& filepath) {
         std::ifstream file(filepath);
         if (!file.is_open()) {
@@ -50,6 +60,13 @@ public:
         }
         std::cout << "[REGISTRY] Successfully loaded " << filepath << " (" << m_stats.size() << " enemies)\n";
     }
+
+    /**
+     * @brief Returns stats for a given enemy type.
+     * @param eType Enemy type identifier.
+     * @return Reference to the enemy stats for @p eType.
+     * @throws std::out_of_range if @p eType was not loaded.
+     */
     static const EnemyStats& getStats(EnemyType eType) {
         return m_stats.at(eType);
     }

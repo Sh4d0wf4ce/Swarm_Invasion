@@ -1,0 +1,201 @@
+\doxysection{Map\+Generator Class Reference}
+\hypertarget{class_map_generator}{}\label{class_map_generator}\index{MapGenerator@{MapGenerator}}
+
+
+Procedural cave-\/style map generator with wall smoothing and collision queries.  
+
+
+
+
+{\ttfamily \+\#include $<$Map\+Generator.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_map_generator_a7c13719f899356c5c6a58aafd4b26f40}{Map\+Generator}} (int width, int height)
+\begin{DoxyCompactList}\small\item\em Constructs a map generator with the given tile grid dimensions. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_map_generator_a5990c5d9c86209b2c996ced7e4aec639}{generate}} (int seed)
+\begin{DoxyCompactList}\small\item\em Generates a new map layout using the given seed. \end{DoxyCompactList}\item 
+Tile\+Type \doxymbox{\hyperlink{class_map_generator_a454524339a7b77a343b8a02c4798aa56}{get\+Tile}} (int x, int y) const
+\begin{DoxyCompactList}\small\item\em Returns the tile type at grid coordinates. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{class_map_generator_a20f631ba77f8cb4e1444812a8cc5c0df}{get\+Width}} () const
+\begin{DoxyCompactList}\small\item\em Returns the map width in tiles. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{class_map_generator_a6265de7d35d74a20ef3d9132c4dd3c95}{get\+Height}} () const
+\begin{DoxyCompactList}\small\item\em Returns the map height in tiles. \end{DoxyCompactList}\item 
+bool \doxymbox{\hyperlink{class_map_generator_a7200856b9050c19629ad5f96ae0e86e0}{check\+Collision}} (const sf::\+\+Vector2f \&pos, float radius) const
+\begin{DoxyCompactList}\small\item\em Tests whether a circular entity overlaps any wall tile. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_map_generator_ac500f009bf2fa8a0cdf0b20edaac728c}{smooth\+Map}} ()
+\begin{DoxyCompactList}\small\item\em Applies one cellular-\/automata smoothing pass to the tile grid. \end{DoxyCompactList}\item 
+int \doxymbox{\hyperlink{class_map_generator_a0fcf013307cd23260e91e58714dbd227}{get\+Surrounding\+Wall\+Count}} (int gridX, int gridY) const
+\begin{DoxyCompactList}\small\item\em Counts wall tiles in the 3x3 neighborhood around a grid cell. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_map_generator_a69e206419dc7ed915ef2543b8cf55102}\label{class_map_generator_a69e206419dc7ed915ef2543b8cf55102} 
+int {\bfseries m\+\_\+width}
+\item 
+\Hypertarget{class_map_generator_a87ecc2ae732bffbd9e2951f6921374b3}\label{class_map_generator_a87ecc2ae732bffbd9e2951f6921374b3} 
+int {\bfseries m\+\_\+height}
+\item 
+\Hypertarget{class_map_generator_a009342e4de04ecb7386e88e12292fda5}\label{class_map_generator_a009342e4de04ecb7386e88e12292fda5} 
+int {\bfseries m\+\_\+fill\+Percent}
+\item 
+\Hypertarget{class_map_generator_a98767b3f0d7e8c8c7ab29998da6eb781}\label{class_map_generator_a98767b3f0d7e8c8c7ab29998da6eb781} 
+std::\+vector$<$ std::\+vector$<$ Tile\+Type $>$ $>$ {\bfseries m\+\_\+map}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Procedural cave-\/style map generator with wall smoothing and collision queries. 
+
+\label{doc-constructors}
+\Hypertarget{class_map_generator_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_map_generator_a7c13719f899356c5c6a58aafd4b26f40}\index{MapGenerator@{MapGenerator}!MapGenerator@{MapGenerator}}
+\index{MapGenerator@{MapGenerator}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{MapGenerator()}{MapGenerator()}}
+{\footnotesize\ttfamily \label{class_map_generator_a7c13719f899356c5c6a58aafd4b26f40} 
+Map\+Generator::\+\+Map\+Generator (\begin{DoxyParamCaption}\item[{int}]{width}{, }\item[{int}]{height}{}\end{DoxyParamCaption})}
+
+
+
+Constructs a map generator with the given tile grid dimensions. 
+
+Constructs a map generator and initializes an empty floor grid.
+
+
+\begin{DoxyParams}{Parameters}
+{\em width} & Map width in tiles. \\
+\hline
+{\em height} & Map height in tiles. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_map_generator_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_map_generator_a7200856b9050c19629ad5f96ae0e86e0}\index{MapGenerator@{MapGenerator}!checkCollision@{checkCollision}}
+\index{checkCollision@{checkCollision}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{checkCollision()}{checkCollision()}}
+{\footnotesize\ttfamily \label{class_map_generator_a7200856b9050c19629ad5f96ae0e86e0} 
+bool Map\+Generator::\+check\+Collision (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{pos}{, }\item[{float}]{radius}{}\end{DoxyParamCaption}) const}
+
+
+
+Tests whether a circular entity overlaps any wall tile. 
+
+Tests whether a circular entity overlaps any wall tile using corner sample points.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & World-\/space center position of the entity. \\
+\hline
+{\em radius} & Collision radius of the entity in world units. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if any sample point intersects a wall tile. 
+\end{DoxyReturn}
+\Hypertarget{class_map_generator_a5990c5d9c86209b2c996ced7e4aec639}\index{MapGenerator@{MapGenerator}!generate@{generate}}
+\index{generate@{generate}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{generate()}{generate()}}
+{\footnotesize\ttfamily \label{class_map_generator_a5990c5d9c86209b2c996ced7e4aec639} 
+void Map\+Generator::\+generate (\begin{DoxyParamCaption}\item[{int}]{seed}{}\end{DoxyParamCaption})}
+
+
+
+Generates a new map layout using the given seed. 
+
+Generates a cave-\/like map from random wall fill, smoothing passes, and a cleared spawn area.
+
+
+\begin{DoxyParams}{Parameters}
+{\em seed} & Random seed for reproducible map generation. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_map_generator_a6265de7d35d74a20ef3d9132c4dd3c95}\index{MapGenerator@{MapGenerator}!getHeight@{getHeight}}
+\index{getHeight@{getHeight}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{getHeight()}{getHeight()}}
+{\footnotesize\ttfamily \label{class_map_generator_a6265de7d35d74a20ef3d9132c4dd3c95} 
+int Map\+Generator::\+get\+Height (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the map height in tiles. 
+
+\begin{DoxyReturn}{Returns}
+Map height. 
+\end{DoxyReturn}
+\Hypertarget{class_map_generator_a0fcf013307cd23260e91e58714dbd227}\index{MapGenerator@{MapGenerator}!getSurroundingWallCount@{getSurroundingWallCount}}
+\index{getSurroundingWallCount@{getSurroundingWallCount}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{getSurroundingWallCount()}{getSurroundingWallCount()}}
+{\footnotesize\ttfamily \label{class_map_generator_a0fcf013307cd23260e91e58714dbd227} 
+int Map\+Generator::\+get\+Surrounding\+Wall\+Count (\begin{DoxyParamCaption}\item[{int}]{gridX}{, }\item[{int}]{gridY}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Counts wall tiles in the 3x3 neighborhood around a grid cell. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em gridX} & Tile column index. \\
+\hline
+{\em gridY} & Tile row index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Number of neighboring wall tiles, treating out-\/of-\/bounds as walls. 
+\end{DoxyReturn}
+\Hypertarget{class_map_generator_a454524339a7b77a343b8a02c4798aa56}\index{MapGenerator@{MapGenerator}!getTile@{getTile}}
+\index{getTile@{getTile}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{getTile()}{getTile()}}
+{\footnotesize\ttfamily \label{class_map_generator_a454524339a7b77a343b8a02c4798aa56} 
+Tile\+Type Map\+Generator::\+get\+Tile (\begin{DoxyParamCaption}\item[{int}]{x}{, }\item[{int}]{y}{}\end{DoxyParamCaption}) const}
+
+
+
+Returns the tile type at grid coordinates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em x} & Tile column index. \\
+\hline
+{\em y} & Tile row index. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Tile at ({\ttfamily x}, {\ttfamily y}), or Tile\+Type::\+\+Wall for out-\/of-\/bounds coordinates. 
+\end{DoxyReturn}
+\Hypertarget{class_map_generator_a20f631ba77f8cb4e1444812a8cc5c0df}\index{MapGenerator@{MapGenerator}!getWidth@{getWidth}}
+\index{getWidth@{getWidth}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{getWidth()}{getWidth()}}
+{\footnotesize\ttfamily \label{class_map_generator_a20f631ba77f8cb4e1444812a8cc5c0df} 
+int Map\+Generator::\+get\+Width (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the map width in tiles. 
+
+\begin{DoxyReturn}{Returns}
+Map width. 
+\end{DoxyReturn}
+\Hypertarget{class_map_generator_ac500f009bf2fa8a0cdf0b20edaac728c}\index{MapGenerator@{MapGenerator}!smoothMap@{smoothMap}}
+\index{smoothMap@{smoothMap}!MapGenerator@{MapGenerator}}
+\doxysubsubsection{\texorpdfstring{smoothMap()}{smoothMap()}}
+{\footnotesize\ttfamily \label{class_map_generator_ac500f009bf2fa8a0cdf0b20edaac728c} 
+void Map\+Generator::\+smooth\+Map (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Applies one cellular-\/automata smoothing pass to the tile grid. 
+
+Applies cellular-\/automata smoothing to reduce noise in the tile grid. 
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Map\+Generator.\+hpp\item 
+src/\+shared/\+Map\+Generator.\+cpp\end{DoxyCompactItemize}

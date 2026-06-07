@@ -1,0 +1,52 @@
+\doxysection{Entity.\+hpp}
+\hypertarget{_entity_8hpp_source}{}\label{_entity_8hpp_source}\index{src/client/entities/Entity.hpp@{src/client/entities/Entity.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{enum\ class}\ Faction\{}
+\DoxyCodeLine{00013\ \ \ \ \ Players,}
+\DoxyCodeLine{00014\ \ \ \ \ Enemies,}
+\DoxyCodeLine{00015\ \ \ \ \ None,}
+\DoxyCodeLine{00016\ \};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{class\ }Entity\{}
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00027\ \ \ \ \ Entity(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos):\ m\_id(\textcolor{keywordtype}{id}),\ m\_position(startPos)\ \{\}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{virtual}\ \string~Entity()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ update(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ =\ 0;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ render(sf::RenderTarget\&\ target)\ =\ 0;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ }
+\DoxyCodeLine{00035\ \ \ \ \ std::uint32\_t\ getId()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_id;\ \}}
+\DoxyCodeLine{00036\ \ \ \ \ sf::Vector2f\ getPosition()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_position;\ \}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{float}\ getHp()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_hp;\ \}}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{void}\ setPosition(\textcolor{keyword}{const}\ sf::Vector2f\&\ \ pos)\ \{\ m\_position\ =\ pos;\ \}\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{void}\ setHp(\textcolor{keywordtype}{float}\ hp)\{\ m\_hp\ =\ hp;\ \}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ setMaxHp(\textcolor{keywordtype}{float}\ maxHp)\{\ m\_maxHp\ =\ maxHp;\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{virtual}\ Faction\ getFaction()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{float}\ getRadius()\ \textcolor{keyword}{const}\ =\ 0;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00048\ \ \ \ \ std::uint32\_t\ m\_id;}
+\DoxyCodeLine{00049\ \ \ \ \ sf::Vector2f\ m\_position;}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_hp\{100.0f\};}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxHp\{100.0f\};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{drawHealthBar}}(sf::RenderTarget\&\ target,\ \textcolor{keywordtype}{float}\ yOffset);}
+\DoxyCodeLine{00056\ \};}
+
+\end{DoxyCode}

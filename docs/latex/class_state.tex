@@ -1,0 +1,136 @@
+\doxysection{State Class Reference}
+\hypertarget{class_state}{}\label{class_state}\index{State@{State}}
+
+
+Abstract base class for client application states.  
+
+
+
+
+{\ttfamily \+\#include $<$State.\+hpp$>$}
+
+Inheritance diagram for State:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}} (\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine)
+\begin{DoxyCompactList}\small\item\em Constructs a state bound to the given client engine. \end{DoxyCompactList}\item 
+\Hypertarget{class_state_a783d52422b544bb226e13de8ecfd6ad6}\label{class_state_a783d52422b544bb226e13de8ecfd6ad6} 
+virtual {\bfseries \texorpdfstring{$\sim$}{\string~}\+State} ()=default
+\begin{DoxyCompactList}\small\item\em Virtual destructor for polymorphic state cleanup. \end{DoxyCompactList}\item 
+\Hypertarget{class_state_aaca84137803ca2e0ad40b427e82d0578}\label{class_state_aaca84137803ca2e0ad40b427e82d0578} 
+virtual void {\bfseries on\+Enter} ()
+\begin{DoxyCompactList}\small\item\em Called when this state becomes active after a state change. \end{DoxyCompactList}\item 
+\Hypertarget{class_state_a7055a47dde6748dc8ba8724f8e2feb90}\label{class_state_a7055a47dde6748dc8ba8724f8e2feb90} 
+virtual void {\bfseries on\+Exit} ()
+\begin{DoxyCompactList}\small\item\em Called when this state is about to be replaced or destroyed. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_state_a22cfb41087635bce529d9061412e52be}{handle\+Packet}} (\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} type, sf::\+\+Packet \&packet)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_state_a91f7c1a787e7947922ac2837c1169cee}{handle\+Input}} (const sf::\+\+Event \&event)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_state_ad7bff3099b1604264afc0bfc346ca6af}{update}} (sf::\+\+Time delta\+Time)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_state_a71f5105bcdc39481be7684d853fe12e9}{render}} ()=0
+\item 
+virtual void \doxymbox{\hyperlink{class_state_a635dca032e7d887ed1599977e7b01e90}{render\+UI}} ()
+\begin{DoxyCompactList}\small\item\em Renders Im\+Gui overlays; default implementation draws nothing. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_state_ab485c6d3c3e4b5f92189275196db9e44}\label{class_state_ab485c6d3c3e4b5f92189275196db9e44} 
+\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \& {\bfseries m\+\_\+engine}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract base class for client application states. 
+
+Each state implements the game loop hooks invoked by \doxylink{class_client_engine}{Client\+Engine}:\+ packet handling, input, simulation update, world rendering, and UI. States receive a reference to the owning engine for window and network access. 
+
+\label{doc-constructors}
+\Hypertarget{class_state_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_state_af36d908fae0ce1e483773f15a1675466}\index{State@{State}!State@{State}}
+\index{State@{State}!State@{State}}
+\doxysubsubsection{\texorpdfstring{State()}{State()}}
+{\footnotesize\ttfamily \label{class_state_af36d908fae0ce1e483773f15a1675466} 
+State::\+\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a state bound to the given client engine. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em engine} & Client engine that owns and drives this state. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_state_a91f7c1a787e7947922ac2837c1169cee}\index{State@{State}!handleInput@{handleInput}}
+\index{handleInput@{handleInput}!State@{State}}
+\doxysubsubsection{\texorpdfstring{handleInput()}{handleInput()}}
+{\footnotesize\ttfamily \label{class_state_a91f7c1a787e7947922ac2837c1169cee} 
+virtual void State::\+handle\+Input (\begin{DoxyParamCaption}\item[{const sf::\+\+Event \&}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_game_state_aafe14518dbd547227d20bb7e076bf4ef}{Game\+State}}, and \doxymbox{\hyperlink{class_lobby_state_a61a006091c084aa2620828c34c35dc8a}{Lobby\+State}}.
+
+\Hypertarget{class_state_a22cfb41087635bce529d9061412e52be}\index{State@{State}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!State@{State}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}}
+{\footnotesize\ttfamily \label{class_state_a22cfb41087635bce529d9061412e52be} 
+virtual void State::\+handle\+Packet (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}}}]{type}{, }\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_game_state_a36a1a733d0cd9cbb1cc65013b88a4f2f}{Game\+State}}, and \doxymbox{\hyperlink{class_lobby_state_a5f943ab150a77c0b943f0abeb2fafaea}{Lobby\+State}}.
+
+\Hypertarget{class_state_a71f5105bcdc39481be7684d853fe12e9}\index{State@{State}!render@{render}}
+\index{render@{render}!State@{State}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_state_a71f5105bcdc39481be7684d853fe12e9} 
+virtual void State::\+render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_game_state_a2c36ada0cae89f91d956e2c91b070893}{Game\+State}}, and \doxymbox{\hyperlink{class_lobby_state_a34d12bde8ce40146356971190ed4b28b}{Lobby\+State}}.
+
+\Hypertarget{class_state_a635dca032e7d887ed1599977e7b01e90}\index{State@{State}!renderUI@{renderUI}}
+\index{renderUI@{renderUI}!State@{State}}
+\doxysubsubsection{\texorpdfstring{renderUI()}{renderUI()}}
+{\footnotesize\ttfamily \label{class_state_a635dca032e7d887ed1599977e7b01e90} 
+virtual void State::\+render\+UI (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Renders Im\+Gui overlays; default implementation draws nothing. 
+
+
+
+Reimplemented in \doxymbox{\hyperlink{class_game_state_ac6ad0f0f10145a53e481d8669d7eb58a}{Game\+State}}, and \doxymbox{\hyperlink{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}{Lobby\+State}}.
+
+\Hypertarget{class_state_ad7bff3099b1604264afc0bfc346ca6af}\index{State@{State}!update@{update}}
+\index{update@{update}!State@{State}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_state_ad7bff3099b1604264afc0bfc346ca6af} 
+virtual void State::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_game_state_a886a5a8d88e20b14c8b08fc309fd8113}{Game\+State}}, and \doxymbox{\hyperlink{class_lobby_state_a37f8aaf7ebb0b33cd71e4b30b89b2182}{Lobby\+State}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+states/\+State.\+hpp\end{DoxyCompactItemize}

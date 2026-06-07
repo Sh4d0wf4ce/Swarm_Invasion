@@ -1,0 +1,41 @@
+\doxysection{Heal\+Field.\+hpp}
+\hypertarget{_heal_field_8hpp_source}{}\label{_heal_field_8hpp_source}\index{src/client/entities/HealField.hpp@{src/client/entities/HealField.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_heal_field_a07556d2f08b24fdd34432259eb406956}{HealField}}\ :\ \textcolor{keyword}{public}\ Entity\{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{class_heal_field_a07556d2f08b24fdd34432259eb406956}{HealField}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keywordtype}{float}\ duration,\ \textcolor{keywordtype}{float}\ radius)\ :\ Entity(id,\ startPos),\ m\_radius(radius)\{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ m\_hp\ =\ duration;}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ duration;}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ m\_shape.setRadius(radius);}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ m\_shape.setOrigin(\{radius,\ radius\});}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_shape.setPosition(startPos);}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ m\_shape.setFillColor(sf::Color(0,\ 255,\ 0,\ 50));}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ m\_shape.setOutlineColor(sf::Color(0,\ 255,\ 0,\ 150));}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ m\_shape.setOutlineThickness(2.0f);}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_heal_field_a24aa54d6d5a6efddaa9e9f6b08600842}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \{\ m\_hp\ -\/=\ deltaTime.asSeconds();\ \}\ ;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_heal_field_ac20d32aede869a5b18dd200fcb27dff6}{render}}(sf::RenderTarget\&\ target)\ \{\ target.draw(m\_shape);\ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00050\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_heal_field_af3a8afb3e9fe53cbfa0a155140e14051}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Players;\ \}}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_heal_field_a1c73e8ebb4c6f5c5f81b3d194148167e}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ m\_radius;\ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_heal_field_a0b12cfee98c27f25fd94fd339ce8f7ee}{getHealPerSecond}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_healPerSecond;\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_healPerSecond\{10.0f\};}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_radius;}
+\DoxyCodeLine{00068\ \ \ \ \ sf::CircleShape\ m\_shape;}
+\DoxyCodeLine{00069\ \};}
+
+\end{DoxyCode}

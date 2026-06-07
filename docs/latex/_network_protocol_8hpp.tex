@@ -1,0 +1,423 @@
+\doxysection{src/\+shared/\+\+Network\+Protocol.hpp File Reference}
+\hypertarget{_network_protocol_8hpp}{}\label{_network_protocol_8hpp}\index{src/shared/NetworkProtocol.hpp@{src/shared/NetworkProtocol.hpp}}
+
+
+Shared network packet types, game entity enums, and SFML packet serialization operators.  
+
+
+{\ttfamily \+\#include $<$SFML/\+\+Network.\+hpp$>$}\newline
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}\label{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} :\+ std::\+uint8\+\_\+t \{ \newline
+{\bfseries Ping}
+, {\bfseries Pong}
+, {\bfseries Player\+Position}
+, {\bfseries World\+State}
+, \newline
+{\bfseries Join\+Request}
+, {\bfseries Join\+Accept}
+, {\bfseries Player\+Shoots}
+, {\bfseries Player\+Died}
+, \newline
+{\bfseries Player\+Disconnect}
+, {\bfseries Level\+Up\+Triggered}
+, {\bfseries Level\+Up\+Offer}
+, {\bfseries Upgrade\+Chosen}
+, \newline
+{\bfseries Upgrade\+Resolved}
+, {\bfseries Card\+Selected}
+, {\bfseries Player\+Upgrade\+Multipliers}
+, {\bfseries Enemy\+Shoots}
+, \newline
+{\bfseries Entity\+Hit}
+, {\bfseries Spawn\+Heal\+Field}
+, {\bfseries Spawn\+Black\+Hole}
+, {\bfseries Spawn\+Decoy}
+, \newline
+{\bfseries Spawn\+Medic\+Orb}
+, {\bfseries Spawn\+Medic\+Barrier}
+, {\bfseries Spawn\+Medic\+Drone}
+, {\bfseries Drone\+Shoots}
+, \newline
+{\bfseries Decoy\+Explode}
+, {\bfseries Player\+Dealt\+Damage}
+, {\bfseries Ability\+Used}
+, {\bfseries Ability\+Hit}
+ \}
+\begin{DoxyCompactList}\small\item\em Identifies the payload type of a network packet exchanged between client and server. \end{DoxyCompactList}\item 
+\Hypertarget{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}\label{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} :\+ std::\+uint8\+\_\+t \{ {\bfseries Soldier}
+, {\bfseries Medic}
+, {\bfseries Juggernaut}
+, {\bfseries Vanguard}
+ \}
+\begin{DoxyCompactList}\small\item\em Playable hero classes available in multiplayer sessions. \end{DoxyCompactList}\item 
+\Hypertarget{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}\label{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} :\+ std::\+uint8\+\_\+t \{ {\bfseries Crawler}
+, {\bfseries Bruiser}
+, {\bfseries Spitter}
+, {\bfseries Kamikaze}
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_enemy}{Enemy} archetypes spawned during invasion waves. \end{DoxyCompactList}\item 
+\Hypertarget{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}\label{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} :\+ std::\+uint8\+\_\+t \{ \newline
+{\bfseries None}
+, {\bfseries Rifle}
+, {\bfseries Laser}
+, {\bfseries Rocket}
+, \newline
+{\bfseries Acid\+Spit}
+, {\bfseries Shotgun}
+, {\bfseries Shuriken}
+, {\bfseries Vanguard\+Wave}
+, \newline
+{\bfseries Medic\+Needle}
+, {\bfseries Drone\+Blaster}
+ \}
+\begin{DoxyCompactList}\small\item\em \doxylink{class_projectile}{Projectile} and weapon identifiers used by players, enemies, and drones. \end{DoxyCompactList}\item 
+\Hypertarget{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}\label{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} :\+ std::\+uint8\+\_\+t \{ \newline
+{\bfseries Juggernaut\+Dash}
+, {\bfseries Juggernaut\+Black\+Hole}
+, {\bfseries Juggernaut\+Repulsor}
+, {\bfseries Soldier\+Heal\+Field}
+, \newline
+{\bfseries Vanguard\+Katana\+Slash}
+, {\bfseries Vanguard\+Dash}
+, {\bfseries Vanguard\+Decoy}
+, {\bfseries Vanguard\+Decoy\+Explode}
+, \newline
+{\bfseries Medic\+Teleport}
+, {\bfseries Medic\+Orb}
+, {\bfseries Medic\+Barrier}
+, {\bfseries Medic\+Ult\+Command}
+ \}
+\begin{DoxyCompactList}\small\item\em Active ability identifiers mapped to hero-\/specific skills. \end{DoxyCompactList}\item 
+\Hypertarget{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}\label{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead} 
+enum class \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} :\+ std::\+uint8\+\_\+t \{ {\bfseries Orbit}
+, {\bfseries Sentry}
+ \}
+\begin{DoxyCompactList}\small\item\em Behavioral modes for the \doxylink{class_medic}{Medic}\textquotesingle{}s companion drone. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator$<$$<$}} (sf::\+\+Packet \&packet, const \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} \&state)
+\begin{DoxyCompactList}\small\item\em Serializes a \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} \&state)
+\begin{DoxyCompactList}\small\item\em Deserializes a \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} value from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a5e28399c2970eaf21b6e735a7fe5de60}{operator$<$$<$}} (sf::\+\+Packet \&packet, const \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} \&a\+Type)
+\begin{DoxyCompactList}\small\item\em Serializes an \doxylink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a6f4982e9d10c7c379379b634f44fea47}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} \&a\+Type)
+\begin{DoxyCompactList}\small\item\em Deserializes an \doxylink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type} value from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a0e46b746e418d6a1ce8173d50d7420c3}{operator$<$$<$}} (sf::\+\+Packet \&packet, const \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} \&w\+Type)
+\begin{DoxyCompactList}\small\item\em Serializes a \doxylink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_af541a43dc7c6d915e5fb44019b058e13}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} \&w\+Type)
+\begin{DoxyCompactList}\small\item\em Deserializes a \doxylink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type} value from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a877b83da26cc17ce51212ec52266adb7}{operator$<$$<$}} (sf::\+\+Packet \&packet, const \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} \&e\+Type)
+\begin{DoxyCompactList}\small\item\em Serializes an \doxylink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a718aa9c9713637907379f85eff7dcc20}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} \&e\+Type)
+\begin{DoxyCompactList}\small\item\em Deserializes an \doxylink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type} value from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a89032f2effcc053f85cc3b143128debe}{operator$<$$<$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Serializes a \doxylink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a4e0e72ee1f80a2e1397c37696a46a998}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} \&type)
+\begin{DoxyCompactList}\small\item\em Deserializes a \doxylink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type} value from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_aa467d71184d62c4f4545121853b7b808}{operator$<$$<$}} (sf::\+\+Packet \&packet, const sf::\+\+Vector2f \&vector)
+\begin{DoxyCompactList}\small\item\em Serializes a 2D vector into an SFML packet as two floats. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_a2255f0373079e2b794b15937535109f7}{operator$>$$>$}} (sf::\+\+Packet \&packet, sf::\+\+Vector2f \&vector)
+\begin{DoxyCompactList}\small\item\em Deserializes a 2D vector from an SFML packet. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_ab60ddd5b45e28680be2cfc06f0316bf2}{operator$<$$<$}} (sf::\+\+Packet \&packet, const \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} \&p\+Class)
+\begin{DoxyCompactList}\small\item\em Serializes a \doxylink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class} value into an SFML packet as a single byte. \end{DoxyCompactList}\item 
+sf::\+\+Packet \& \doxymbox{\hyperlink{_network_protocol_8hpp_abad435309ca32efa57412bce1ee4be05}{operator$>$$>$}} (sf::\+\+Packet \&packet, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} \&p\+Class)
+\begin{DoxyCompactList}\small\item\em Deserializes a \doxylink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class} value from an SFML packet. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Shared network packet types, game entity enums, and SFML packet serialization operators. 
+
+
+
+\label{doc-func-members}
+\Hypertarget{_network_protocol_8hpp_doc-func-members}
+\doxysubsection{Function Documentation}
+\Hypertarget{_network_protocol_8hpp_a5e28399c2970eaf21b6e735a7fe5de60}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a5e28399c2970eaf21b6e735a7fe5de60} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} \&}]{a\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes an \doxylink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em a\+Type} & Ability type to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a877b83da26cc17ce51212ec52266adb7}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a877b83da26cc17ce51212ec52266adb7} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} \&}]{e\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes an \doxylink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em e\+Type} & \doxylink{class_enemy}{Enemy} type to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} \&}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes a \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em state} & Drone state to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_ab60ddd5b45e28680be2cfc06f0316bf2}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_ab60ddd5b45e28680be2cfc06f0316bf2} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} \&}]{p\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes a \doxylink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em p\+Class} & \doxylink{class_player}{Player} class to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_aa467d71184d62c4f4545121853b7b808}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_aa467d71184d62c4f4545121853b7b808} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const sf::\+\+Vector2f \&}]{vector}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes a 2D vector into an SFML packet as two floats. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em vector} & Vector to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a0e46b746e418d6a1ce8173d50d7420c3}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a0e46b746e418d6a1ce8173d50d7420c3} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{const \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} \&}]{w\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes a \doxylink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em w\+Type} & Weapon type to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a89032f2effcc053f85cc3b143128debe}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$()}{operator<<()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a89032f2effcc053f85cc3b143128debe} 
+sf::\+\+Packet \& operator$<$$<$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}}}]{type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Serializes a \doxylink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type} value into an SFML packet as a single byte. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Destination packet buffer. \\
+\hline
+{\em type} & Packet type to write. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a6f4982e9d10c7c379379b634f44fea47}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [1/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a6f4982e9d10c7c379379b634f44fea47} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} \&}]{a\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes an \doxylink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em a\+Type} & Output ability type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a718aa9c9713637907379f85eff7dcc20}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [2/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a718aa9c9713637907379f85eff7dcc20} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} \&}]{e\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes an \doxylink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em e\+Type} & Output enemy type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [3/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} \&}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes a \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em state} & Output drone state. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a4e0e72ee1f80a2e1397c37696a46a998}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [4/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a4e0e72ee1f80a2e1397c37696a46a998} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} \&}]{type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes a \doxylink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em type} & Output packet type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_abad435309ca32efa57412bce1ee4be05}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [5/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_abad435309ca32efa57412bce1ee4be05} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} \&}]{p\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes a \doxylink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em p\+Class} & Output player class. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_a2255f0373079e2b794b15937535109f7}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [6/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_a2255f0373079e2b794b15937535109f7} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{sf::\+\+Vector2f \&}]{vector}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes a 2D vector from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em vector} & Output vector. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}
+\Hypertarget{_network_protocol_8hpp_af541a43dc7c6d915e5fb44019b058e13}\index{NetworkProtocol.hpp@{NetworkProtocol.hpp}!operator$>$$>$@{operator$>$$>$}}
+\index{operator$>$$>$@{operator$>$$>$}!NetworkProtocol.hpp@{NetworkProtocol.hpp}}
+\doxysubsubsection{\texorpdfstring{operator$>$$>$()}{operator>>()}\hspace{0.1cm}{\footnotesize\ttfamily [7/7]}}
+{\footnotesize\ttfamily \label{_network_protocol_8hpp_af541a43dc7c6d915e5fb44019b058e13} 
+sf::\+\+Packet \& operator$>$$>$ (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} \&}]{w\+Type}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Deserializes a \doxylink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type} value from an SFML packet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Source packet buffer. \\
+\hline
+{\em w\+Type} & Output weapon type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to {\ttfamily packet} for chaining. 
+\end{DoxyReturn}

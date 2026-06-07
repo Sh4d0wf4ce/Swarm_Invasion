@@ -1,0 +1,106 @@
+\doxysection{Projectile\+Manager Class Reference}
+\hypertarget{class_projectile_manager}{}\label{class_projectile_manager}\index{ProjectileManager@{ProjectileManager}}
+
+
+Spawns, updates, and renders all active client projectiles.  
+
+
+
+
+{\ttfamily \+\#include $<$Projectile\+Manager.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_projectile_manager_af5eb469a6d47d26cd76a1c078994e2ef}{spawn\+Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&target\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} weapon, Faction faction)
+\begin{DoxyCompactList}\small\item\em Creates one or more projectiles aimed at a target with optional pellet spread. \end{DoxyCompactList}\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_hit_record}{Hit\+Record}} $>$ \doxymbox{\hyperlink{class_projectile_manager_ae1d21b9f2bcedd606cb6cc868cabf004}{update}} (sf::\+\+Time delta\+Time, const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map, const std::\+vector$<$ \doxymbox{\hyperlink{struct_sector_barrier_snapshot}{Sector\+Barrier\+Snapshot}} $>$ \&barriers=\{\}, std::\+uint32\+\_\+t local\+Player\+Id=0)
+\begin{DoxyCompactList}\small\item\em Updates all projectiles, applies barrier blocking, and collects local hits. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_projectile_manager_a12252922ff9d664dcd3bad71daf060d8}{render}} (sf::\+\+Render\+Target \&target)
+\begin{DoxyCompactList}\small\item\em Renders all active projectiles. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_projectile_manager_ab4536d81dedc49d1c255784ca131bc40}\label{class_projectile_manager_ab4536d81dedc49d1c255784ca131bc40} 
+std::\+vector$<$ std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_projectile}{Projectile}} $>$ $>$ {\bfseries m\+\_\+projectiles}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Spawns, updates, and renders all active client projectiles. 
+
+Factory-\/selects derived projectile types from weapon enum values and collects hit records for locally owned shots. 
+
+\label{doc-func-members}
+\Hypertarget{class_projectile_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_projectile_manager_a12252922ff9d664dcd3bad71daf060d8}\index{ProjectileManager@{ProjectileManager}!render@{render}}
+\index{render@{render}!ProjectileManager@{ProjectileManager}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_projectile_manager_a12252922ff9d664dcd3bad71daf060d8} 
+void Projectile\+Manager::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})}
+
+
+
+Renders all active projectiles. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_projectile_manager_af5eb469a6d47d26cd76a1c078994e2ef}\index{ProjectileManager@{ProjectileManager}!spawnProjectile@{spawnProjectile}}
+\index{spawnProjectile@{spawnProjectile}!ProjectileManager@{ProjectileManager}}
+\doxysubsubsection{\texorpdfstring{spawnProjectile()}{spawnProjectile()}}
+{\footnotesize\ttfamily \label{class_projectile_manager_af5eb469a6d47d26cd76a1c078994e2ef} 
+void Projectile\+Manager::\+spawn\+Projectile (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{target\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}}}]{weapon}{, }\item[{Faction}]{faction}{}\end{DoxyParamCaption})}
+
+
+
+Creates one or more projectiles aimed at a target with optional pellet spread. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_entity}{Entity} ID of the shooter. \\
+\hline
+{\em start\+Pos} & World position where projectiles spawn. \\
+\hline
+{\em target\+Pos} & Aim point used to compute direction. \\
+\hline
+{\em weapon} & Weapon type determining stats and derived projectile class. \\
+\hline
+{\em faction} & Faction assigned to spawned projectiles. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_projectile_manager_ae1d21b9f2bcedd606cb6cc868cabf004}\index{ProjectileManager@{ProjectileManager}!update@{update}}
+\index{update@{update}!ProjectileManager@{ProjectileManager}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_projectile_manager_ae1d21b9f2bcedd606cb6cc868cabf004} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_hit_record}{Hit\+Record}} $>$ Projectile\+Manager::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{, }\item[{const std::\+vector$<$ \doxymbox{\hyperlink{struct_sector_barrier_snapshot}{Sector\+Barrier\+Snapshot}} $>$ \&}]{barriers}{ = {\ttfamily \{\}}, }\item[{std::\+uint32\+\_\+t}]{local\+Player\+Id}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+
+
+Updates all projectiles, applies barrier blocking, and collects local hits. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+{\em entities} & Entities available for collision tests. \\
+\hline
+{\em map} & Map used for wall collision checks. \\
+\hline
+{\em barriers} & Active medic barrier snapshots that block enemy projectiles. \\
+\hline
+{\em local\+Player\+Id} & Local player ID; only their shots generate hit records. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Hit records for projectiles owned by the local player. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+projectiles/\+Projectile\+Manager.\+hpp\item 
+src/\+client/\+projectiles/\+Projectile\+Manager.\+cpp\end{DoxyCompactItemize}

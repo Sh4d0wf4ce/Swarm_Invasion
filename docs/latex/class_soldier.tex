@@ -1,0 +1,381 @@
+\doxysection{Soldier Class Reference}
+\hypertarget{class_soldier}{}\label{class_soldier}\index{Soldier@{Soldier}}
+
+
+Rifle-\/wielding hero with sprint stamina and area heal.  
+
+
+
+
+{\ttfamily \+\#include $<$Soldier.\+hpp$>$}
+
+Inheritance diagram for Soldier:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_soldier}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_soldier_a1da43a57d8aa336fb58596eba2b80f92}{Soldier}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\begin{DoxyCompactList}\small\item\em Initializes \doxylink{class_soldier}{Soldier} ability cooldowns from the ability registry. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_soldier_a202cc021f853f61c7089a9d0d32630d5}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Updates sprint stamina, ultimate timer, and base player movement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_soldier_afdc6dbdeeab3eb4c0b3ec1348bc688a5}{onQ}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Activates the rapid-\/fire auto-\/aim ultimate when fully charged. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_soldier_a39384a4fd49f3924360004378eeab3a9}{onE}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Spawns a heal field at the player\textquotesingle{}s position when off cooldown. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_soldier_aaa690d0d9909a1ba79c61b3a79fd9531}{on\+RMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Fires a rocket toward the cursor when off cooldown. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_soldier_a3e8b89366c7ca00d46f48cbf2e0f3036}{on\+LMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&enemies) override
+\begin{DoxyCompactList}\small\item\em Fires the default weapon or triggers reload when out of ammo. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Initializes a player with hero stats, shape, and default state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the player circle and health bar. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+UI} ()
+\begin{DoxyCompactList}\small\item\em Renders both HUD panels for the local hero. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a6883ea051661974f3b0b60aed06adc3a}{update\+Remote\+Visuals}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a38c93f696a344c75dd5288edb6576175}{play\+Remote\+Ability}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} ability, const sf::\+\+Vector2f \&data)
+\item 
+void \doxymbox{\hyperlink{class_player_af2793f057492e5fce5331fa036263cad}{set\+Focused}} (bool focused)
+\begin{DoxyCompactList}\small\item\em Sets whether this player accepts local keyboard input. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries get\+Class} () const
+\item 
+Faction \doxymbox{\hyperlink{class_player_a8ac884bfdd0202512ecef922a56990f0}{get\+Faction}} () const override
+\item 
+float \doxymbox{\hyperlink{class_player_a4337238654d5f36dd2a89f00f72d3960}{get\+Radius}} () const override
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a55313ee49349dfeb73a72f26c945d7cd}{on\+Shift}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr)
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a3b6f25b2227918ba499d48725bedc37d}{reload}} ()
+\begin{DoxyCompactList}\small\item\em Starts a reload if one is not already in progress. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_adf77ec30ad0615e3693a4d1f3a296937}{add\+Ult\+Charge}} (float amount)
+\begin{DoxyCompactList}\small\item\em Adds ultimate charge, clamped to the maximum while ult is inactive. \end{DoxyCompactList}\item 
+virtual bool {\bfseries is\+Auto\+Firing} () const
+\item 
+bool {\bfseries is\+Ult\+Active} () const
+\item 
+int {\bfseries get\+Ammo} () const
+\item 
+bool {\bfseries is\+Reloading} () const
+\item 
+virtual std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ \doxymbox{\hyperlink{class_player_afe9ecb410e274bcb24650273684a7eb8}{check\+Ability\+Hits}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities)
+\item 
+void {\bfseries set\+Stealth\+Timer} (float timer)
+\item 
+float {\bfseries get\+Stealth\+Timer} () const
+\item 
+void \doxymbox{\hyperlink{class_player_af22ac0793705ba6fff981082a16af0d6}{set\+Upgrade\+Multipliers}} (float hp\+Mult, float speed\+Mult, float damage\+Mult, float cooldown\+Mult)
+\begin{DoxyCompactList}\small\item\em Applies run upgrade multipliers to HP, speed, damage, and cooldowns. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a2bea558d18cc033039b0fbbbff869c65}{get\+Upgrade\+Cooldown\+Scale}} () const
+\begin{DoxyCompactList}\small\item\em Returns the cooldown duration scale from upgrade multipliers. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a221a133c2c7e97b100f35c902e8fba62}{get\+Effective\+Max\+Cooldown}} (float base\+Cooldown) const
+\begin{DoxyCompactList}\small\item\em Scales a base cooldown by the current upgrade multiplier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_soldier_a7778a124f1ba632495788c3fdec15b47}{render\+Shift\+Skill}} () override
+\begin{DoxyCompactList}\small\item\em Renders the sprint stamina bar in the left HUD panel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_soldier_a9188d564a7f29b4dd123b138e060d1a8}\label{class_soldier_a9188d564a7f29b4dd123b138e060d1a8} 
+float {\bfseries m\+\_\+stamina} \{100.\+0f\}
+\item 
+\Hypertarget{class_soldier_ad6f5c86b43a91966b91243faf37e6361}\label{class_soldier_ad6f5c86b43a91966b91243faf37e6361} 
+float {\bfseries m\+\_\+max\+Stamina} \{100.\+0f\}
+\item 
+\Hypertarget{class_soldier_a1472cee3b307eb06aba7518c02712c89}\label{class_soldier_a1472cee3b307eb06aba7518c02712c89} 
+bool {\bfseries m\+\_\+is\+Exhausted} \{false\}
+\item 
+\Hypertarget{class_soldier_acacc8448de65b61c486622e7065ee49d}\label{class_soldier_acacc8448de65b61c486622e7065ee49d} 
+bool {\bfseries m\+\_\+is\+Sprinting} \{false\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Static Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ \doxymbox{\hyperlink{class_player_aab8a11adbac17c5c8ea94ec0203aa592}{create}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Factory that constructs the correct hero subclass for a player class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}{check\+Collision}} (const sf::\+\+Vector2f \&pos, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Tests whether a position overlaps a wall tile. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+Left\+Panel} ()
+\begin{DoxyCompactList}\small\item\em Renders the left HUD panel with ability cooldown indicators. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_aaf187efa0d73c6200da953e09d6470b9}{render\+Right\+Panel}} ()
+\begin{DoxyCompactList}\small\item\em Renders the right HUD panel with HP and ammo status. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}{render\+ESkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the E ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a884b262895cd0e45d1a61514bc1ea763}{render\+QSkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Q ultimate charge or active timer in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+RMBSkill} ()
+\begin{DoxyCompactList}\small\item\em Renders the right-\/mouse ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+bool {\bfseries m\+\_\+is\+Focused}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+class}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+last\+Move\+Direction} \{1.\+0f, 0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+Shift} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldownE} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+RMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+LMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+Shift} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+CooldownE} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+RMB} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate} \{0.\+15f\}
+\item 
+int {\bfseries m\+\_\+ammo} \{30\}
+\item 
+int {\bfseries m\+\_\+max\+Ammo} \{30\}
+\item 
+bool {\bfseries m\+\_\+is\+Reloading} \{false\}
+\item 
+float {\bfseries m\+\_\+reload\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+reload\+Time} \{1.\+5f\}
+\item 
+float {\bfseries m\+\_\+ult\+Charge} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Ult\+Charge} \{500.\+0f\}
+\item 
+float {\bfseries m\+\_\+ult\+Timer} \{0.\+0f\}
+\item 
+bool {\bfseries m\+\_\+is\+Ult\+Active} \{false\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+stealth\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+base\+Max\+Hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Hp\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Cooldown\+Multiplier} \{1.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Rifle-\/wielding hero with sprint stamina and area heal. 
+
+Fires the default hero weapon on left click, launches rockets on right click, drops heal fields on E, and enters a rapid-\/fire auto-\/aim ultimate on Q. Sprint is bound to Shift and drains stamina while moving. 
+
+\label{doc-constructors}
+\Hypertarget{class_soldier_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_soldier_a1da43a57d8aa336fb58596eba2b80f92}\index{Soldier@{Soldier}!Soldier@{Soldier}}
+\index{Soldier@{Soldier}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{Soldier()}{Soldier()}}
+{\footnotesize\ttfamily \label{class_soldier_a1da43a57d8aa336fb58596eba2b80f92} 
+Soldier::\+\+Soldier (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{}\end{DoxyParamCaption})}
+
+
+
+Initializes \doxylink{class_soldier}{Soldier} ability cooldowns from the ability registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_soldier_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_soldier_a39384a4fd49f3924360004378eeab3a9}\index{Soldier@{Soldier}!onE@{onE}}
+\index{onE@{onE}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{onE()}{onE()}}
+{\footnotesize\ttfamily \label{class_soldier_a39384a4fd49f3924360004378eeab3a9} 
+void Soldier::\+onE (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Spawns a heal field at the player\textquotesingle{}s position when off cooldown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Cursor position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_soldier_a3e8b89366c7ca00d46f48cbf2e0f3036}\index{Soldier@{Soldier}!onLMB@{onLMB}}
+\index{onLMB@{onLMB}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{onLMB()}{onLMB()}}
+{\footnotesize\ttfamily \label{class_soldier_a3e8b89366c7ca00d46f48cbf2e0f3036} 
+void Soldier::\+on\+LMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&}]{enemies}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Fires the default weapon or triggers reload when out of ammo. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Target position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager that spawns bullets. \\
+\hline
+{\em enemies} & Live enemy map used for ultimate auto-\/aim targeting. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_soldier_afdc6dbdeeab3eb4c0b3ec1348bc688a5}\index{Soldier@{Soldier}!onQ@{onQ}}
+\index{onQ@{onQ}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{onQ()}{onQ()}}
+{\footnotesize\ttfamily \label{class_soldier_afdc6dbdeeab3eb4c0b3ec1348bc688a5} 
+void Soldier::\+onQ (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Activates the rapid-\/fire auto-\/aim ultimate when fully charged. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Cursor position in world space. \\
+\hline
+{\em engine} & Client engine for network dispatch. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_soldier_aaa690d0d9909a1ba79c61b3a79fd9531}\index{Soldier@{Soldier}!onRMB@{onRMB}}
+\index{onRMB@{onRMB}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{onRMB()}{onRMB()}}
+{\footnotesize\ttfamily \label{class_soldier_aaa690d0d9909a1ba79c61b3a79fd9531} 
+void Soldier::\+on\+RMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Fires a rocket toward the cursor when off cooldown. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Target position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager that spawns the rocket. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_soldier_a7778a124f1ba632495788c3fdec15b47}\index{Soldier@{Soldier}!renderShiftSkill@{renderShiftSkill}}
+\index{renderShiftSkill@{renderShiftSkill}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{renderShiftSkill()}{renderShiftSkill()}}
+{\footnotesize\ttfamily \label{class_soldier_a7778a124f1ba632495788c3fdec15b47} 
+void Soldier::\+render\+Shift\+Skill (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [private]}, {\ttfamily [virtual]}}
+
+
+
+Renders the sprint stamina bar in the left HUD panel. 
+
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player_a11a9f06b90f268689c3e5b931a17ea3c}{Player}}.
+
+\Hypertarget{class_soldier_a202cc021f853f61c7089a9d0d32630d5}\index{Soldier@{Soldier}!update@{update}}
+\index{update@{update}!Soldier@{Soldier}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_soldier_a202cc021f853f61c7089a9d0d32630d5} 
+void Soldier::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Updates sprint stamina, ultimate timer, and base player movement. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map used for wall collision checks. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{Player}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Soldier.\+hpp\item 
+src/\+client/\+entities/\+Soldier.\+cpp\end{DoxyCompactItemize}

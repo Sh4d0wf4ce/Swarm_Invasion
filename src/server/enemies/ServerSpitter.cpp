@@ -1,5 +1,16 @@
 #include "ServerSpitter.hpp"
 
+/**
+ * @brief Shoots acid spit when in range with line of sight; otherwise chases or separates.
+ * @param deltaTime Elapsed time since the last update.
+ * @param clients Mutable player targets for pursuit and shooting.
+ * @param map Map used for collision and line-of-sight checks.
+ * @param flowField Precomputed BFS cost field used when falling back to melee chase.
+ * @param outShootEvents Output list populated when a spit shot is fired.
+ * @param allEnemies All enemies used for separation calculations.
+ * @param grid Spatial grid for neighbour queries.
+ * @return Player IDs killed this tick (empty for spitter ranged behaviour).
+ */
 std::vector<std::uint32_t> ServerSpitter::update(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, std::vector<EnemyShootEvent>& outShootEvents, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     std::vector<std::uint32_t> deadPlayers;
     const auto& eStats = EnemyRegistry::getStats(m_type);

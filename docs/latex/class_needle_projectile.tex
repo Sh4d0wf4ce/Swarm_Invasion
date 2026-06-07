@@ -1,0 +1,158 @@
+\doxysection{Needle\+Projectile Class Reference}
+\hypertarget{class_needle_projectile}{}\label{class_needle_projectile}\index{NeedleProjectile@{NeedleProjectile}}
+
+
+\doxylink{class_medic}{Medic} needle projectile that heals allies and damages enemies on contact.  
+
+
+
+
+{\ttfamily \+\#include $<$Needle\+Projectile.\+hpp$>$}
+
+Inheritance diagram for Needle\+Projectile:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_needle_projectile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_needle_projectile_aee13abb21a29d511b4d6a0655ed9a0b4}{Needle\+Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction)
+\begin{DoxyCompactList}\small\item\em Builds the needle triangle shape and applies medic color styling. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_needle_projectile_a42d65c303a901b8eb97c334eda8221de}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the needle shape aligned to its velocity direction. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_needle_projectile_ad42493c2ca1120bc63278331aac657f1}{check\+Collisions}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Heals player allies or damages enemies on contact; deactivates after one hit or wall impact. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} weapon)
+\begin{DoxyCompactList}\small\item\em Constructs a projectile from weapon stats and initializes its visual shape. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}{update}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Advances position and decrements lifetime; deactivates when expired. \end{DoxyCompactList}\item 
+bool {\bfseries is\+Active} () const
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Owner\+Id} () const
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries get\+Weapon\+Type} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Radius} () const
+\item 
+Faction {\bfseries get\+Faction} () const
+\item 
+void {\bfseries deactivate} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_needle_projectile_a214f3eeff13901eac46bfd1eb8968720}\label{class_needle_projectile_a214f3eeff13901eac46bfd1eb8968720} 
+sf::\+\+Convex\+Shape {\bfseries m\+\_\+needle\+Shape}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+owner\+Id}
+\item 
+Faction {\bfseries m\+\_\+faction}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries m\+\_\+weapon\+Type}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+velocity}
+\item 
+float {\bfseries m\+\_\+lifetime}
+\item 
+float {\bfseries m\+\_\+radius}
+\item 
+bool {\bfseries m\+\_\+active} \{true\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_medic}{Medic} needle projectile that heals allies and damages enemies on contact. 
+
+\label{doc-constructors}
+\Hypertarget{class_needle_projectile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_needle_projectile_aee13abb21a29d511b4d6a0655ed9a0b4}\index{NeedleProjectile@{NeedleProjectile}!NeedleProjectile@{NeedleProjectile}}
+\index{NeedleProjectile@{NeedleProjectile}!NeedleProjectile@{NeedleProjectile}}
+\doxysubsubsection{\texorpdfstring{NeedleProjectile()}{NeedleProjectile()}}
+{\footnotesize\ttfamily \label{class_needle_projectile_aee13abb21a29d511b4d6a0655ed9a0b4} 
+Needle\+Projectile::\+\+Needle\+Projectile (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{velocity}{, }\item[{Faction}]{faction}{}\end{DoxyParamCaption})}
+
+
+
+Builds the needle triangle shape and applies medic color styling. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_entity}{Entity} ID of the shooter. \\
+\hline
+{\em start\+Pos} & World position where the needle spawns. \\
+\hline
+{\em velocity} & Initial movement vector in pixels per second. \\
+\hline
+{\em faction} & Faction of the owner. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_needle_projectile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_needle_projectile_ad42493c2ca1120bc63278331aac657f1}\index{NeedleProjectile@{NeedleProjectile}!checkCollisions@{checkCollisions}}
+\index{checkCollisions@{checkCollisions}!NeedleProjectile@{NeedleProjectile}}
+\doxysubsubsection{\texorpdfstring{checkCollisions()}{checkCollisions()}}
+{\footnotesize\ttfamily \label{class_needle_projectile_ad42493c2ca1120bc63278331aac657f1} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Needle\+Projectile::\+check\+Collisions (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Heals player allies or damages enemies on contact; deactivates after one hit or wall impact. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & Candidate entities to test against. \\
+\hline
+{\em map} & Map used for wall tile checks. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+ID of the entity hit, if any. 
+\end{DoxyReturn}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_af7ea80495061bcff8628631dbfedcf5a}{Projectile}}.
+
+\Hypertarget{class_needle_projectile_a42d65c303a901b8eb97c334eda8221de}\index{NeedleProjectile@{NeedleProjectile}!render@{render}}
+\index{render@{render}!NeedleProjectile@{NeedleProjectile}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_needle_projectile_a42d65c303a901b8eb97c334eda8221de} 
+void Needle\+Projectile::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the needle shape aligned to its velocity direction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_ac314a0afcb6937b668171376275715ff}{Projectile}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+projectiles/\+Needle\+Projectile.\+hpp\item 
+src/\+client/\+projectiles/\+Needle\+Projectile.\+cpp\end{DoxyCompactItemize}

@@ -24,6 +24,13 @@
 #include <array>
 #include <string>
 
+/**
+ * @brief Active gameplay state for an in-session multiplayer match.
+ *
+ * Simulates the local player, mirrors remote entities from server snapshots,
+ * manages projectiles and ability world objects, handles combat input, and
+ * renders the world plus HUD overlays including upgrade selection and session end.
+ */
 class GameState : public State {
 public:
     GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass);

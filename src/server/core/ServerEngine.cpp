@@ -6,6 +6,10 @@
 #include <cmath>
 #include <algorithm>
 
+/**
+ * @brief Binds the UDP socket, generates the map, and prepares the 60 Hz tick clock.
+ * @throws None Does not throw exceptions; bind failure sets m_isRunning to false.
+ */
 ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_timePerTick = sf::seconds(1.0f / 60.0f);
     m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
@@ -21,6 +25,9 @@ ServerEngine::ServerEngine(): m_isRunning(true), m_tickCounter(0){
     m_socket.setBlocking(false);
 }
 
+/**
+ * @brief Main server loop: fixed-rate network processing and simulation updates.
+ */
 void ServerEngine::run(){
     std::cout<<"[SERVER] Launching engine (Tickrat: 60)...\n";
     sf::Time timeSinceLastUpdate = sf::Time::Zero;
@@ -39,6 +46,9 @@ void ServerEngine::run(){
     }
 }
 
+/**
+ * @brief Drains all pending UDP packets and dispatches them to packet handlers.
+ */
 void ServerEngine::processNetwork(){
     sf::Packet packet;
     std::optional<sf::IpAddress> sender;
@@ -65,6 +75,10 @@ void ServerEngine::processNetwork(){
     }
 }
 
+/**
+ * @brief Advances one simulation tick: AI, abilities, projectiles, deaths, and world broadcast.
+ * @param deltaTime Fixed tick duration (typically 1/60 second).
+ */
 void ServerEngine::update(sf::Time deltaTime){
     m_tickCounter++;
 
@@ -213,6 +227,12 @@ void ServerEngine::update(sf::Time deltaTime){
     sendWorldState();
 }
 
+/**
+ * @brief Responds to a client ping with a pong packet.
+ * @param packet Incoming packet containing the ping message string.
+ * @param sender Client IP address.
+ * @param port Client UDP port.
+ */
 void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
     std::string message;
     packet >> message;
@@ -222,6 +242,10 @@ void ServerEngine::handlePing(sf::Packet& packet, const sf::IpAddress& sender, u
     (void)m_socket.send(reply, sender, port);
 }
 
+/**
+ * @brief Updates a connected player's position and refreshes activity timestamp.
+ * @param packet Incoming packet with player ID and position.
+ */
 void ServerEngine::handlePlayerPosition(sf::Packet& packet){
     std::uint32_t playerId;
     sf::Vector2f position;
@@ -234,6 +258,10 @@ void ServerEngine::handlePlayerPosition(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Applies weapon damage to decoys, players, or enemies and handles kill rewards.
+ * @param packet Incoming packet with shooter ID, target ID, and weapon type.
+ */
 void ServerEngine::handleEntityHit(sf::Packet& packet){
     std::uint32_t shooterId, targetId;
     WeaponType weaponUsed;
@@ -303,6 +331,12 @@ void ServerEngine::handleEntityHit(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Registers a new player, assigns an ID, and sends a join-accept reply.
+ * @param packet Incoming packet with requested player class.
+ * @param sender Client IP address.
+ * @param port Client UDP port.
+ */
 void ServerEngine::handleJoinRequest(sf::Packet& packet, const sf::IpAddress& sender, unsigned short port){
     PlayerClass requestedClass;
     if(packet >> requestedClass){
@@ -319,6 +353,10 @@ void ServerEngine::handleJoinRequest(sf::Packet& packet, const sf::IpAddress& se
     }
 }
 
+/**
+ * @brief Spawns server-authoritative medic needles and relays shoot events to other clients.
+ * @param packet Incoming packet with shooter ID, weapon, start position, and target.
+ */
 void ServerEngine::handlePlayerShoots(sf::Packet& packet){
     std::uint32_t shooterId;
     sf::Vector2f startPos, targetPos;
@@ -337,6 +375,10 @@ void ServerEngine::handlePlayerShoots(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Removes a disconnected player and cleans up their medic drone.
+ * @param packet Incoming packet with the disconnecting player ID.
+ */
 void ServerEngine::handlePlayerDisconnect(sf::Packet& packet){
     std::uint32_t playerId;
     if(packet >> playerId){
@@ -349,6 +391,10 @@ void ServerEngine::handlePlayerDisconnect(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Records a player's upgrade selection during the level-up menu phase.
+ * @param packet Incoming packet with player ID and chosen upgrade ID.
+ */
 void ServerEngine::handleUpgradeChosen(sf::Packet& packet){
     std::uint32_t playerId;
     std::string upgradeId;
@@ -364,6 +410,10 @@ void ServerEngine::handleUpgradeChosen(sf::Packet& packet){
     m_playerChosenUpgrades[playerId] = upgradeId;
 }
 
+/**
+ * @brief Resolves ability contact hits for dash, repulsor, katana, and vanguard dash abilities.
+ * @param packet Incoming packet with shooter ID, target ID, and ability type.
+ */
 void ServerEngine::handleAbilityHit(sf::Packet& packet){
     std::uint32_t shooterId, targetId;
     AbilityType ability;
@@ -467,6 +517,10 @@ void ServerEngine::handleAbilityHit(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Spawns ability world entities and relays movement abilities to other clients.
+ * @param packet Incoming packet with player ID, ability type, and position or direction data.
+ */
 void ServerEngine::handleAbilityUsed(sf::Packet& packet){
     std::uint32_t playerId;
     AbilityType ability;
@@ -648,14 +702,30 @@ void ServerEngine::handleAbilityUsed(sf::Packet& packet){
     }
 }
 
+/**
+ * @brief Computes a player's maximum HP including upgrade multipliers.
+ * @param client Client whose class and HP multiplier are applied.
+ * @return Effective maximum hit points.
+ */
 float ServerEngine::getEffectiveMaxHp(const ClientInfo& client) const {
     return HeroRegistry::getStats(client.pClass).maxHp * client.hpMultiplier;
 }
 
+/**
+ * @brief Builds the eligible upgrade pool for a player class and augment tier.
+ * @param pClass Player class used to filter upgrades.
+ * @param wantAugment When true, prefer augment-tier upgrades.
+ * @return Pointers to matching upgrade definitions from the registry.
+ */
 std::vector<const UpgradeDefinition*> ServerEngine::buildUpgradePool(PlayerClass pClass, bool wantAugment) const {
     return UpgradeRegistry::buildPool(pClass, wantAugment);
 }
 
+/**
+ * @brief Rolls three weighted random upgrade IDs for a client.
+ * @param client Client whose class determines the upgrade pool.
+ * @return Up to three upgrade ID strings offered to the player.
+ */
 std::vector<std::string> ServerEngine::rollUpgradeOffer(const ClientInfo& client) const {
     bool wantAugment = (m_teamLevel >= 4 && m_teamLevel % 4 == 0);
     auto pool = buildUpgradePool(client.pClass, wantAugment);
@@ -667,6 +737,11 @@ std::vector<std::string> ServerEngine::rollUpgradeOffer(const ClientInfo& client
     return UpgradeRegistry::pickWeightedRandom(pool, 3);
 }
 
+/**
+ * @brief Applies an upgrade's stat modifier to a client and records owned augments.
+ * @param client Client state to modify in place.
+ * @param upgrade Upgrade definition containing stat type and modifier value.
+ */
 void ServerEngine::applyUpgrade(ClientInfo& client, const UpgradeDefinition& upgrade) {
     if (upgrade.isAugment) {
         client.ownedAugments.push_back(upgrade.id);
@@ -695,6 +770,9 @@ void ServerEngine::applyUpgrade(ClientInfo& client, const UpgradeDefinition& upg
     }
 }
 
+/**
+ * @brief Generates and sends level-up upgrade offers to every connected client.
+ */
 void ServerEngine::sendLevelUpOffers() {
     m_pendingOffers.clear();
     for (const auto& [id, info] : m_clients) {
@@ -712,6 +790,9 @@ void ServerEngine::sendLevelUpOffers() {
     }
 }
 
+/**
+ * @brief Applies chosen or random upgrades and notifies clients of resolved selections.
+ */
 void ServerEngine::finalizeUpgradeSelections() {
     for (const auto& [playerId, info] : m_clients) {
         bool wasRandom = false;
@@ -742,6 +823,10 @@ void ServerEngine::finalizeUpgradeSelections() {
     }
 }
 
+/**
+ * @brief Sends updated stat multipliers to a client after an upgrade is applied.
+ * @param playerId ID of the client to notify.
+ */
 void ServerEngine::sendUpgradeMultipliers(std::uint32_t playerId) {
     if (!m_clients.count(playerId)) return;
 
@@ -754,6 +839,10 @@ void ServerEngine::sendUpgradeMultipliers(std::uint32_t playerId) {
     (void)m_socket.send(packet, info.ip, info.port);
 }
 
+/**
+ * @brief Returns whether leftover world state requires a full reset after all players leave.
+ * @return True if any entities, progression, or upgrade state remains active.
+ */
 bool ServerEngine::needsWorldReset() const {
     return !m_enemies.empty()
         || !m_energyCells.empty()
@@ -773,6 +862,9 @@ bool ServerEngine::needsWorldReset() const {
         || m_globalEntityCounter > 1;
 }
 
+/**
+ * @brief Clears all world entities, progression, and AI state back to initial values.
+ */
 void ServerEngine::resetWorld() {
     m_enemies.clear();
     m_energyCells.clear();
@@ -796,6 +888,9 @@ void ServerEngine::resetWorld() {
     std::cout << "[SERVER] All players left. Resetting world to initial state...\n";
 }
 
+/**
+ * @brief Advances the upgrade menu selecting and reveal phases while the game is paused.
+ */
 void ServerEngine::proccessUpgradeMenuTimeout(){
     if (m_upgradeMenuPhase == UpgradeMenuPhase::Selecting) {
         bool allSelected = true;
@@ -826,6 +921,9 @@ void ServerEngine::proccessUpgradeMenuTimeout(){
     }
 }
 
+/**
+ * @brief Disconnects clients that have exceeded the network inactivity timeout.
+ */
 void ServerEngine::removeAFKPlayers(){
     for(auto it = m_clients.begin(); it != m_clients.end();){
         if(it->second.lastActivity.getElapsedTime().asSeconds() > Config::NETWORK_TIMEOUT_SECONDS){
@@ -837,6 +935,10 @@ void ServerEngine::removeAFKPlayers(){
     }
 }
 
+/**
+ * @brief Updates energy cell magnet movement, pickup collection, and team level-up triggers.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateEnergyCells(sf::Time deltaTime){
     for(auto it = m_energyCells.begin(); it != m_energyCells.end(); ){
         auto& cell = it->second;
@@ -889,6 +991,10 @@ void ServerEngine::updateEnergyCells(sf::Time deltaTime){
     }
 }
 
+/**
+ * @brief Heals players inside active soldier heal fields and expires finished fields.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateHealingFields(sf::Time deltaTime){
     for (auto it = m_healFields.begin(); it != m_healFields.end(); ) {
         auto& field = it->second;
@@ -911,6 +1017,10 @@ void ServerEngine::updateHealingFields(sf::Time deltaTime){
     }
 }
 
+/**
+ * @brief Applies medic class passive regeneration to all medic players below max HP.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateMedicPassives(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
     const float healPerSecond = AbilityRegistry::param(AbilityRegistry::medic().Passive, "healPerSecond", 2.f);
@@ -923,6 +1033,10 @@ void ServerEngine::updateMedicPassives(sf::Time deltaTime) {
     }
 }
 
+/**
+ * @brief Simulates black hole pull, core damage, enemy kills, and lifetime expiry.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateBlackHoles(sf::Time deltaTime){
     std::vector<std::uint32_t> deadFromBlackHole;
     const auto& bhStats = AbilityRegistry::getStats(AbilityType::JuggernautBlackHole);
@@ -978,6 +1092,11 @@ void ServerEngine::updateBlackHoles(sf::Time deltaTime){
     }
 }
 
+/**
+ * @brief Damages enemies in a decoy explosion radius and notifies all clients.
+ * @param decoyId Network ID of the exploding decoy.
+ * @param decoy Decoy snapshot used for position and owner context.
+ */
 void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
     const float explosionRadius = AbilityRegistry::param(AbilityType::VanguardDecoy, "explosionRadius", 120.f);
     const float explosionDamage = AbilityRegistry::param(AbilityType::VanguardDecoy, "explosionDamage", 200.f);
@@ -1009,6 +1128,11 @@ void ServerEngine::explodeDecoy(std::uint32_t decoyId, const DecoyData& decoy){
     }
 }
 
+/**
+ * @brief Checks whether a player currently owns an active decoy entity.
+ * @param playerId Owner player ID to query.
+ * @return True if any decoy is owned by the given player.
+ */
 bool ServerEngine::playerHasActiveDecoy(std::uint32_t playerId) const{
     for (const auto& [id, decoy] : m_decoys) {
         if (decoy.ownerId == playerId) return true;
@@ -1016,6 +1140,11 @@ bool ServerEngine::playerHasActiveDecoy(std::uint32_t playerId) const{
     return false;
 }
 
+/**
+ * @brief Checks whether a player currently owns an active medic orb.
+ * @param playerId Owner player ID to query.
+ * @return True if any medic orb is owned by the given player.
+ */
 bool ServerEngine::playerHasActiveOrb(std::uint32_t playerId) const{
     for (const auto& [id, orb] : m_medicOrbs) {
         if (orb.ownerId == playerId) return true;
@@ -1023,6 +1152,10 @@ bool ServerEngine::playerHasActiveOrb(std::uint32_t playerId) const{
     return false;
 }
 
+/**
+ * @brief Moves medic orbs with wall bounce, applies periodic heal/damage ticks, and expires orbs.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
     float dt = deltaTime.asSeconds();
     const auto& orbStats = AbilityRegistry::getStats(AbilityType::MedicOrb);
@@ -1095,6 +1228,10 @@ void ServerEngine::updateMedicOrbs(sf::Time deltaTime){
     }
 }
 
+/**
+ * @brief Knocks back enemies intersecting medic barriers and expires finished barriers.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateMedicBarriers(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
     const auto& barrierStats = AbilityRegistry::getStats(AbilityType::MedicBarrier);
@@ -1139,6 +1276,11 @@ void ServerEngine::updateMedicBarriers(sf::Time deltaTime) {
     }
 }
 
+/**
+ * @brief Finds the medic drone owned by a given player, if one exists.
+ * @param ownerId Player ID that owns the drone.
+ * @return Pointer to live drone data, or nullptr if none exists.
+ */
 MedicDroneData* ServerEngine::findDroneByOwner(std::uint32_t ownerId) {
     for (auto& [id, drone] : m_medicDrones) {
         if (drone.ownerId == ownerId) return &drone;
@@ -1146,6 +1288,12 @@ MedicDroneData* ServerEngine::findDroneByOwner(std::uint32_t ownerId) {
     return nullptr;
 }
 
+/**
+ * @brief Finds the nearest live enemy within a maximum range of a world position.
+ * @param from Origin position for distance comparison.
+ * @param maxRange Maximum search radius in world units.
+ * @return Enemy ID of the closest match, or 0 if none are in range.
+ */
 std::uint32_t ServerEngine::findNearestEnemyId(const sf::Vector2f& from, float maxRange) const {
     const float maxRangeSq = maxRange * maxRange;
     std::uint32_t bestId = 0;
@@ -1160,6 +1308,12 @@ std::uint32_t ServerEngine::findNearestEnemyId(const sf::Vector2f& from, float m
     return bestId;
 }
 
+/**
+ * @brief Creates a server-side drone blaster projectile and broadcasts the visual shot event.
+ * @param ownerId Player ID credited with the shot.
+ * @param startPos Projectile spawn position.
+ * @param targetPos Aim point used to compute direction.
+ */
 void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos) {
     const auto& stats = WeaponRegistry::getStats(WeaponType::DroneBlaster);
     sf::Vector2f dir = targetPos - startPos;
@@ -1184,6 +1338,11 @@ void ServerEngine::spawnDroneBlaster(std::uint32_t ownerId, sf::Vector2f startPo
     }
 }
 
+/**
+ * @brief Spawns or retasks a medic drone to orbit a nearby player or hold a sentry point.
+ * @param playerId Medic player issuing the ult command.
+ * @param targetPos World position clicked for orbit or sentry placement.
+ */
 void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f targetPos) {
     MedicDroneData* drone = findDroneByOwner(playerId);
     const auto& droneStats = AbilityRegistry::medic().Drone;
@@ -1236,6 +1395,10 @@ void ServerEngine::handleMedicDroneCommand(std::uint32_t playerId, sf::Vector2f 
     }
 }
 
+/**
+ * @brief Updates medic drone movement, symbiotic healing, shooting, and lifetime expiry.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
     const auto& droneStats = AbilityRegistry::medic().Drone;
@@ -1319,6 +1482,12 @@ void ServerEngine::updateMedicDrones(sf::Time deltaTime) {
     }
 }
 
+/**
+ * @brief Adds an authoritative medic needle projectile to the server simulation.
+ * @param ownerId Player ID credited with the shot.
+ * @param startPos Projectile spawn position.
+ * @param targetPos Aim point used to compute direction.
+ */
 void ServerEngine::spawnMedicNeedle(std::uint32_t ownerId, sf::Vector2f startPos, sf::Vector2f targetPos) {
     const auto& stats = WeaponRegistry::getStats(WeaponType::MedicNeedle);
     sf::Vector2f dir = targetPos - startPos;
@@ -1340,6 +1509,10 @@ void ServerEngine::spawnMedicNeedle(std::uint32_t ownerId, sf::Vector2f startPos
     });
 }
 
+/**
+ * @brief Simulates medic needle and drone blaster projectiles with heal, damage, and poison effects.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
     float dt = deltaTime.asSeconds();
     const float needleDamage = WeaponRegistry::getStats(WeaponType::MedicNeedle).damage;
@@ -1431,6 +1604,9 @@ void ServerEngine::updateServerProjectiles(sf::Time deltaTime) {
     }
 }
 
+/**
+ * @brief Serializes and broadcasts the full world snapshot to every connected client.
+ */
 void ServerEngine::sendWorldState(){
     if(m_clients.empty()) return;
     sf::Packet worldPacket;

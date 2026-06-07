@@ -1,0 +1,46 @@
+\doxysection{Projectile\+Manager.\+hpp}
+\hypertarget{_projectile_manager_8hpp_source}{}\label{_projectile_manager_8hpp_source}\index{src/client/projectiles/ProjectileManager.hpp@{src/client/projectiles/ProjectileManager.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Projectile.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}../entities/Player.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}WeaponRegistry.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}SectorMath.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00012\ \textcolor{comment}{//\ Collision\ \&\ Barrier\ Data}}
+\DoxyCodeLine{00013\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_hit_record}{HitRecord}}\ \{}
+\DoxyCodeLine{00019\ \ \ \ \ std::uint32\_t\ shooterId;}
+\DoxyCodeLine{00020\ \ \ \ \ std::uint32\_t\ targetId;}
+\DoxyCodeLine{00021\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ weapon;}
+\DoxyCodeLine{00022\ \};}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_sector_barrier_snapshot}{SectorBarrierSnapshot}}\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ sf::Vector2f\ center;}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{float}\ facingAngle;}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{float}\ arcRadius;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{float}\ halfSpan;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{float}\ wallThickness;}
+\DoxyCodeLine{00033\ \};}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{class\ }ProjectileManager\{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \ \ ProjectileManager()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_projectile_manager_af5eb469a6d47d26cd76a1c078994e2ef}{spawnProjectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ targetPos,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ weapon,\ Faction\ faction);}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ std::vector<HitRecord>\ \doxymbox{\hyperlink{class_projectile_manager_ae1d21b9f2bcedd606cb6cc868cabf004}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map,\ \textcolor{keyword}{const}\ std::vector<SectorBarrierSnapshot>\&\ barriers\ =\ \{\},\ std::uint32\_t\ localPlayerId\ =\ 0);}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_projectile_manager_a12252922ff9d664dcd3bad71daf060d8}{render}}(sf::RenderTarget\&\ target);}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00051\ \ \ \ \ std::vector<std::unique\_ptr<Projectile>>\ m\_projectiles;}
+\DoxyCodeLine{00052\ \};}
+
+\end{DoxyCode}

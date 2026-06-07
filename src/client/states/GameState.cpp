@@ -8,6 +8,12 @@
 // Construction & Destruction
 // ==========================================
 
+/**
+ * @brief Initializes the match scene for the local player.
+ * @param engine Client engine providing window and network access.
+ * @param myPlayerId Server-assigned network identifier for this client.
+ * @param myClass Hero class selected in the lobby.
+ */
 GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass myClass) : State(engine){
     m_camera.setSize({static_cast<float>(Config::WINDOW_WIDTH), static_cast<float>(Config::WINDOW_HEIGHT)});
     m_map = std::make_shared<MapGenerator>(Config::MAP_WIDTH_TILES, Config::MAP_HEIGHT_TILES);
@@ -21,6 +27,12 @@ GameState::GameState(ClientEngine& engine, std::uint32_t myPlayerId, PlayerClass
     m_camera.setCenter(newPos);
 }
 
+/**
+ * @brief Notifies the server that this player is disconnecting.
+ *
+ * Sends a PlayerDisconnect packet if the local player and server address
+ * are still available when the state is destroyed.
+ */
 GameState::~GameState(){
     if(m_player && m_engine.getServerAddress()){
         sf::Packet packet;
@@ -33,6 +45,13 @@ GameState::~GameState(){
 // Input
 // ==========================================
 
+/**
+ * @brief Handles combat and ability input for the local player.
+ * @param event SFML input event from the client engine poll loop.
+ *
+ * Ignores input while an upgrade choice is active. Maps mouse right-click
+ * and Q/E/R/Shift keys to player ability and reload actions.
+ */
 void GameState::handleInput(const sf::Event& event){
     if(m_isChoosingUpgrade) return;
     if(const auto* mouseBtn = event.getIf<sf::Event::MouseButtonPressed>()){
@@ -63,6 +82,14 @@ void GameState::handleInput(const sf::Event& event){
 // Network — Packet Dispatch
 // ==========================================
 
+/**
+ * @brief Dispatches an incoming server packet to the appropriate handler.
+ * @param type Identifies the packet payload format and semantic action.
+ * @param packet Deserialized UDP payload; may be partially consumed by handlers.
+ *
+ * Resets the server heartbeat timer, then routes combat events, ability
+ * spawns, progression updates, and world snapshots to local state changes.
+ */
 void GameState::handlePacket(PacketType type, sf::Packet& packet){
     // --- Connection heartbeat ---
     m_lastServerMessageTimer.restart();
@@ -228,6 +255,14 @@ void GameState::handlePacket(PacketType type, sf::Packet& packet){
 // Network — World State Sync
 // ==========================================
 
+/**
+ * @brief Applies a full world snapshot from the server.
+ * @param packet Serialized WorldState payload containing entity lists and team data.
+ *
+ * Synchronizes players, enemies, pickups, decoys, medic entities, team
+ * progression, and upgrade-pause state. Creates missing entities, updates
+ * existing ones, and removes entries no longer present in the snapshot.
+ */
 void GameState::handleWorldState(sf::Packet& packet){
     // --- Players ---
     std::uint32_t playerCount;
@@ -434,6 +469,14 @@ void GameState::handleWorldState(sf::Packet& packet){
 // Update
 // ==========================================
 
+/**
+ * @brief Advances simulation, camera, networking, and entity updates.
+ * @param deltaTime Elapsed time since the previous frame.
+ *
+ * Detects server timeouts, updates the local and remote players, follows
+ * the camera, sends position heartbeats, simulates projectiles and ability
+ * objects, and processes continuous combat input.
+ */
 void GameState::update(sf::Time deltaTime){
     if(m_player){
         // --- Connection timeout ---
@@ -621,6 +664,12 @@ void GameState::update(sf::Time deltaTime){
 // Render
 // ==========================================
 
+/**
+ * @brief Draws the game world using the follow camera.
+ *
+ * Renders the map, ability entities, energy cells, projectiles, players,
+ * and enemies, then restores the default window view for UI drawing.
+ */
 void GameState::render() {
     auto& window = m_engine.getWindow();
     window.setView(m_camera);
@@ -675,6 +724,12 @@ void GameState::render() {
 // UI
 // ==========================================
 
+/**
+ * @brief Renders ImGui HUD overlays for the active match.
+ *
+ * Shows death or disconnect dialogs, team experience bar, upgrade selection
+ * UI, per-player HUD, and a debug panel with FPS and lobby return action.
+ */
 void GameState::renderUI(){
     // --- Session end overlay ---
     if(!m_player){

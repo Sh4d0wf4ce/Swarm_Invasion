@@ -4,6 +4,11 @@
 #include "AbilityRegistry.hpp"
 
 
+/**
+ * @brief Initializes Juggernaut stats and ability tuning from the registry.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ */
 Juggernaut::Juggernaut(std::uint32_t id, const sf::Vector2f& startPos) : Player(id, startPos, PlayerClass::Juggernaut){
     const auto& a = AbilityRegistry::juggernaut();
     m_maxAmmo = 6;
@@ -24,6 +29,11 @@ Juggernaut::Juggernaut(std::uint32_t id, const sf::Vector2f& startPos) : Player(
 }
 
 
+/**
+ * @brief Updates charge movement, repulsor VFX, recoil, ult timer, and base state.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map used for wall collision checks.
+ */
 void Juggernaut::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
 
     // --- Charge movement ---
@@ -99,6 +109,12 @@ void Juggernaut::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>&
 // Ability inputs
 // ==========================================
 
+/**
+ * @brief Starts a directional charge dash toward the cursor.
+ * @param mouseWorldPos Target direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Juggernaut::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if(m_cooldownShift <= 0.0f && !m_isCharging){
         m_cooldownShift = m_maxCooldownShift;
@@ -124,6 +140,12 @@ void Juggernaut::onShift(const sf::Vector2f& mouseWorldPos, ClientEngine& engine
     }
 }
 
+/**
+ * @brief Activates the rapid-fire ultimate when fully charged.
+ * @param mouseWorldPos Cursor position in world space.
+ * @param engine Client engine.
+ * @param projMgr Projectile manager.
+ */
 void Juggernaut::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if (!m_isUltActive && m_ultCharge >= m_maxUltCharge) {
         m_isUltActive = true;
@@ -132,6 +154,12 @@ void Juggernaut::onQ(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
     }
 }
 
+/**
+ * @brief Requests a black hole spawn at the cursor, clamped to max range.
+ * @param mouseWorldPos Desired spawn position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Juggernaut::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if(m_cooldownE <= 0.0f){
         m_cooldownE = m_maxCooldownE;
@@ -153,6 +181,12 @@ void Juggernaut::onE(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, Pr
     }
 }
 
+/**
+ * @brief Fires the frontal repulsor cone toward the cursor.
+ * @param mouseWorldPos Aim direction in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager.
+ */
 void Juggernaut::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr){
     if(m_cooldownRMB <= 0.0f){
         m_cooldownRMB = m_maxCooldownRMB;
@@ -172,6 +206,13 @@ void Juggernaut::onRMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
     }
 }
 
+/**
+ * @brief Fires the shotgun and applies recoil knockback during the ultimate.
+ * @param mouseWorldPos Target position in world space.
+ * @param engine Client engine used to notify the server.
+ * @param projMgr Projectile manager that spawns shotgun pellets.
+ * @param enemies Enemy map.
+ */
 void Juggernaut::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, ProjectileManager& projMgr, const std::map<std::uint32_t, std::unique_ptr<Enemy>>& enemies){
     if (m_cooldownLMB > 0.0f || m_isReloading) return; 
     if (m_ammo == 0 && !m_isUltActive) {
@@ -208,6 +249,11 @@ void Juggernaut::onLMB(const sf::Vector2f& mouseWorldPos, ClientEngine& engine, 
 // Remote sync
 // ==========================================
 
+/**
+ * @brief Replays remote charge dash or repulsor visuals from network data.
+ * @param ability Ability type that was used remotely.
+ * @param data Direction or aim vector supplied by the server.
+ */
 void Juggernaut::playRemoteAbility(AbilityType ability, const sf::Vector2f& data) {
     if (ability == AbilityType::JuggernautDash && !m_isCharging) {
         m_isCharging = true;
@@ -232,6 +278,11 @@ void Juggernaut::playRemoteAbility(AbilityType ability, const sf::Vector2f& data
     }
 }
 
+/**
+ * @brief Updates repulsor VFX for a remotely controlled Juggernaut.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map reference.
+ */
 void Juggernaut::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) {
     float dt = deltaTime.asSeconds();
 
@@ -259,6 +310,11 @@ void Juggernaut::updateRemoteVisuals(sf::Time deltaTime, const std::shared_ptr<M
 // Ability hit detection
 // ==========================================
 
+/**
+ * @brief Detects charge dash and repulsor hits against nearby enemies.
+ * @param entities All entities to test for overlap or cone inclusion.
+ * @return Records of enemies hit by active abilities this frame.
+ */
 std::vector<AbilityHitRecord> Juggernaut::checkAbilityHits(const std::vector<Entity*>& entities){
     std::vector<AbilityHitRecord> hits;
     if(m_isCharging){
@@ -310,6 +366,10 @@ std::vector<AbilityHitRecord> Juggernaut::checkAbilityHits(const std::vector<Ent
 // Render
 // ==========================================
 
+/**
+ * @brief Draws the repulsor cone VFX and the base player representation.
+ * @param target Render target to draw into.
+ */
 void Juggernaut::render(sf::RenderTarget& target){
     if (m_repulsorVfxTimer > 0.0f) {
         target.draw(m_repulsorVfx);

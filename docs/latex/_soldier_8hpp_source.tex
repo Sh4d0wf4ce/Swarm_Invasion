@@ -1,0 +1,31 @@
+\doxysection{Soldier.\+hpp}
+\hypertarget{_soldier_8hpp_source}{}\label{_soldier_8hpp_source}\index{src/client/entities/Soldier.hpp@{src/client/entities/Soldier.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Player.hpp"{}}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_soldier_a1da43a57d8aa336fb58596eba2b80f92}{Soldier}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}\{}
+\DoxyCodeLine{00012\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{class_soldier_a1da43a57d8aa336fb58596eba2b80f92}{Soldier}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos);}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_a202cc021f853f61c7089a9d0d32630d5}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{comment}{//\ Ability\ Input\ Hooks}}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_afdc6dbdeeab3eb4c0b3ec1348bc688a5}{onQ}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_a39384a4fd49f3924360004378eeab3a9}{onE}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_aaa690d0d9909a1ba79c61b3a79fd9531}{onRMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_a3e8b89366c7ca00d46f48cbf2e0f3036}{onLMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\&\ enemies)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{comment}{//\ Sprint\ \&\ Stamina}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_stamina\{100.0f\};}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxStamina\{100.0f\};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isExhausted\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isSprinting\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_soldier_a7778a124f1ba632495788c3fdec15b47}{renderShiftSkill}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00032\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,185 @@
+\doxysection{Projectile Class Reference}
+\hypertarget{class_projectile}{}\label{class_projectile}\index{Projectile@{Projectile}}
+
+
+Base client-\/side projectile with movement, lifetime, and collision handling.  
+
+
+
+
+{\ttfamily \+\#include $<$Projectile.\+hpp$>$}
+
+Inheritance diagram for Projectile:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.523810cm]{class_projectile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} weapon)
+\begin{DoxyCompactList}\small\item\em Constructs a projectile from weapon stats and initializes its visual shape. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}{update}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Advances position and decrements lifetime; deactivates when expired. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_projectile_ac314a0afcb6937b668171376275715ff}{render}} (sf::\+\+Render\+Target \&target)
+\begin{DoxyCompactList}\small\item\em Draws the projectile circle shape at its current position. \end{DoxyCompactList}\item 
+virtual std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_projectile_af7ea80495061bcff8628631dbfedcf5a}{check\+Collisions}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Tests wall and entity collisions and deactivates on first hostile hit. \end{DoxyCompactList}\item 
+\Hypertarget{class_projectile_aa3107fe7df323250ca2ae0e869994790}\label{class_projectile_aa3107fe7df323250ca2ae0e869994790} 
+bool {\bfseries is\+Active} () const
+\item 
+\Hypertarget{class_projectile_a880c817daa6c8d7df6e2defc724c04b5}\label{class_projectile_a880c817daa6c8d7df6e2defc724c04b5} 
+std::\+uint32\+\_\+t {\bfseries get\+Owner\+Id} () const
+\item 
+\Hypertarget{class_projectile_acd4d16024ae21a4f8a847425c469ec24}\label{class_projectile_acd4d16024ae21a4f8a847425c469ec24} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries get\+Weapon\+Type} () const
+\item 
+\Hypertarget{class_projectile_ac25688c27f1737c501ad726ca9850a4f}\label{class_projectile_ac25688c27f1737c501ad726ca9850a4f} 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+\Hypertarget{class_projectile_a59745666508b1ad0cb9f2d9579b9858e}\label{class_projectile_a59745666508b1ad0cb9f2d9579b9858e} 
+float {\bfseries get\+Radius} () const
+\item 
+\Hypertarget{class_projectile_aff4de189764bc239246407c3bca041b7}\label{class_projectile_aff4de189764bc239246407c3bca041b7} 
+Faction {\bfseries get\+Faction} () const
+\item 
+\Hypertarget{class_projectile_a6aa9b6ef83fedaf348a0b87b441f1394}\label{class_projectile_a6aa9b6ef83fedaf348a0b87b441f1394} 
+void {\bfseries deactivate} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_projectile_a36c3b047a0f8de7fec36dad0247cfdd1}\label{class_projectile_a36c3b047a0f8de7fec36dad0247cfdd1} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+\Hypertarget{class_projectile_add6f0d3d0c5bccfc0cca2430fbdd828a}\label{class_projectile_add6f0d3d0c5bccfc0cca2430fbdd828a} 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+owner\+Id}
+\item 
+\Hypertarget{class_projectile_a9e10c76ecdc4bf76bd1629070b60a5dd}\label{class_projectile_a9e10c76ecdc4bf76bd1629070b60a5dd} 
+Faction {\bfseries m\+\_\+faction}
+\item 
+\Hypertarget{class_projectile_a26d4bdd83c3458bb399904ed68bd8a30}\label{class_projectile_a26d4bdd83c3458bb399904ed68bd8a30} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries m\+\_\+weapon\+Type}
+\item 
+\Hypertarget{class_projectile_a12b50b57c9e4338ed6ce3203a3db0816}\label{class_projectile_a12b50b57c9e4338ed6ce3203a3db0816} 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+\Hypertarget{class_projectile_ae052b6bf7f25063f1c3b0fff3911d4a0}\label{class_projectile_ae052b6bf7f25063f1c3b0fff3911d4a0} 
+sf::\+\+Vector2f {\bfseries m\+\_\+velocity}
+\item 
+\Hypertarget{class_projectile_a2aa53ec3d81e06b0d1e2dab2bcdf0996}\label{class_projectile_a2aa53ec3d81e06b0d1e2dab2bcdf0996} 
+float {\bfseries m\+\_\+lifetime}
+\item 
+\Hypertarget{class_projectile_a23f41267c4cfaf329b6b904941876bf8}\label{class_projectile_a23f41267c4cfaf329b6b904941876bf8} 
+float {\bfseries m\+\_\+radius}
+\item 
+\Hypertarget{class_projectile_af9dcc1b11bd5752a25094f24dba7dbaa}\label{class_projectile_af9dcc1b11bd5752a25094f24dba7dbaa} 
+bool {\bfseries m\+\_\+active} \{true\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base client-\/side projectile with movement, lifetime, and collision handling. 
+
+Uses weapon registry stats for radius, lifetime, and appearance. Derived classes override update, render, and collision behavior for weapon-\/specific effects. 
+
+\label{doc-constructors}
+\Hypertarget{class_projectile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}\index{Projectile@{Projectile}!Projectile@{Projectile}}
+\index{Projectile@{Projectile}!Projectile@{Projectile}}
+\doxysubsubsection{\texorpdfstring{Projectile()}{Projectile()}}
+{\footnotesize\ttfamily \label{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88} 
+Projectile::\+\+Projectile (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{velocity}{, }\item[{Faction}]{faction}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}}}]{weapon}{}\end{DoxyParamCaption})}
+
+
+
+Constructs a projectile from weapon stats and initializes its visual shape. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_entity}{Entity} ID of the shooter. \\
+\hline
+{\em start\+Pos} & World position where the projectile spawns. \\
+\hline
+{\em velocity} & Initial movement vector in pixels per second. \\
+\hline
+{\em faction} & Faction of the owner; used to filter collision targets. \\
+\hline
+{\em weapon} & Weapon type used to look up radius, lifetime, and color. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_projectile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_projectile_af7ea80495061bcff8628631dbfedcf5a}\index{Projectile@{Projectile}!checkCollisions@{checkCollisions}}
+\index{checkCollisions@{checkCollisions}!Projectile@{Projectile}}
+\doxysubsubsection{\texorpdfstring{checkCollisions()}{checkCollisions()}}
+{\footnotesize\ttfamily \label{class_projectile_af7ea80495061bcff8628631dbfedcf5a} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Projectile::\+check\+Collisions (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Tests wall and entity collisions and deactivates on first hostile hit. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & Candidate entities to test against. \\
+\hline
+{\em map} & Map used for wall tile checks; may be null to skip wall collision. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+IDs of entities hit; at most one ID for the base projectile. 
+\end{DoxyReturn}
+
+
+Reimplemented in \doxymbox{\hyperlink{class_drone_blaster_projectile_a7699deba7d8a8daf29185fbec7cbd15f}{Drone\+Blaster\+Projectile}}, \doxymbox{\hyperlink{class_needle_projectile_ad42493c2ca1120bc63278331aac657f1}{Needle\+Projectile}}, \doxymbox{\hyperlink{class_rocket_projectile_a3219ad45218752ad165ccf0685f099e6}{Rocket\+Projectile}}, and \doxymbox{\hyperlink{class_wave_projectile_a069fff796eb303b4b82081b34a12d44c}{Wave\+Projectile}}.
+
+\Hypertarget{class_projectile_ac314a0afcb6937b668171376275715ff}\index{Projectile@{Projectile}!render@{render}}
+\index{render@{render}!Projectile@{Projectile}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_projectile_ac314a0afcb6937b668171376275715ff} 
+void Projectile::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Draws the projectile circle shape at its current position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \doxymbox{\hyperlink{class_drone_blaster_projectile_a0c2f7fc0b26e84c9acf06f164518f455}{Drone\+Blaster\+Projectile}}, \doxymbox{\hyperlink{class_needle_projectile_a42d65c303a901b8eb97c334eda8221de}{Needle\+Projectile}}, \doxymbox{\hyperlink{class_rocket_projectile_a64b198b9ce87a122933729cb51b8475b}{Rocket\+Projectile}}, \doxymbox{\hyperlink{class_shuriken_projectile_aba50516707dac651eed48d3c3176e874}{Shuriken\+Projectile}}, and \doxymbox{\hyperlink{class_wave_projectile_ad7f01e53e06d8f919060190ee5e73132}{Wave\+Projectile}}.
+
+\Hypertarget{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}\index{Projectile@{Projectile}!update@{update}}
+\index{update@{update}!Projectile@{Projectile}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_projectile_acf4823bc5a00bf10d39c423f8077b58c} 
+void Projectile::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Advances position and decrements lifetime; deactivates when expired. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented in \doxymbox{\hyperlink{class_rocket_projectile_ae324497e69e4dedf54d1f62bd1f3046d}{Rocket\+Projectile}}, \doxymbox{\hyperlink{class_shuriken_projectile_a7a21f9a0e80ac51af3fa2d57879ccba4}{Shuriken\+Projectile}}, and \doxymbox{\hyperlink{class_wave_projectile_a7eb09a0651f8917f65da5c2fd11be50c}{Wave\+Projectile}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+projectiles/\+Projectile.\+hpp\item 
+src/\+client/\+projectiles/\+Projectile.\+cpp\end{DoxyCompactItemize}

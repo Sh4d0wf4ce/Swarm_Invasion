@@ -1,0 +1,263 @@
+\doxysection{Medic\+Orb Class Reference}
+\hypertarget{class_medic_orb}{}\label{class_medic_orb}\index{MedicOrb@{MedicOrb}}
+
+
+\doxylink{class_medic}{Medic} healing orb that moves through the map and tethers nearby units.  
+
+
+
+
+{\ttfamily \+\#include $<$Medic\+Orb.\+hpp$>$}
+
+Inheritance diagram for Medic\+Orb:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_medic_orb}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_medic_orb_a0dcac93ab5061c00bfa2fbf0d7595206}{Medic\+Orb}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&direction)
+\begin{DoxyCompactList}\small\item\em Constructs an orb with registry speed and directional velocity. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_orb_aba7a6f6707cdcbce18b856db4ad79eb0}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Moves the orb, bounces off walls, and syncs toward server position. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_orb_a8a75dff6d1b74255a75467b0a2806afb}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws tethers to nearby entities and the pulsing orb shapes. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_orb_afd0550159dd1bd7243b201f1e0764143}{set\+Server\+Position}} (const sf::\+\+Vector2f \&pos)
+\begin{DoxyCompactList}\small\item\em Sets the authoritative server position for interpolation. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_orb_aa08e38914d3d13ab19f64fdece4c1169}{set\+Nearby\+Entities}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&allies, const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&enemies)
+\begin{DoxyCompactList}\small\item\em Supplies nearby allies and enemies for tether rendering. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_medic_orb_a8bbaf2377a0f90f4f408e0a9de9d41e2}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the player faction for combat filtering. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_medic_orb_acdbccd895dff797aca513ef2f297554c}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Returns the orb collision radius from the ability registry. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668}{draw\+Tether}} (sf::\+\+Render\+Target \&target, sf::\+\+Vector2f from, sf::\+\+Vector2f to, sf::\+\+Color color)
+\begin{DoxyCompactList}\small\item\em Draws a jagged energy tether line between two world points. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_orb_a878e0df7396a7d9c721e7ed5eece7abc}\label{class_medic_orb_a878e0df7396a7d9c721e7ed5eece7abc} 
+sf::\+\+Vector2f {\bfseries m\+\_\+velocity}
+\item 
+\Hypertarget{class_medic_orb_a6fb232fc14b22af2c8678486c0c182d4}\label{class_medic_orb_a6fb232fc14b22af2c8678486c0c182d4} 
+sf::\+\+Vector2f {\bfseries m\+\_\+server\+Position}
+\item 
+\Hypertarget{class_medic_orb_ae58ec4fa8d3603671d0e1863dd4b76d4}\label{class_medic_orb_ae58ec4fa8d3603671d0e1863dd4b76d4} 
+float {\bfseries m\+\_\+anim\+Time} \{0.\+0f\}
+\item 
+\Hypertarget{class_medic_orb_ade3e31731cd898e41e009f6c28cd25ad}\label{class_medic_orb_ade3e31731cd898e41e009f6c28cd25ad} 
+std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ {\bfseries m\+\_\+allies}
+\item 
+\Hypertarget{class_medic_orb_a040bccd335da9ef998fd65ecfcfb8448}\label{class_medic_orb_a040bccd335da9ef998fd65ecfcfb8448} 
+std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ {\bfseries m\+\_\+enemies}
+\item 
+\Hypertarget{class_medic_orb_a0c3482bca5cd5ea00f6ea2e8359fcbbc}\label{class_medic_orb_a0c3482bca5cd5ea00f6ea2e8359fcbbc} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+inner\+Shape}
+\item 
+\Hypertarget{class_medic_orb_a131e426b8dbb7cffd8735edf65ad11ac}\label{class_medic_orb_a131e426b8dbb7cffd8735edf65ad11ac} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+outer\+Shape}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_medic}{Medic} healing orb that moves through the map and tethers nearby units. 
+
+Bounces off walls, interpolates toward server position, and draws energy tethers to allies and enemies within effect range. Lifetime is tracked via HP. 
+
+\label{doc-constructors}
+\Hypertarget{class_medic_orb_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_medic_orb_a0dcac93ab5061c00bfa2fbf0d7595206}\index{MedicOrb@{MedicOrb}!MedicOrb@{MedicOrb}}
+\index{MedicOrb@{MedicOrb}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{MedicOrb()}{MedicOrb()}}
+{\footnotesize\ttfamily \label{class_medic_orb_a0dcac93ab5061c00bfa2fbf0d7595206} 
+Medic\+Orb::\+\+Medic\+Orb (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{direction}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs an orb with registry speed and directional velocity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+{\em direction} & Launch direction; defaults to +X when near zero length. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_medic_orb_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668}\index{MedicOrb@{MedicOrb}!drawTether@{drawTether}}
+\index{drawTether@{drawTether}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{drawTether()}{drawTether()}}
+{\footnotesize\ttfamily \label{class_medic_orb_aaa3eff223ba43183dc2f9590f39c8668} 
+void Medic\+Orb::\+draw\+Tether (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{, }\item[{sf::\+\+Vector2f}]{from}{, }\item[{sf::\+\+Vector2f}]{to}{, }\item[{sf::\+\+Color}]{color}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}, {\ttfamily [private]}}
+
+
+
+Draws a jagged energy tether line between two world points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+{\em from} & Start position in world space. \\
+\hline
+{\em to} & End position in world space. \\
+\hline
+{\em color} & Line color including alpha. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_orb_a8bbaf2377a0f90f4f408e0a9de9d41e2}\index{MedicOrb@{MedicOrb}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_medic_orb_a8bbaf2377a0f90f4f408e0a9de9d41e2} 
+Faction Medic\+Orb::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the player faction for combat filtering. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+Players. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_orb_acdbccd895dff797aca513ef2f297554c}\index{MedicOrb@{MedicOrb}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_medic_orb_acdbccd895dff797aca513ef2f297554c} 
+float Medic\+Orb::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Returns the orb collision radius from the ability registry. 
+
+\begin{DoxyReturn}{Returns}
+Orb radius in world units. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_orb_a8a75dff6d1b74255a75467b0a2806afb}\index{MedicOrb@{MedicOrb}!render@{render}}
+\index{render@{render}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_medic_orb_a8a75dff6d1b74255a75467b0a2806afb} 
+void Medic\+Orb::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws tethers to nearby entities and the pulsing orb shapes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_orb_aa08e38914d3d13ab19f64fdece4c1169}\index{MedicOrb@{MedicOrb}!setNearbyEntities@{setNearbyEntities}}
+\index{setNearbyEntities@{setNearbyEntities}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{setNearbyEntities()}{setNearbyEntities()}}
+{\footnotesize\ttfamily \label{class_medic_orb_aa08e38914d3d13ab19f64fdece4c1169} 
+void Medic\+Orb::\+set\+Nearby\+Entities (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{allies}{, }\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{enemies}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Supplies nearby allies and enemies for tether rendering. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em allies} & Player-\/faction entities within tether range. \\
+\hline
+{\em enemies} & Enemy-\/faction entities within tether range. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_orb_afd0550159dd1bd7243b201f1e0764143}\index{MedicOrb@{MedicOrb}!setServerPosition@{setServerPosition}}
+\index{setServerPosition@{setServerPosition}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{setServerPosition()}{setServerPosition()}}
+{\footnotesize\ttfamily \label{class_medic_orb_afd0550159dd1bd7243b201f1e0764143} 
+void Medic\+Orb::\+set\+Server\+Position (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets the authoritative server position for interpolation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & Latest world position from the server. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_orb_aba7a6f6707cdcbce18b856db4ad79eb0}\index{MedicOrb@{MedicOrb}!update@{update}}
+\index{update@{update}!MedicOrb@{MedicOrb}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_medic_orb_aba7a6f6707cdcbce18b856db4ad79eb0} 
+void Medic\+Orb::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Moves the orb, bounces off walls, and syncs toward server position. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map used for wall collision checks. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Medic\+Orb.\+hpp\end{DoxyCompactItemize}

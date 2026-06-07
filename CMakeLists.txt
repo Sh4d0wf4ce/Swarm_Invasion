@@ -110,3 +110,12 @@ add_custom_target(copy_assets ALL
 
 add_dependencies(SwarmClient copy_assets)
 add_dependencies(SwarmServer copy_assets)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Generating Doxygen documentation"
+    )
+endif()

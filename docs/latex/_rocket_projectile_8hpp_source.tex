@@ -1,0 +1,31 @@
+\doxysection{Rocket\+Projectile.\+hpp}
+\hypertarget{_rocket_projectile_8hpp_source}{}\label{_rocket_projectile_8hpp_source}\index{src/client/projectiles/RocketProjectile.hpp@{src/client/projectiles/RocketProjectile.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Projectile.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/Sprite.hpp>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/CircleShape.hpp>}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_rocket_projectile_a58040e1591917d35f9dd582a3a2aa7e4}{RocketProjectile}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}\ \{}
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00015\ \ \ \ \ \doxymbox{\hyperlink{class_rocket_projectile_a58040e1591917d35f9dd582a3a2aa7e4}{RocketProjectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ velocity,\ Faction\ faction);}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_rocket_projectile_ae324497e69e4dedf54d1f62bd1f3046d}{update}}(sf::Time\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_rocket_projectile_a64b198b9ce87a122933729cb51b8475b}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00019\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_rocket_projectile_a3219ad45218752ad165ccf0685f099e6}{checkCollisions}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00020\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00021\ \ \ \ \ std::optional<sf::Sprite>\ m\_sprite;}
+\DoxyCodeLine{00022\ \ \ \ \ sf::CircleShape\ m\_explosionShape;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ }
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{comment}{//\ Explosion\ State}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isExploding\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_explosionTimer\{0.0f\};}
+\DoxyCodeLine{00028\ \ \ \ \ sf::Vector2f\ m\_explosionPos;}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_explosionRadius\{80.0f\};}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ m\_maxExplosionTime\{0.4f\};}
+\DoxyCodeLine{00031\ \};}
+
+\end{DoxyCode}

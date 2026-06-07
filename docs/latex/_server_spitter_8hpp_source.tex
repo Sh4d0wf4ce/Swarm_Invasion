@@ -1,0 +1,26 @@
+\doxysection{Server\+Spitter.\+hpp}
+\hypertarget{_server_spitter_8hpp_source}{}\label{_server_spitter_8hpp_source}\index{src/server/enemies/ServerSpitter.hpp@{src/server/enemies/ServerSpitter.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}ServerEnemy.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_server_spitter}{ServerSpitter}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_server_spitter_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy}}\ \{}
+\DoxyCodeLine{00009\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy::ServerEnemy}};}
+\DoxyCodeLine{00011\ \ \ \ \ }
+\DoxyCodeLine{00012\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_server_spitter_aa4e1e4d7d82a626cdfcd298a9f116bd4}{update}}(}
+\DoxyCodeLine{00013\ \ \ \ \ \ \ \ \ sf::Time\ deltaTime,}
+\DoxyCodeLine{00014\ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ }
+\DoxyCodeLine{00015\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_client_info}{ClientInfo}}>\&\ clients,\ }
+\DoxyCodeLine{00016\ \ \ \ \ \ \ \ \ std::shared\_ptr<MapGenerator>\ map,\ }
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<int>>\&\ flowField,\ }
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ std::vector<EnemyShootEvent>\&\ outShootEvents,\ }
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ allEnemies,\ }
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\&\ grid}
+\DoxyCodeLine{00021\ \ \ \ \ )\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \};}
+
+\end{DoxyCode}

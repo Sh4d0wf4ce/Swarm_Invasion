@@ -1,0 +1,212 @@
+\doxysection{Lobby\+State Class Reference}
+\hypertarget{class_lobby_state}{}\label{class_lobby_state}\index{LobbyState@{LobbyState}}
+
+
+Pre-\/game lobby state for server connection and class selection.  
+
+
+
+
+{\ttfamily \+\#include $<$Lobby\+State.\+hpp$>$}
+
+Inheritance diagram for Lobby\+State:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_lobby_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_lobby_state_a099eb7862e4efcac63f458085df27aeb}{Lobby\+State}} (\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine)
+\begin{DoxyCompactList}\small\item\em Constructs the lobby state bound to the client engine. \end{DoxyCompactList}\item 
+\Hypertarget{class_lobby_state_ae241abd0dc3df9961eb1ed03ad8af45a}\label{class_lobby_state_ae241abd0dc3df9961eb1ed03ad8af45a} 
+{\bfseries \texorpdfstring{$\sim$}{\string~}\+Lobby\+State} () override=default
+\begin{DoxyCompactList}\small\item\em Default destructor; no special cleanup required. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_lobby_state_a5f943ab150a77c0b943f0abeb2fafaea}{handle\+Packet}} (\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} type, sf::\+\+Packet \&packet) override
+\begin{DoxyCompactList}\small\item\em Handles server responses while waiting in the lobby. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_lobby_state_a61a006091c084aa2620828c34c35dc8a}{handle\+Input}} (const sf::\+\+Event \&event) override
+\begin{DoxyCompactList}\small\item\em Lobby has no keyboard or mouse gameplay input. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_lobby_state_a37f8aaf7ebb0b33cd71e4b30b89b2182}{update}} (sf::\+\+Time delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Retries join requests and enforces the lobby connection timeout. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_lobby_state_a34d12bde8ce40146356971190ed4b28b}{render}} () override
+\begin{DoxyCompactList}\small\item\em Lobby has no world rendering; UI is drawn in \doxylink{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}{render\+UI()}. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}{render\+UI}} () override
+\begin{DoxyCompactList}\small\item\em Renders the lobby menu for server connection and class selection. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_state}{State}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}} (\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine)
+\begin{DoxyCompactList}\small\item\em Constructs a state bound to the given client engine. \end{DoxyCompactList}\item 
+virtual {\bfseries \texorpdfstring{$\sim$}{\string~}\+State} ()=default
+\begin{DoxyCompactList}\small\item\em Virtual destructor for polymorphic state cleanup. \end{DoxyCompactList}\item 
+virtual void {\bfseries on\+Enter} ()
+\begin{DoxyCompactList}\small\item\em Called when this state becomes active after a state change. \end{DoxyCompactList}\item 
+virtual void {\bfseries on\+Exit} ()
+\begin{DoxyCompactList}\small\item\em Called when this state is about to be replaced or destroyed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_lobby_state_ac951187dd730732620b12628d5863fad}{try\+Send\+Join\+Request}} ()
+\begin{DoxyCompactList}\small\item\em Resolves the server address and sends a join request packet. \end{DoxyCompactList}\item 
+\Hypertarget{class_lobby_state_a7eebb67c1e1d5009f21f73fd88482d2e}\label{class_lobby_state_a7eebb67c1e1d5009f21f73fd88482d2e} 
+void {\bfseries cancel\+Connecting} ()
+\begin{DoxyCompactList}\small\item\em Aborts an in-\/progress connection attempt and clears error display state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_lobby_state_abb2aca13346c06954d8aa9e1f00006fd}\label{class_lobby_state_abb2aca13346c06954d8aa9e1f00006fd} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+selected\+Class} = Player\+Class::\+\+Soldier
+\item 
+\Hypertarget{class_lobby_state_a4e2c6725eff6827bf63ae1d9545a9891}\label{class_lobby_state_a4e2c6725eff6827bf63ae1d9545a9891} 
+char {\bfseries m\+\_\+ip\+Buffer} \+[64]\+ = "{}127.\+0.\+0.\+1"{}
+\item 
+\Hypertarget{class_lobby_state_a89b8cff7df22dae204c35a8d0236b07e}\label{class_lobby_state_a89b8cff7df22dae204c35a8d0236b07e} 
+bool {\bfseries m\+\_\+is\+Connecting} = false
+\item 
+\Hypertarget{class_lobby_state_a93dc233e051df2158dd0eff7d953213a}\label{class_lobby_state_a93dc233e051df2158dd0eff7d953213a} 
+bool {\bfseries m\+\_\+connect\+Failed} = false
+\item 
+\Hypertarget{class_lobby_state_ac2c02d386ca86f90d2081538bb1eb4d2}\label{class_lobby_state_ac2c02d386ca86f90d2081538bb1eb4d2} 
+std::\+string {\bfseries m\+\_\+connect\+Error\+Message}
+\item 
+\Hypertarget{class_lobby_state_a5756c820e69efdfae151a1e6d6b0c0f7}\label{class_lobby_state_a5756c820e69efdfae151a1e6d6b0c0f7} 
+sf::\+\+Clock {\bfseries m\+\_\+connect\+Timer}
+\item 
+\Hypertarget{class_lobby_state_ababc063a4c8db518278fd0e3f06613f4}\label{class_lobby_state_ababc063a4c8db518278fd0e3f06613f4} 
+sf::\+\+Clock {\bfseries m\+\_\+retry\+Timer}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_state}{State}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \& {\bfseries m\+\_\+engine}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Pre-\/game lobby state for server connection and class selection. 
+
+Presents an Im\+Gui menu to enter a server address, pick a hero class, and join a match. Retries join requests until accepted or the connection times out. 
+
+\label{doc-constructors}
+\Hypertarget{class_lobby_state_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_lobby_state_a099eb7862e4efcac63f458085df27aeb}\index{LobbyState@{LobbyState}!LobbyState@{LobbyState}}
+\index{LobbyState@{LobbyState}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{LobbyState()}{LobbyState()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a099eb7862e4efcac63f458085df27aeb} 
+Lobby\+State::\+\+Lobby\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs the lobby state bound to the client engine. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em engine} & Client engine that owns this state. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_lobby_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_lobby_state_a61a006091c084aa2620828c34c35dc8a}\index{LobbyState@{LobbyState}!handleInput@{handleInput}}
+\index{handleInput@{handleInput}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{handleInput()}{handleInput()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a61a006091c084aa2620828c34c35dc8a} 
+void Lobby\+State::\+handle\+Input (\begin{DoxyParamCaption}\item[{const sf::\+\+Event \&}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Lobby has no keyboard or mouse gameplay input. 
+
+
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_lobby_state_a5f943ab150a77c0b943f0abeb2fafaea}\index{LobbyState@{LobbyState}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a5f943ab150a77c0b943f0abeb2fafaea} 
+void Lobby\+State::\+handle\+Packet (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}}}]{type}{, }\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Handles server responses while waiting in the lobby. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Identifies the incoming packet kind. \\
+\hline
+{\em packet} & Deserialized UDP payload from the server.\\
+\hline
+\end{DoxyParams}
+On Join\+Accept, transitions to \doxylink{class_game_state}{Game\+State} with the assigned player id and the class selected in the lobby UI. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_lobby_state_a34d12bde8ce40146356971190ed4b28b}\index{LobbyState@{LobbyState}!render@{render}}
+\index{render@{render}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a34d12bde8ce40146356971190ed4b28b} 
+void Lobby\+State::\+render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Lobby has no world rendering; UI is drawn in \doxylink{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}{render\+UI()}. 
+
+
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75}\index{LobbyState@{LobbyState}!renderUI@{renderUI}}
+\index{renderUI@{renderUI}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{renderUI()}{renderUI()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a74700001cefeb0cc0a9bb0fd82caff75} 
+void Lobby\+State::\+render\+UI (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Renders the lobby menu for server connection and class selection. 
+
+Displays server IP input, hero class radio buttons, connect/\+cancel controls, connection status messages, and a quit button. 
+
+Reimplemented from \doxymbox{\hyperlink{class_state_a635dca032e7d887ed1599977e7b01e90}{State}}.
+
+\Hypertarget{class_lobby_state_ac951187dd730732620b12628d5863fad}\index{LobbyState@{LobbyState}!trySendJoinRequest@{trySendJoinRequest}}
+\index{trySendJoinRequest@{trySendJoinRequest}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{trySendJoinRequest()}{trySendJoinRequest()}}
+{\footnotesize\ttfamily \label{class_lobby_state_ac951187dd730732620b12628d5863fad} 
+void Lobby\+State::\+try\+Send\+Join\+Request (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Resolves the server address and sends a join request packet. 
+
+Updates connection failure state when DNS resolution fails; otherwise stores the resolved address on the engine and sends Join\+Request with the selected player class. \Hypertarget{class_lobby_state_a37f8aaf7ebb0b33cd71e4b30b89b2182}\index{LobbyState@{LobbyState}!update@{update}}
+\index{update@{update}!LobbyState@{LobbyState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_lobby_state_a37f8aaf7ebb0b33cd71e4b30b89b2182} 
+void Lobby\+State::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Retries join requests and enforces the lobby connection timeout. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the previous frame; unused.\\
+\hline
+\end{DoxyParams}
+While connecting, periodically resends join requests and marks the attempt as failed when the configured timeout is exceeded. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+states/\+Lobby\+State.\+hpp\item 
+src/\+client/\+states/\+Lobby\+State.\+cpp\end{DoxyCompactItemize}

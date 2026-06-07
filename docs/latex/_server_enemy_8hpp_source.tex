@@ -1,0 +1,81 @@
+\doxysection{Server\+Enemy.\+hpp}
+\hypertarget{_server_enemy_8hpp_source}{}\label{_server_enemy_8hpp_source}\index{src/server/enemies/ServerEnemy.hpp@{src/server/enemies/ServerEnemy.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}../core/ServerTypes.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}EnemyRegistry.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}../core/SpatialGrid.hpp"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <SFML/System.hpp>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00015\ \textcolor{comment}{//\ Combat\ Events\ \&\ Status\ Effects}}
+\DoxyCodeLine{00016\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00020\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_poison_effect}{PoisonEffect}}\ \{}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ remainingTime;}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{float}\ damagePerSecond;}
+\DoxyCodeLine{00023\ \};}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_enemy_shoot_event}{EnemyShootEvent}}\{}
+\DoxyCodeLine{00029\ \ \ \ \ sf::Vector2f\ startPos;}
+\DoxyCodeLine{00030\ \ \ \ \ sf::Vector2f\ targetPos;}
+\DoxyCodeLine{00031\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ weapon;}
+\DoxyCodeLine{00032\ \};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy}}\{}
+\DoxyCodeLine{00042\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00043\ \ \ \ \ \doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{ServerEnemy}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ type);}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{\string~ServerEnemy}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{virtual}\ std::vector<std::uint32\_t>\ update(}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ sf::Time\ deltaTime,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ ClientInfo>\&\ clients,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ std::shared\_ptr<MapGenerator>\ map,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::vector<std::vector<int>>\&\ flowField,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ std::vector<EnemyShootEvent>\&\ outShootEvents,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ allEnemies,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\&\ grid}
+\DoxyCodeLine{00054\ \ \ \ \ )\ =\ 0;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ std::uint32\_t\ getId()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_id;\ \}}
+\DoxyCodeLine{00057\ \ \ \ \ sf::Vector2f\ getPosition()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_position;\ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ getType()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_type;\ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{float}\ getHp()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_hp;\ \}}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{void}\ setPosition(sf::Vector2f\ newPos)\ \{\ m\_position\ =\ newPos;\ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{void}\ takeDamage(\textcolor{keywordtype}{float}\ damage)\ \{\ m\_hp\ -\/=\ damage;\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ Status\ Effects\ \&\ Knockback}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_enemy_af25637f7502ec64047004584376c3eed}{applyPoison}}(\textcolor{keywordtype}{float}\ duration,\ \textcolor{keywordtype}{float}\ damagePerSecond);}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_enemy_a2feed450487278249f4cee12ee1760d7}{tickStatusEffects}}(\textcolor{keywordtype}{float}\ dt);}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_enemy_afe6cf22dec4573ea143f7bc7a2a6dbb6}{applyKnockback}}(sf::Vector2f\ direction,\ \textcolor{keywordtype}{float}\ force);}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{//\ Perception\ \&\ Movement\ Helpers}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_server_enemy_a015d94bcca62aae81fcc8fdd05813b59}{hasLineOfSight}}(sf::Vector2f\ start,\ sf::Vector2f\ end,\ \textcolor{keywordtype}{float}\ radius,\ std::shared\_ptr<MapGenerator>\ map);}
+\DoxyCodeLine{00072\ \ \ \ \ sf::Vector2f\ \doxymbox{\hyperlink{class_server_enemy_a386ed04189c3e5b569b75ff2ecd02bbd}{calculateSeparation}}(\textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ allEnemies,\ \textcolor{keywordtype}{float}\ myRadius,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\&\ grid);}
+\DoxyCodeLine{00073\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_server_enemy_a584be8ee638f06b9b97487d8f2756acb}{performMeleeChase}}(sf::Time\ deltaTime,\ std::map<std::uint32\_t,\ ClientInfo>\&\ clients,\ std::shared\_ptr<MapGenerator>\ map,\ \textcolor{keyword}{const}\ std::vector<std::vector<int>>\&\ flowField,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ allEnemies,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\&\ grid);}
+\DoxyCodeLine{00074\ \ \ \ \ std::uint32\_t\ \doxymbox{\hyperlink{class_server_enemy_ac7a6c709b19ca53a7a8201d2028454fb}{getClosestPlayerId}}(\textcolor{keyword}{const}\ std::map<std::uint32\_t,\ ClientInfo>\&\ clients,\ \textcolor{keywordtype}{float}\&\ outMinDistSq)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{//\ Core\ State}}
+\DoxyCodeLine{00078\ \ \ \ \ std::uint32\_t\ m\_id;}
+\DoxyCodeLine{00079\ \ \ \ \ sf::Vector2f\ m\_position;}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_hp;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_speed;}
+\DoxyCodeLine{00082\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ m\_type;}
+\DoxyCodeLine{00083\ \ \ \ \ sf::Clock\ m\_lastAttackTime;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ sf::Vector2f\ m\_knockbackVelocity\{0.0f,\ 0.0f\};}
+\DoxyCodeLine{00086\ \ \ \ \ std::vector<PoisonEffect>\ m\_poisonEffects;}
+\DoxyCodeLine{00087\ \};}
+
+\end{DoxyCode}

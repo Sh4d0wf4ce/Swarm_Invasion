@@ -1,0 +1,197 @@
+\doxysection{Rocket\+Projectile Class Reference}
+\hypertarget{class_rocket_projectile}{}\label{class_rocket_projectile}\index{RocketProjectile@{RocketProjectile}}
+
+
+Explosive rocket projectile with area-\/of-\/effect detonation and fade-\/out visuals.  
+
+
+
+
+{\ttfamily \+\#include $<$Rocket\+Projectile.\+hpp$>$}
+
+Inheritance diagram for Rocket\+Projectile:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_rocket_projectile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_rocket_projectile_a58040e1591917d35f9dd582a3a2aa7e4}{Rocket\+Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction)
+\begin{DoxyCompactList}\small\item\em Initializes rocket visuals, texture, and explosion radius from weapon stats. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_rocket_projectile_ae324497e69e4dedf54d1f62bd1f3046d}{update}} (sf::\+\+Time delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Moves the rocket or advances the explosion animation timer. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_rocket_projectile_a64b198b9ce87a122933729cb51b8475b}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the rocket sprite or an expanding explosion fade-\/out. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_rocket_projectile_a3219ad45218752ad165ccf0685f099e6}{check\+Collisions}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Detonates on wall or direct hit and returns all entities inside blast radius. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} weapon)
+\begin{DoxyCompactList}\small\item\em Constructs a projectile from weapon stats and initializes its visual shape. \end{DoxyCompactList}\item 
+bool {\bfseries is\+Active} () const
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Owner\+Id} () const
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries get\+Weapon\+Type} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Radius} () const
+\item 
+Faction {\bfseries get\+Faction} () const
+\item 
+void {\bfseries deactivate} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_rocket_projectile_ab389fd0e5f12eca36ade090c676e76d5}\label{class_rocket_projectile_ab389fd0e5f12eca36ade090c676e76d5} 
+std::\+optional$<$ sf::\+\+Sprite $>$ {\bfseries m\+\_\+sprite}
+\item 
+\Hypertarget{class_rocket_projectile_a249436257a7ccd6e5bcc3fa75fa87ccc}\label{class_rocket_projectile_a249436257a7ccd6e5bcc3fa75fa87ccc} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+explosion\+Shape}
+\item 
+\Hypertarget{class_rocket_projectile_a07183c6375e05329b97e5a2a9299e218}\label{class_rocket_projectile_a07183c6375e05329b97e5a2a9299e218} 
+bool {\bfseries m\+\_\+is\+Exploding} \{false\}
+\item 
+\Hypertarget{class_rocket_projectile_a77b706657148ce6a8566723af90ac30d}\label{class_rocket_projectile_a77b706657148ce6a8566723af90ac30d} 
+float {\bfseries m\+\_\+explosion\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{class_rocket_projectile_a285ba3ff861ba58d36202f9aa26e350f}\label{class_rocket_projectile_a285ba3ff861ba58d36202f9aa26e350f} 
+sf::\+\+Vector2f {\bfseries m\+\_\+explosion\+Pos}
+\item 
+\Hypertarget{class_rocket_projectile_ab63b5c3a6ebc8a2dae39b93b657db5b3}\label{class_rocket_projectile_ab63b5c3a6ebc8a2dae39b93b657db5b3} 
+float {\bfseries m\+\_\+explosion\+Radius} \{80.\+0f\}
+\item 
+\Hypertarget{class_rocket_projectile_a8ee970c1ee436aeca2feee9175bd72f1}\label{class_rocket_projectile_a8ee970c1ee436aeca2feee9175bd72f1} 
+const float {\bfseries m\+\_\+max\+Explosion\+Time} \{0.\+4f\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+owner\+Id}
+\item 
+Faction {\bfseries m\+\_\+faction}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries m\+\_\+weapon\+Type}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+velocity}
+\item 
+float {\bfseries m\+\_\+lifetime}
+\item 
+float {\bfseries m\+\_\+radius}
+\item 
+bool {\bfseries m\+\_\+active} \{true\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Explosive rocket projectile with area-\/of-\/effect detonation and fade-\/out visuals. 
+
+On impact with a wall or entity, triggers an explosion that damages all enemies within the configured radius before deactivating. 
+
+\label{doc-constructors}
+\Hypertarget{class_rocket_projectile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_rocket_projectile_a58040e1591917d35f9dd582a3a2aa7e4}\index{RocketProjectile@{RocketProjectile}!RocketProjectile@{RocketProjectile}}
+\index{RocketProjectile@{RocketProjectile}!RocketProjectile@{RocketProjectile}}
+\doxysubsubsection{\texorpdfstring{RocketProjectile()}{RocketProjectile()}}
+{\footnotesize\ttfamily \label{class_rocket_projectile_a58040e1591917d35f9dd582a3a2aa7e4} 
+Rocket\+Projectile::\+\+Rocket\+Projectile (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{velocity}{, }\item[{Faction}]{faction}{}\end{DoxyParamCaption})}
+
+
+
+Initializes rocket visuals, texture, and explosion radius from weapon stats. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_entity}{Entity} ID of the shooter. \\
+\hline
+{\em start\+Pos} & World position where the rocket spawns. \\
+\hline
+{\em velocity} & Initial movement vector in pixels per second. \\
+\hline
+{\em faction} & Faction of the owner. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_rocket_projectile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_rocket_projectile_a3219ad45218752ad165ccf0685f099e6}\index{RocketProjectile@{RocketProjectile}!checkCollisions@{checkCollisions}}
+\index{checkCollisions@{checkCollisions}!RocketProjectile@{RocketProjectile}}
+\doxysubsubsection{\texorpdfstring{checkCollisions()}{checkCollisions()}}
+{\footnotesize\ttfamily \label{class_rocket_projectile_a3219ad45218752ad165ccf0685f099e6} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Rocket\+Projectile::\+check\+Collisions (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Detonates on wall or direct hit and returns all entities inside blast radius. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & Candidate entities to test against. \\
+\hline
+{\em map} & Map used for wall tile checks. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+IDs of all hostile entities within explosion radius after detonation. 
+\end{DoxyReturn}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_af7ea80495061bcff8628631dbfedcf5a}{Projectile}}.
+
+\Hypertarget{class_rocket_projectile_a64b198b9ce87a122933729cb51b8475b}\index{RocketProjectile@{RocketProjectile}!render@{render}}
+\index{render@{render}!RocketProjectile@{RocketProjectile}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_rocket_projectile_a64b198b9ce87a122933729cb51b8475b} 
+void Rocket\+Projectile::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the rocket sprite or an expanding explosion fade-\/out. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_ac314a0afcb6937b668171376275715ff}{Projectile}}.
+
+\Hypertarget{class_rocket_projectile_ae324497e69e4dedf54d1f62bd1f3046d}\index{RocketProjectile@{RocketProjectile}!update@{update}}
+\index{update@{update}!RocketProjectile@{RocketProjectile}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_rocket_projectile_ae324497e69e4dedf54d1f62bd1f3046d} 
+void Rocket\+Projectile::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Moves the rocket or advances the explosion animation timer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}{Projectile}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+projectiles/\+Rocket\+Projectile.\+hpp\item 
+src/\+client/\+projectiles/\+Rocket\+Projectile.\+cpp\end{DoxyCompactItemize}

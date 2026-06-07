@@ -1,0 +1,306 @@
+\doxysection{Game\+State Class Reference}
+\hypertarget{class_game_state}{}\label{class_game_state}\index{GameState@{GameState}}
+
+
+Active gameplay state for an in-\/session multiplayer match.  
+
+
+
+
+{\ttfamily \+\#include $<$Game\+State.\+hpp$>$}
+
+Inheritance diagram for Game\+State:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_game_state}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_game_state_1_1_client_heal_field}{Client\+Heal\+Field}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_game_state_ad7d2c7a6e419136ad59056b454710572}{Game\+State}} (\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, std::\+uint32\+\_\+t my\+Player\+Id, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} my\+Class)
+\begin{DoxyCompactList}\small\item\em Initializes the match scene for the local player. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{class_game_state_a5eddf97b5c453466e5f9729d7507dab0}{\texorpdfstring{$\sim$}{\string~}\+Game\+State}} () override
+\begin{DoxyCompactList}\small\item\em Notifies the server that this player is disconnecting. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_game_state_a36a1a733d0cd9cbb1cc65013b88a4f2f}{handle\+Packet}} (\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}} type, sf::\+\+Packet \&packet) override
+\begin{DoxyCompactList}\small\item\em Dispatches an incoming server packet to the appropriate handler. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_game_state_aafe14518dbd547227d20bb7e076bf4ef}{handle\+Input}} (const sf::\+\+Event \&event) override
+\begin{DoxyCompactList}\small\item\em Handles combat and ability input for the local player. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_game_state_a886a5a8d88e20b14c8b08fc309fd8113}{update}} (sf::\+\+Time delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Advances simulation, camera, networking, and entity updates. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_game_state_a2c36ada0cae89f91d956e2c91b070893}{render}} () override
+\begin{DoxyCompactList}\small\item\em Draws the game world using the follow camera. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_game_state_ac6ad0f0f10145a53e481d8669d7eb58a}{render\+UI}} () override
+\begin{DoxyCompactList}\small\item\em Renders Im\+Gui HUD overlays for the active match. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_state}{State}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}} (\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine)
+\begin{DoxyCompactList}\small\item\em Constructs a state bound to the given client engine. \end{DoxyCompactList}\item 
+virtual {\bfseries \texorpdfstring{$\sim$}{\string~}\+State} ()=default
+\begin{DoxyCompactList}\small\item\em Virtual destructor for polymorphic state cleanup. \end{DoxyCompactList}\item 
+virtual void {\bfseries on\+Enter} ()
+\begin{DoxyCompactList}\small\item\em Called when this state becomes active after a state change. \end{DoxyCompactList}\item 
+virtual void {\bfseries on\+Exit} ()
+\begin{DoxyCompactList}\small\item\em Called when this state is about to be replaced or destroyed. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_state_a5da8842f6004cca87ec9aee02ba198a5}\label{class_game_state_a5da8842f6004cca87ec9aee02ba198a5} 
+enum class {\bfseries Session\+End\+Reason} \{ {\bfseries None}
+, {\bfseries Death}
+, {\bfseries Disconnected}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_game_state_aa7ebed73422e0c26508a6acc7ad0db95}{handle\+World\+State}} (sf::\+\+Packet \&packet)
+\begin{DoxyCompactList}\small\item\em Applies a full world snapshot from the server. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_game_state_a32811d4a80a1bba7e83f202c3b728a86}\label{class_game_state_a32811d4a80a1bba7e83f202c3b728a86} 
+sf::\+\+View {\bfseries m\+\_\+camera}
+\item 
+\Hypertarget{class_game_state_a1c2af717f7431d97bf81c67e8cb8da20}\label{class_game_state_a1c2af717f7431d97bf81c67e8cb8da20} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ {\bfseries m\+\_\+player}
+\item 
+\Hypertarget{class_game_state_aada9f2b0eb75b6d990527fd151557876}\label{class_game_state_aada9f2b0eb75b6d990527fd151557876} 
+sf::\+\+Vector2f {\bfseries m\+\_\+last\+Sent\+Position}
+\item 
+\Hypertarget{class_game_state_a6d10f36a032d0ce4d7fcc42e32f1705e}\label{class_game_state_a6d10f36a032d0ce4d7fcc42e32f1705e} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+selected\+Class} = Player\+Class::\+\+Soldier
+\item 
+\Hypertarget{class_game_state_af01f5d258d86bf9ab4f920ade3d90ae3}\label{class_game_state_af01f5d258d86bf9ab4f920ade3d90ae3} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ $>$ {\bfseries m\+\_\+other\+Players}
+\item 
+\Hypertarget{class_game_state_a4f252056cd1e529541d97e0099545766}\label{class_game_state_a4f252056cd1e529541d97e0099545766} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ {\bfseries m\+\_\+enemies}
+\item 
+\Hypertarget{class_game_state_aa7c00193e9525ba0f5f8290d9146de1b}\label{class_game_state_aa7c00193e9525ba0f5f8290d9146de1b} 
+std::\+map$<$ std::\+uint32\+\_\+t, sf::\+\+Vector2f $>$ {\bfseries m\+\_\+energy\+Cells}
+\item 
+\Hypertarget{class_game_state_a92de348c82a2e361cc9b3475f8524ed3}\label{class_game_state_a92de348c82a2e361cc9b3475f8524ed3} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_heal_field}{Heal\+Field}} $>$ $>$ {\bfseries m\+\_\+heal\+Fields}
+\item 
+\Hypertarget{class_game_state_a2fcb6a013fc462e0ac207798935d031c}\label{class_game_state_a2fcb6a013fc462e0ac207798935d031c} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_black_hole}{Black\+Hole}} $>$ $>$ {\bfseries m\+\_\+black\+Holes}
+\item 
+\Hypertarget{class_game_state_a3108fafba9b8ad75bd85af51e1b67d42}\label{class_game_state_a3108fafba9b8ad75bd85af51e1b67d42} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_decoy}{Decoy}} $>$ $>$ {\bfseries m\+\_\+decoys}
+\item 
+\Hypertarget{class_game_state_a97780a7fbb66099ec02da75e1881ce44}\label{class_game_state_a97780a7fbb66099ec02da75e1881ce44} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_medic_orb}{Medic\+Orb}} $>$ $>$ {\bfseries m\+\_\+medic\+Orbs}
+\item 
+\Hypertarget{class_game_state_aabef0a79914b78bf241f9434f6c1fbc4}\label{class_game_state_aabef0a79914b78bf241f9434f6c1fbc4} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_medic_barrier}{Medic\+Barrier}} $>$ $>$ {\bfseries m\+\_\+medic\+Barriers}
+\item 
+\Hypertarget{class_game_state_a67e50804676b736e8120aa924c892b47}\label{class_game_state_a67e50804676b736e8120aa924c892b47} 
+std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_medic_drone}{Medic\+Drone}} $>$ $>$ {\bfseries m\+\_\+medic\+Drones}
+\item 
+\Hypertarget{class_game_state_a9268c0ac1409c290f2e9e7022f70fff3}\label{class_game_state_a9268c0ac1409c290f2e9e7022f70fff3} 
+sf::\+\+Clock {\bfseries m\+\_\+last\+Server\+Message\+Timer}
+\item 
+\Hypertarget{class_game_state_a5cbe58e1e23b5ea9865b5948f0303f36}\label{class_game_state_a5cbe58e1e23b5ea9865b5948f0303f36} 
+sf::\+\+Clock {\bfseries m\+\_\+heartbeat\+Timer}
+\item 
+\Hypertarget{class_game_state_a98f0ce7d391e9a1de33756744b553dc0}\label{class_game_state_a98f0ce7d391e9a1de33756744b553dc0} 
+std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ {\bfseries m\+\_\+map}
+\item 
+\Hypertarget{class_game_state_aa5851a937fa095aa2315c36bbcb2d0b2}\label{class_game_state_aa5851a937fa095aa2315c36bbcb2d0b2} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_renderer}{Map\+Renderer}} $>$ {\bfseries m\+\_\+map\+Renderer}
+\item 
+\Hypertarget{class_game_state_a968506e265608a08b92a623dd5a79c6a}\label{class_game_state_a968506e265608a08b92a623dd5a79c6a} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} $>$ {\bfseries m\+\_\+projectile\+Manager}
+\item 
+\Hypertarget{class_game_state_ae5139a3bc703012e2d568ce0bad25431}\label{class_game_state_ae5139a3bc703012e2d568ce0bad25431} 
+int {\bfseries m\+\_\+team\+Level} = 1
+\item 
+\Hypertarget{class_game_state_a391e8c8bed222fc944fd06287d02d68f}\label{class_game_state_a391e8c8bed222fc944fd06287d02d68f} 
+int {\bfseries m\+\_\+team\+Exp} = 0
+\item 
+\Hypertarget{class_game_state_a8d2ebb978acfb575265e0ed942a55bde}\label{class_game_state_a8d2ebb978acfb575265e0ed942a55bde} 
+int {\bfseries m\+\_\+team\+Exp\+Max} = 10
+\item 
+\Hypertarget{class_game_state_a0773e13c3060a8fda8708f6af89e0dcb}\label{class_game_state_a0773e13c3060a8fda8708f6af89e0dcb} 
+bool {\bfseries m\+\_\+is\+Choosing\+Upgrade} = false
+\item 
+\Hypertarget{class_game_state_a7cdedae471d7df64e4f0da9561360a8b}\label{class_game_state_a7cdedae471d7df64e4f0da9561360a8b} 
+bool {\bfseries m\+\_\+upgrade\+Reveal\+Phase} = false
+\item 
+\Hypertarget{class_game_state_ac119c654ce2c541792eed9681f27908e}\label{class_game_state_ac119c654ce2c541792eed9681f27908e} 
+std::\+array$<$ std::\+string, 3 $>$ {\bfseries m\+\_\+upgrade\+Offers} \{\}
+\item 
+\Hypertarget{class_game_state_a9d3232acb2765b959fd4e9b0559b8c7d}\label{class_game_state_a9d3232acb2765b959fd4e9b0559b8c7d} 
+std::\+string {\bfseries m\+\_\+chosen\+Upgrade\+Id}
+\item 
+\Hypertarget{class_game_state_a8b729b632cd3bceb6381e71c6749fb56}\label{class_game_state_a8b729b632cd3bceb6381e71c6749fb56} 
+sf::\+\+Clock {\bfseries m\+\_\+client\+Upgrade\+Timer}
+\item 
+\Hypertarget{class_game_state_a0089adde3deeb0d98082392ecf1fb9a8}\label{class_game_state_a0089adde3deeb0d98082392ecf1fb9a8} 
+Session\+End\+Reason {\bfseries m\+\_\+session\+End\+Reason} = Session\+End\+Reason::\+\+None
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_state}{State}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \& {\bfseries m\+\_\+engine}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Active gameplay state for an in-\/session multiplayer match. 
+
+Simulates the local player, mirrors remote entities from server snapshots, manages projectiles and ability world objects, handles combat input, and renders the world plus HUD overlays including upgrade selection and session end. 
+
+\label{doc-constructors}
+\Hypertarget{class_game_state_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_game_state_ad7d2c7a6e419136ad59056b454710572}\index{GameState@{GameState}!GameState@{GameState}}
+\index{GameState@{GameState}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{GameState()}{GameState()}}
+{\footnotesize\ttfamily \label{class_game_state_ad7d2c7a6e419136ad59056b454710572} 
+Game\+State::\+\+Game\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{std::\+uint32\+\_\+t}]{my\+Player\+Id}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{my\+Class}{}\end{DoxyParamCaption})}
+
+
+
+Initializes the match scene for the local player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em engine} & Client engine providing window and network access. \\
+\hline
+{\em my\+Player\+Id} & Server-\/assigned network identifier for this client. \\
+\hline
+{\em my\+Class} & Hero class selected in the lobby. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_game_state_a5eddf97b5c453466e5f9729d7507dab0}\index{GameState@{GameState}!````~GameState@{\texorpdfstring{$\sim$}{\string~}GameState}}
+\index{````~GameState@{\texorpdfstring{$\sim$}{\string~}GameState}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}GameState()}{\string~GameState()}}
+{\footnotesize\ttfamily \label{class_game_state_a5eddf97b5c453466e5f9729d7507dab0} 
+Game\+State::\+\texorpdfstring{$\sim$}{\string~}\+Game\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+Notifies the server that this player is disconnecting. 
+
+Sends a Player\+Disconnect packet if the local player and server address are still available when the state is destroyed. 
+
+\label{doc-func-members}
+\Hypertarget{class_game_state_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_game_state_aafe14518dbd547227d20bb7e076bf4ef}\index{GameState@{GameState}!handleInput@{handleInput}}
+\index{handleInput@{handleInput}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{handleInput()}{handleInput()}}
+{\footnotesize\ttfamily \label{class_game_state_aafe14518dbd547227d20bb7e076bf4ef} 
+void Game\+State::\+handle\+Input (\begin{DoxyParamCaption}\item[{const sf::\+\+Event \&}]{event}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Handles combat and ability input for the local player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & SFML input event from the client engine poll loop.\\
+\hline
+\end{DoxyParams}
+Ignores input while an upgrade choice is active. Maps mouse right-\/click and Q/\+\+E/\+\+R/\+\+Shift keys to player ability and reload actions. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_game_state_a36a1a733d0cd9cbb1cc65013b88a4f2f}\index{GameState@{GameState}!handlePacket@{handlePacket}}
+\index{handlePacket@{handlePacket}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{handlePacket()}{handlePacket()}}
+{\footnotesize\ttfamily \label{class_game_state_a36a1a733d0cd9cbb1cc65013b88a4f2f} 
+void Game\+State::\+handle\+Packet (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type}}}]{type}{, }\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Dispatches an incoming server packet to the appropriate handler. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Identifies the packet payload format and semantic action. \\
+\hline
+{\em packet} & Deserialized UDP payload; may be partially consumed by handlers.\\
+\hline
+\end{DoxyParams}
+Resets the server heartbeat timer, then routes combat events, ability spawns, progression updates, and world snapshots to local state changes. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_game_state_aa7ebed73422e0c26508a6acc7ad0db95}\index{GameState@{GameState}!handleWorldState@{handleWorldState}}
+\index{handleWorldState@{handleWorldState}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{handleWorldState()}{handleWorldState()}}
+{\footnotesize\ttfamily \label{class_game_state_aa7ebed73422e0c26508a6acc7ad0db95} 
+void Game\+State::\+handle\+World\+State (\begin{DoxyParamCaption}\item[{sf::\+\+Packet \&}]{packet}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Applies a full world snapshot from the server. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em packet} & Serialized World\+State payload containing entity lists and team data.\\
+\hline
+\end{DoxyParams}
+Synchronizes players, enemies, pickups, decoys, medic entities, team progression, and upgrade-\/pause state. Creates missing entities, updates existing ones, and removes entries no longer present in the snapshot. \Hypertarget{class_game_state_a2c36ada0cae89f91d956e2c91b070893}\index{GameState@{GameState}!render@{render}}
+\index{render@{render}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_game_state_a2c36ada0cae89f91d956e2c91b070893} 
+void Game\+State::\+render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the game world using the follow camera. 
+
+Renders the map, ability entities, energy cells, projectiles, players, and enemies, then restores the default window view for UI drawing. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+\Hypertarget{class_game_state_ac6ad0f0f10145a53e481d8669d7eb58a}\index{GameState@{GameState}!renderUI@{renderUI}}
+\index{renderUI@{renderUI}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{renderUI()}{renderUI()}}
+{\footnotesize\ttfamily \label{class_game_state_ac6ad0f0f10145a53e481d8669d7eb58a} 
+void Game\+State::\+render\+UI (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Renders Im\+Gui HUD overlays for the active match. 
+
+Shows death or disconnect dialogs, team experience bar, upgrade selection UI, per-\/player HUD, and a debug panel with FPS and lobby return action. 
+
+Reimplemented from \doxymbox{\hyperlink{class_state_a635dca032e7d887ed1599977e7b01e90}{State}}.
+
+\Hypertarget{class_game_state_a886a5a8d88e20b14c8b08fc309fd8113}\index{GameState@{GameState}!update@{update}}
+\index{update@{update}!GameState@{GameState}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_game_state_a886a5a8d88e20b14c8b08fc309fd8113} 
+void Game\+State::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Advances simulation, camera, networking, and entity updates. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the previous frame.\\
+\hline
+\end{DoxyParams}
+Detects server timeouts, updates the local and remote players, follows the camera, sends position heartbeats, simulates projectiles and ability objects, and processes continuous combat input. 
+
+Implements \doxymbox{\hyperlink{class_state}{State}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+states/\+Game\+State.\+hpp\item 
+src/\+client/\+states/\+Game\+State.\+cpp\end{DoxyCompactItemize}

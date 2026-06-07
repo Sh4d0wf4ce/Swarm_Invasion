@@ -5,6 +5,12 @@
 #include "Medic.hpp"
 #include "imgui.h"
 
+/**
+ * @brief Initializes a player with hero stats, shape, and default state.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ * @param pClass Hero class used to look up registry stats.
+ */
 Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClass): Entity(id, startPos), m_isFocused(true), m_class(pClass){
     const auto& stats = HeroRegistry::getStats(pClass);
     m_maxHp = stats.maxHp;
@@ -17,6 +23,11 @@ Player::Player(std::uint32_t id, const sf::Vector2f& startPos, PlayerClass pClas
     m_shape.setPosition(m_position);
 }
 
+/**
+ * @brief Advances reload and cooldown timers, then applies keyboard movement.
+ * @param deltaTime Elapsed time since the last frame.
+ * @param map Tile map used for wall collision checks.
+ */
 void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map){
     // --- Advance reload timer and restore ammo when complete ---
     if(m_isReloading){
@@ -64,17 +75,31 @@ void Player::update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map
     m_shape.setPosition(m_position);
 }
 
+/**
+ * @brief Draws the player circle and health bar.
+ * @param target Render target to draw into.
+ */
 void Player::render(sf::RenderTarget& target){
     m_shape.setPosition(m_position);
     target.draw(m_shape);
     drawHealthBar(target, 30.0f);
 }
 
+/**
+ * @brief Sets whether this player accepts local keyboard input.
+ * @param focused True when the player should respond to movement keys.
+ */
 void Player::setFocused(bool focused){
     m_isFocused = focused;
 }
 
 
+/**
+ * @brief Tests whether a position overlaps a wall tile.
+ * @param pos Candidate world position to test.
+ * @param map Tile map used for collision lookup.
+ * @return True if any corner of the hit box intersects a wall.
+ */
 bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGenerator>& map){
     if(!map) return false;
     float hitBoxOffset = HeroRegistry::getStats(m_class).radius * 0.8f;
@@ -96,6 +121,9 @@ bool Player::checkCollision(const sf::Vector2f& pos, const std::shared_ptr<MapGe
     return false;
 }
 
+/**
+ * @brief Starts a reload if one is not already in progress.
+ */
 void Player::reload(){
     if(!m_isReloading){
         m_isReloading = true;
@@ -103,12 +131,23 @@ void Player::reload(){
     }
 }
 
+/**
+ * @brief Adds ultimate charge, clamped to the maximum while ult is inactive.
+ * @param amount Charge points to add.
+ */
 void Player::addUltCharge(float amount){
     if(m_isUltActive) return;
     m_ultCharge += amount;
     if(m_ultCharge > m_maxUltCharge) m_ultCharge = m_maxUltCharge;
 }
 
+/**
+ * @brief Factory that constructs the correct hero subclass for a player class.
+ * @param id Unique network entity identifier.
+ * @param startPos Initial world position.
+ * @param pClass Hero class to instantiate.
+ * @return Owning pointer to the created player subclass.
+ */
 std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos, PlayerClass pClass){
     switch(pClass){
         case PlayerClass::Soldier:
@@ -124,11 +163,17 @@ std::unique_ptr<Player> Player::create(uint32_t id, const sf::Vector2f &startPos
     }
 }
 
+/**
+ * @brief Renders both HUD panels for the local hero.
+ */
 void Player::renderUI(){
     renderLeftPanel();
     renderRightPanel();
 }
 
+/**
+ * @brief Renders the right HUD panel with HP and ammo status.
+ */
 void Player::renderRightPanel() {
     ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH - 320.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(300.0f, 100.0f), ImGuiCond_Always);
@@ -153,6 +198,9 @@ void Player::renderRightPanel() {
     ImGui::End();
 }
 
+/**
+ * @brief Renders the left HUD panel with ability cooldown indicators.
+ */
 void Player::renderLeftPanel() {
     ImGui::SetNextWindowPos(ImVec2(20.0f, Config::WINDOW_HEIGHT - 80.0f), ImGuiCond_Always);
     ImGui::SetNextWindowSize(ImVec2(400.0f, 100.0f), ImGuiCond_Always);
@@ -167,6 +215,9 @@ void Player::renderLeftPanel() {
     ImGui::End();
 }
 
+/**
+ * @brief Renders the Shift ability cooldown bar in the left HUD panel.
+ */
 void Player::renderShiftSkill() {
     ImGui::Text("LSHIFT");
     if (m_cooldownShift <= 0.0f) {
@@ -181,6 +232,9 @@ void Player::renderShiftSkill() {
     }
 }
 
+/**
+ * @brief Renders the E ability cooldown bar in the left HUD panel.
+ */
 void Player::renderESkill() {
     ImGui::Text("E");
     if (m_cooldownE <= 0.0f) {
@@ -195,6 +249,9 @@ void Player::renderESkill() {
     }
 }
 
+/**
+ * @brief Renders the Q ultimate charge or active timer in the left HUD panel.
+ */
 void Player::renderQSkill() {
     ImGui::Text("Q");
     if (m_isUltActive) {
@@ -219,6 +276,9 @@ void Player::renderQSkill() {
     }
 }
 
+/**
+ * @brief Renders the right-mouse ability cooldown bar in the left HUD panel.
+ */
 void Player::renderRMBSkill() {
     ImGui::Text("RMB");
     if (m_cooldownRMB <= 0.0f) {
@@ -233,14 +293,30 @@ void Player::renderRMBSkill() {
     }
 }
 
+/**
+ * @brief Returns the cooldown duration scale from upgrade multipliers.
+ * @return Cooldown multiplier clamped to a minimum of 0.1.
+ */
 float Player::getUpgradeCooldownScale() const {
     return std::max(0.1f, m_upgradeCooldownMultiplier);
 }
 
+/**
+ * @brief Scales a base cooldown by the current upgrade multiplier.
+ * @param baseCooldown Unmodified cooldown duration in seconds.
+ * @return Effective maximum cooldown after upgrade scaling.
+ */
 float Player::getEffectiveMaxCooldown(float baseCooldown) const {
     return baseCooldown * getUpgradeCooldownScale();
 }
 
+/**
+ * @brief Applies run upgrade multipliers to HP, speed, damage, and cooldowns.
+ * @param hpMult Maximum HP multiplier.
+ * @param speedMult Movement speed multiplier.
+ * @param damageMult Damage multiplier (stored for subclasses).
+ * @param cooldownMult Cooldown duration multiplier.
+ */
 void Player::setUpgradeMultipliers(float hpMult, float speedMult, float damageMult, float cooldownMult) {
     m_upgradeHpMultiplier = hpMult;
     m_upgradeSpeedMultiplier = speedMult;

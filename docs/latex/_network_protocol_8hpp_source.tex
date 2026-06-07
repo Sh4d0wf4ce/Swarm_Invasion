@@ -1,0 +1,171 @@
+\doxysection{Network\+Protocol.\+hpp}
+\hypertarget{_network_protocol_8hpp_source}{}\label{_network_protocol_8hpp_source}\index{src/shared/NetworkProtocol.hpp@{src/shared/NetworkProtocol.hpp}}
+\doxymbox{\hyperlink{_network_protocol_8hpp}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <SFML/Network.hpp>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00010\ \textcolor{comment}{//\ Network\ Packet\ Types}}
+\DoxyCodeLine{00011\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00015\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\ :\ std::uint8\_t\{}
+\DoxyCodeLine{00016\ \ \ \ \ Ping,}
+\DoxyCodeLine{00017\ \ \ \ \ Pong,}
+\DoxyCodeLine{00018\ \ \ \ \ PlayerPosition,}
+\DoxyCodeLine{00019\ \ \ \ \ WorldState,}
+\DoxyCodeLine{00020\ \ \ \ \ JoinRequest,}
+\DoxyCodeLine{00021\ \ \ \ \ JoinAccept,}
+\DoxyCodeLine{00022\ \ \ \ \ PlayerShoots,}
+\DoxyCodeLine{00023\ \ \ \ \ PlayerDied,}
+\DoxyCodeLine{00024\ \ \ \ \ PlayerDisconnect,}
+\DoxyCodeLine{00025\ \ \ \ \ LevelUpTriggered,}
+\DoxyCodeLine{00026\ \ \ \ \ LevelUpOffer,}
+\DoxyCodeLine{00027\ \ \ \ \ UpgradeChosen,}
+\DoxyCodeLine{00028\ \ \ \ \ UpgradeResolved,}
+\DoxyCodeLine{00029\ \ \ \ \ CardSelected,}
+\DoxyCodeLine{00030\ \ \ \ \ PlayerUpgradeMultipliers,}
+\DoxyCodeLine{00031\ \ \ \ \ EnemyShoots,}
+\DoxyCodeLine{00032\ \ \ \ \ EntityHit,}
+\DoxyCodeLine{00033\ \ \ \ \ SpawnHealField,}
+\DoxyCodeLine{00034\ \ \ \ \ SpawnBlackHole,}
+\DoxyCodeLine{00035\ \ \ \ \ SpawnDecoy,}
+\DoxyCodeLine{00036\ \ \ \ \ SpawnMedicOrb,}
+\DoxyCodeLine{00037\ \ \ \ \ SpawnMedicBarrier,}
+\DoxyCodeLine{00038\ \ \ \ \ SpawnMedicDrone,}
+\DoxyCodeLine{00039\ \ \ \ \ DroneShoots,}
+\DoxyCodeLine{00040\ \ \ \ \ DecoyExplode,}
+\DoxyCodeLine{00041\ \ \ \ \ PlayerDealtDamage,}
+\DoxyCodeLine{00042\ \ \ \ \ AbilityUsed,}
+\DoxyCodeLine{00043\ \ \ \ \ AbilityHit}
+\DoxyCodeLine{00044\ \};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\ Game\ Entity\ Enums}}
+\DoxyCodeLine{00048\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00052\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ :\ std::uint8\_t\{}
+\DoxyCodeLine{00053\ \ \ \ \ \doxymbox{\hyperlink{class_soldier}{Soldier}},}
+\DoxyCodeLine{00054\ \ \ \ \ \doxymbox{\hyperlink{class_medic}{Medic}},}
+\DoxyCodeLine{00055\ \ \ \ \ \doxymbox{\hyperlink{class_juggernaut}{Juggernaut}},}
+\DoxyCodeLine{00056\ \ \ \ \ \doxymbox{\hyperlink{class_vanguard}{Vanguard}}}
+\DoxyCodeLine{00057\ \};}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ :\ std::uint8\_t\{}
+\DoxyCodeLine{00063\ \ \ \ \ Crawler,}
+\DoxyCodeLine{00064\ \ \ \ \ Bruiser,}
+\DoxyCodeLine{00065\ \ \ \ \ Spitter,}
+\DoxyCodeLine{00066\ \ \ \ \ Kamikaze}
+\DoxyCodeLine{00067\ \};}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\ :\ std::uint8\_t\{}
+\DoxyCodeLine{00073\ \ \ \ \ None,}
+\DoxyCodeLine{00074\ \ \ \ \ Rifle,}
+\DoxyCodeLine{00075\ \ \ \ \ Laser,}
+\DoxyCodeLine{00076\ \ \ \ \ Rocket,}
+\DoxyCodeLine{00077\ \ \ \ \ AcidSpit,}
+\DoxyCodeLine{00078\ \ \ \ \ Shotgun,}
+\DoxyCodeLine{00079\ \ \ \ \ Shuriken,}
+\DoxyCodeLine{00080\ \ \ \ \ VanguardWave,}
+\DoxyCodeLine{00081\ \ \ \ \ MedicNeedle,}
+\DoxyCodeLine{00082\ \ \ \ \ DroneBlaster,}
+\DoxyCodeLine{00083\ \};}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00088\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ :\ std::uint8\_t\{}
+\DoxyCodeLine{00089\ \ \ \ \ JuggernautDash,}
+\DoxyCodeLine{00090\ \ \ \ \ JuggernautBlackHole,}
+\DoxyCodeLine{00091\ \ \ \ \ JuggernautRepulsor,}
+\DoxyCodeLine{00092\ \ \ \ \ SoldierHealField,}
+\DoxyCodeLine{00093\ \ \ \ \ VanguardKatanaSlash,}
+\DoxyCodeLine{00094\ \ \ \ \ VanguardDash,}
+\DoxyCodeLine{00095\ \ \ \ \ VanguardDecoy,}
+\DoxyCodeLine{00096\ \ \ \ \ VanguardDecoyExplode,}
+\DoxyCodeLine{00097\ \ \ \ \ MedicTeleport,}
+\DoxyCodeLine{00098\ \ \ \ \ \doxymbox{\hyperlink{class_medic_orb}{MedicOrb}},}
+\DoxyCodeLine{00099\ \ \ \ \ \doxymbox{\hyperlink{class_medic_barrier}{MedicBarrier}},}
+\DoxyCodeLine{00100\ \ \ \ \ MedicUltCommand}
+\DoxyCodeLine{00101\ \};}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00106\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\ :\ std::uint8\_t\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ Orbit,}
+\DoxyCodeLine{00108\ \ \ \ \ Sentry}
+\DoxyCodeLine{00109\ \};}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00112\ \textcolor{comment}{//\ Packet\ Serialization\ Operators}}
+\DoxyCodeLine{00113\ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00120\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\&\ state)\{}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(state);}
+\DoxyCodeLine{00122\ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00130\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\&\ state)\{}
+\DoxyCodeLine{00131\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00132\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00133\ \ \ \ \ state\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{MedicDroneState}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00135\ \}}
+\DoxyCodeLine{00136\ }
+\DoxyCodeLine{00143\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\&\ aType)\{}
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(aType);}
+\DoxyCodeLine{00145\ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00153\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\&\ aType)\{}
+\DoxyCodeLine{00154\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00155\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00156\ \ \ \ \ aType\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00158\ \}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00166\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\&\ wType)\{}
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(wType);}
+\DoxyCodeLine{00168\ \}}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00176\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\&\ wType)\{}
+\DoxyCodeLine{00177\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00178\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00179\ \ \ \ \ wType\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{WeaponType}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00181\ \}}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00189\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\&\ eType)\{}
+\DoxyCodeLine{00190\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(eType);}
+\DoxyCodeLine{00191\ \}}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00199\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\&\ eType)\{}
+\DoxyCodeLine{00200\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00201\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00202\ \ \ \ \ eType\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00204\ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00212\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\ type)\{}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(type);}
+\DoxyCodeLine{00214\ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00222\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\&\ type)\{}
+\DoxyCodeLine{00223\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00224\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00225\ \ \ \ \ type\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00226\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00227\ \}}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00235\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ vector)\{}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ vector.x\ <<\ vector.y;}
+\DoxyCodeLine{00237\ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00245\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ sf::Vector2f\&\ vector)\{}
+\DoxyCodeLine{00246\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ >>\ vector.x\ >>\ vector.y;}
+\DoxyCodeLine{00247\ \}}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00255\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a3ec06b7dd432d3b108da640b534b8ff8}{operator<<}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\&\ pClass)\{}
+\DoxyCodeLine{00256\ \ \ \ \ \textcolor{keywordflow}{return}\ packet\ <<\ static\_cast<std::uint8\_t>(pClass);}
+\DoxyCodeLine{00257\ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00265\ \textcolor{keyword}{inline}\ sf::Packet\&\ \doxymbox{\hyperlink{_network_protocol_8hpp_a92f5df19055f6957ffb730250f68d4be}{operator>>}}(sf::Packet\&\ packet,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\&\ pClass)\{}
+\DoxyCodeLine{00266\ \ \ \ \ std::uint8\_t\ value;}
+\DoxyCodeLine{00267\ \ \ \ \ packet\ >>\ value;}
+\DoxyCodeLine{00268\ \ \ \ \ pClass\ =\ \textcolor{keyword}{static\_cast<}\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\textcolor{keyword}{>}(value);}
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00270\ \}}
+
+\end{DoxyCode}

@@ -1,6 +1,13 @@
 #pragma once
 #include "Player.hpp"
 
+/**
+ * @brief Rifle-wielding hero with sprint stamina and area heal.
+ *
+ * Fires the default hero weapon on left click, launches rockets on right
+ * click, drops heal fields on E, and enters a rapid-fire auto-aim ultimate
+ * on Q. Sprint is bound to Shift and drains stamina while moving.
+ */
 class Soldier : public Player{
 public:
     Soldier(std::uint32_t id, const sf::Vector2f& startPos);

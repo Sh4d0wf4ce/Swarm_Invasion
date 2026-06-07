@@ -1,0 +1,19 @@
+\doxysection{Needle\+Projectile.\+hpp}
+\hypertarget{_needle_projectile_8hpp_source}{}\label{_needle_projectile_8hpp_source}\index{src/client/projectiles/NeedleProjectile.hpp@{src/client/projectiles/NeedleProjectile.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Projectile.hpp"{}}}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_needle_projectile_aee13abb21a29d511b4d6a0655ed9a0b4}{NeedleProjectile}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}\ \{}
+\DoxyCodeLine{00008\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \doxymbox{\hyperlink{class_needle_projectile_aee13abb21a29d511b4d6a0655ed9a0b4}{NeedleProjectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ velocity,\ Faction\ faction);}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_needle_projectile_a42d65c303a901b8eb97c334eda8221de}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00012\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_needle_projectile_ad42493c2ca1120bc63278331aac657f1}{checkCollisions}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00015\ \ \ \ \ sf::ConvexShape\ m\_needleShape;}
+\DoxyCodeLine{00016\ \};}
+
+\end{DoxyCode}

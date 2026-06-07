@@ -1,0 +1,75 @@
+\doxysection{Hero\+Registry Class Reference}
+\hypertarget{class_hero_registry}{}\label{class_hero_registry}\index{HeroRegistry@{HeroRegistry}}
+
+
+Central registry that loads and exposes hero class tuning data from JSON files.  
+
+
+
+
+{\ttfamily \+\#include $<$Hero\+Registry.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_hero_registry_aa0a7fe0339308527fd4329e7ab566f04}{load\+Config}} (const std::\+string \&filepath)
+\begin{DoxyCompactList}\small\item\em Loads hero configuration from a JSON file and populates the registry. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_hero_stats}{Hero\+Stats}} \& \doxymbox{\hyperlink{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}{get\+Stats}} (\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Returns stats for a given hero class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_hero_registry_a96768d5750e5a4d3c4a349afa5f8a144}\label{class_hero_registry_a96768d5750e5a4d3c4a349afa5f8a144} 
+static std::\+unordered\+\_\+map$<$ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}, \doxymbox{\hyperlink{struct_hero_stats}{Hero\+Stats}} $>$ {\bfseries m\+\_\+stats}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central registry that loads and exposes hero class tuning data from JSON files. 
+
+\label{doc-func-members}
+\Hypertarget{class_hero_registry_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}\index{HeroRegistry@{HeroRegistry}!getStats@{getStats}}
+\index{getStats@{getStats}!HeroRegistry@{HeroRegistry}}
+\doxysubsubsection{\texorpdfstring{getStats()}{getStats()}}
+{\footnotesize\ttfamily \label{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d} 
+const \doxymbox{\hyperlink{struct_hero_stats}{Hero\+Stats}} \& Hero\+Registry::\+get\+Stats (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{p\+Class}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns stats for a given hero class. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Class} & \doxylink{class_player}{Player} class identifier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to the hero stats for {\ttfamily p\+Class}. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em std::\+out\+\_\+of\+\_\+range} & if {\ttfamily p\+Class} was not loaded. \\
+\hline
+\end{DoxyExceptions}
+\Hypertarget{class_hero_registry_aa0a7fe0339308527fd4329e7ab566f04}\index{HeroRegistry@{HeroRegistry}!loadConfig@{loadConfig}}
+\index{loadConfig@{loadConfig}!HeroRegistry@{HeroRegistry}}
+\doxysubsubsection{\texorpdfstring{loadConfig()}{loadConfig()}}
+{\footnotesize\ttfamily \label{class_hero_registry_aa0a7fe0339308527fd4329e7ab566f04} 
+void Hero\+Registry::\+load\+Config (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{filepath}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Loads hero configuration from a JSON file and populates the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & Path to the heroes JSON configuration file. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Hero\+Registry.\+hpp\end{DoxyCompactItemize}

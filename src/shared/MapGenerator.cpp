@@ -1,9 +1,18 @@
 #include "MapGenerator.hpp"
 
+/**
+ * @brief Constructs a map generator and initializes an empty floor grid.
+ * @param width Map width in tiles.
+ * @param height Map height in tiles.
+ */
 MapGenerator::MapGenerator(int width, int height): m_width(width), m_height(height), m_fillPercent(Config::MAP_FILL_PERCENT){
     m_map.resize(m_width, std::vector<TileType>(m_height, TileType::Floor));
 }
 
+/**
+ * @brief Generates a cave-like map from random wall fill, smoothing passes, and a cleared spawn area.
+ * @param seed Random seed for reproducible map generation.
+ */
 void MapGenerator::generate(int seed){
     // --- Random initial wall fill with border walls ---
     std::mt19937 rng(seed);
@@ -39,6 +48,9 @@ void MapGenerator::generate(int seed){
      }
 }
 
+/**
+ * @brief Applies one cellular-automata smoothing pass to the tile grid.
+ */
 void MapGenerator::smoothMap(){
     std::vector<std::vector<TileType>> newMap = m_map;
     for(int x = 0; x < m_width; x++){
@@ -54,6 +66,12 @@ void MapGenerator::smoothMap(){
     m_map = newMap;
 }
 
+/**
+ * @brief Counts wall tiles in the 3x3 neighborhood around a grid cell.
+ * @param gridX Tile column index.
+ * @param gridY Tile row index.
+ * @return Number of neighboring wall tiles, treating out-of-bounds as walls.
+ */
 int MapGenerator::getSurroundingWallCount(int gridX, int gridY) const{
     int wallCount = 0;
     for(int neighbourX = gridX - 1; neighbourX <= gridX + 1; neighbourX++){
@@ -69,11 +87,23 @@ int MapGenerator::getSurroundingWallCount(int gridX, int gridY) const{
     return wallCount;
 }
 
+/**
+ * @brief Returns the tile type at grid coordinates.
+ * @param x Tile column index.
+ * @param y Tile row index.
+ * @return Tile at (@p x, @p y), or TileType::Wall for out-of-bounds coordinates.
+ */
 TileType MapGenerator::getTile(int x, int y) const{
     if(x < 0 || x >= m_width || y < 0 || y >= m_height) return TileType::Wall;
     return m_map[x][y];
 }
 
+/**
+ * @brief Tests whether a circular entity overlaps any wall tile using corner sample points.
+ * @param pos World-space center position of the entity.
+ * @param radius Collision radius of the entity in world units.
+ * @return True if any sample point intersects a wall tile.
+ */
 bool MapGenerator::checkCollision(const sf::Vector2f& pos, float radius) const {
     // --- Test corner sample points against wall tiles ---
     float hitBoxOffset = radius * 0.8f;

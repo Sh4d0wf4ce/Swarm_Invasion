@@ -2,6 +2,13 @@
 #include "../entities/Entity.hpp"
 #include <cmath>
 
+/**
+ * @brief Builds the needle triangle shape and applies medic color styling.
+ * @param ownerId Entity ID of the shooter.
+ * @param startPos World position where the needle spawns.
+ * @param velocity Initial movement vector in pixels per second.
+ * @param faction Faction of the owner.
+ */
 NeedleProjectile::NeedleProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction)
     : Projectile(ownerId, startPos, velocity, faction, WeaponType::MedicNeedle) {
     m_needleShape.setPointCount(3);
@@ -14,6 +21,10 @@ NeedleProjectile::NeedleProjectile(std::uint32_t ownerId, const sf::Vector2f& st
     m_needleShape.setOrigin({0.0f, 0.0f});
 }
 
+/**
+ * @brief Draws the needle shape aligned to its velocity direction.
+ * @param target Render target to draw into.
+ */
 void NeedleProjectile::render(sf::RenderTarget& target) {
     float angle = std::atan2(m_velocity.y, m_velocity.x) * (180.0f / static_cast<float>(M_PI));
     m_needleShape.setPosition(m_position);
@@ -21,6 +32,12 @@ void NeedleProjectile::render(sf::RenderTarget& target) {
     target.draw(m_needleShape);
 }
 
+/**
+ * @brief Heals player allies or damages enemies on contact; deactivates after one hit or wall impact.
+ * @param entities Candidate entities to test against.
+ * @param map Map used for wall tile checks.
+ * @return ID of the entity hit, if any.
+ */
 std::vector<std::uint32_t> NeedleProjectile::checkCollisions(const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map) {
     std::vector<std::uint32_t> hitlist;
     if (!m_active) return hitlist;

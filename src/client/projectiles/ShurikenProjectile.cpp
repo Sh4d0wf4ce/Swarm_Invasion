@@ -1,6 +1,13 @@
 #include "ShurikenProjectile.hpp"
 #include <SFML/Graphics/Texture.hpp>
 
+/**
+ * @brief Loads the shuriken texture and scales the sprite to match collision radius.
+ * @param ownerId Entity ID of the shooter.
+ * @param startPos World position where the shuriken spawns.
+ * @param velocity Initial movement vector in pixels per second.
+ * @param faction Faction of the owner.
+ */
 ShurikenProjectile::ShurikenProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction)
     : Projectile(ownerId, startPos, velocity, faction, WeaponType::Shuriken) {
     
@@ -25,12 +32,20 @@ ShurikenProjectile::ShurikenProjectile(std::uint32_t ownerId, const sf::Vector2f
     }
 }
 
+/**
+ * @brief Advances base movement and rotates the sprite each frame.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void ShurikenProjectile::update(sf::Time deltaTime) {
     Projectile::update(deltaTime);
     
     m_sprite->rotate(sf::degrees(1200.0f * deltaTime.asSeconds()));
 }
 
+/**
+ * @brief Draws the shuriken sprite at its current position.
+ * @param target Render target to draw into.
+ */
 void ShurikenProjectile::render(sf::RenderTarget& target) {
     m_sprite->setPosition(m_position);
     target.draw(*m_sprite);

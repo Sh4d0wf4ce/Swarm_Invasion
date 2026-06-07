@@ -3,6 +3,13 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <cmath>
 
+/**
+ * @brief Initializes rocket visuals, texture, and explosion radius from weapon stats.
+ * @param ownerId Entity ID of the shooter.
+ * @param startPos World position where the rocket spawns.
+ * @param velocity Initial movement vector in pixels per second.
+ * @param faction Faction of the owner.
+ */
 RocketProjectile::RocketProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction)
     : Projectile(ownerId, startPos, velocity, faction, WeaponType::Rocket) {
     m_lifetime = 5.0f;
@@ -28,6 +35,10 @@ RocketProjectile::RocketProjectile(std::uint32_t ownerId, const sf::Vector2f& st
     m_explosionShape.setOutlineColor(sf::Color(255, 200, 80, 0));
 }
 
+/**
+ * @brief Moves the rocket or advances the explosion animation timer.
+ * @param deltaTime Elapsed time since the last update.
+ */
 void RocketProjectile::update(sf::Time deltaTime) {
     if (m_isExploding) {
         m_explosionTimer += deltaTime.asSeconds();
@@ -40,6 +51,10 @@ void RocketProjectile::update(sf::Time deltaTime) {
     Projectile::update(deltaTime);
 }
 
+/**
+ * @brief Draws the rocket sprite or an expanding explosion fade-out.
+ * @param target Render target to draw into.
+ */
 void RocketProjectile::render(sf::RenderTarget& target) {
     if (m_isExploding) {
         // --- Draw expanding explosion fade-out ---
@@ -68,6 +83,12 @@ void RocketProjectile::render(sf::RenderTarget& target) {
     target.draw(*m_sprite);
 }
 
+/**
+ * @brief Detonates on wall or direct hit and returns all entities inside blast radius.
+ * @param entities Candidate entities to test against.
+ * @param map Map used for wall tile checks.
+ * @return IDs of all hostile entities within explosion radius after detonation.
+ */
 std::vector<std::uint32_t> RocketProjectile::checkCollisions(const std::vector<Entity*>& entities, const std::shared_ptr<MapGenerator>& map) {
     std::vector<std::uint32_t> hitlist;
     if (!m_active || m_isExploding) return hitlist;

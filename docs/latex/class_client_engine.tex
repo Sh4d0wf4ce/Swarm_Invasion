@@ -1,0 +1,174 @@
+\doxysection{Client\+Engine Class Reference}
+\hypertarget{class_client_engine}{}\label{class_client_engine}\index{ClientEngine@{ClientEngine}}
+
+
+Central client application engine.  
+
+
+
+
+{\ttfamily \+\#include $<$Client\+Engine.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_client_engine_a00a864bc935cad2402ad6739156c3c60}{Client\+Engine}} ()
+\begin{DoxyCompactList}\small\item\em Constructs the client engine and enters the lobby state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_client_engine_a42e4bec747fca125cbdaec3f3940f6cb}{run}} ()
+\begin{DoxyCompactList}\small\item\em Runs the main application loop until quit or window close. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_client_engine_aa2adb508fb7ebeff2396497da29bc867}{change\+State}} (std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_state}{State}} $>$ new\+State)
+\begin{DoxyCompactList}\small\item\em Replaces the active state with a new one. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_a3beffacf35f2567cf350d4b701cfbfb9}\label{class_client_engine_a3beffacf35f2567cf350d4b701cfbfb9} 
+sf::\+\+Render\+Window \& {\bfseries get\+Window} ()
+\begin{DoxyCompactList}\small\item\em Returns the SFML render window used for drawing and input. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_a63e98c5b33bee493428e9824ee8a4959}\label{class_client_engine_a63e98c5b33bee493428e9824ee8a4959} 
+sf::\+\+Udp\+Socket \& {\bfseries get\+Socket} ()
+\begin{DoxyCompactList}\small\item\em Returns the non-\/blocking UDP socket used for server communication. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_a2395c98558c3d1894d1da6c2bccf573d}\label{class_client_engine_a2395c98558c3d1894d1da6c2bccf573d} 
+std::\+optional$<$ sf::\+\+Ip\+Address $>$ \& {\bfseries get\+Server\+Address} ()
+\begin{DoxyCompactList}\small\item\em Returns the resolved server IP address, if available. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_aa43412a5bf4d97a5c031bd0d5b3ade69}\label{class_client_engine_aa43412a5bf4d97a5c031bd0d5b3ade69} 
+void {\bfseries quit} ()
+\begin{DoxyCompactList}\small\item\em Requests graceful shutdown of the main loop on the next iteration. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_client_engine_a7aaf42e87d178b1f95541f264e8b0403}{process\+Event}} ()
+\begin{DoxyCompactList}\small\item\em Polls and dispatches window and Im\+Gui events. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_client_engine_a53894b7d9c47239a587f094cdc1aace7}{process\+Network}} ()
+\begin{DoxyCompactList}\small\item\em Receives and dispatches all pending UDP packets from the server. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_a0e5c33116fb9983b6a86730051b5546e}\label{class_client_engine_a0e5c33116fb9983b6a86730051b5546e} 
+void {\bfseries handle\+World\+State} (sf::\+\+Packet \&packet)
+\item 
+void \doxymbox{\hyperlink{class_client_engine_a66f955d49284c1ce3802e9bc9b02a49e}{update}} (sf::\+\+Time delta\+Time)
+\begin{DoxyCompactList}\small\item\em Advances Im\+Gui and the active state by one frame. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_client_engine_a05ba859da8646e5b91f48282bbd8e9fc}{render}} ()
+\begin{DoxyCompactList}\small\item\em Clears the window, renders the active state, and presents the frame. \end{DoxyCompactList}\item 
+\Hypertarget{class_client_engine_a04db90e4a483d64e7122f83d4f899def}\label{class_client_engine_a04db90e4a483d64e7122f83d4f899def} 
+void {\bfseries render\+UI} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_client_engine_a169985cffc7e8750dba97185c9eac8b3}\label{class_client_engine_a169985cffc7e8750dba97185c9eac8b3} 
+sf::\+\+Udp\+Socket {\bfseries m\+\_\+socket}
+\item 
+\Hypertarget{class_client_engine_ad19aa2f7bad29c7e1adbc45e2f601a40}\label{class_client_engine_ad19aa2f7bad29c7e1adbc45e2f601a40} 
+sf::\+\+Render\+Window {\bfseries m\+\_\+window}
+\item 
+\Hypertarget{class_client_engine_a755c2d5f13583f110050b2b3296ba0f7}\label{class_client_engine_a755c2d5f13583f110050b2b3296ba0f7} 
+sf::\+\+View {\bfseries m\+\_\+camera}
+\item 
+\Hypertarget{class_client_engine_a0a9ca2b8464ccfdf5a71955763afc063}\label{class_client_engine_a0a9ca2b8464ccfdf5a71955763afc063} 
+sf::\+\+Clock {\bfseries m\+\_\+clock}
+\item 
+\Hypertarget{class_client_engine_adc22d97b0e75f895408fa8c6eca0aee0}\label{class_client_engine_adc22d97b0e75f895408fa8c6eca0aee0} 
+bool {\bfseries m\+\_\+is\+Running}
+\item 
+\Hypertarget{class_client_engine_a3f4edd220e21f166d718a983c4b9ffc2}\label{class_client_engine_a3f4edd220e21f166d718a983c4b9ffc2} 
+std::\+optional$<$ sf::\+\+Ip\+Address $>$ {\bfseries m\+\_\+server\+Address}
+\item 
+\Hypertarget{class_client_engine_a68fdb48d399af6ae39d3b2d4506abcfe}\label{class_client_engine_a68fdb48d399af6ae39d3b2d4506abcfe} 
+std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_state}{State}} $>$ {\bfseries m\+\_\+current\+State}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central client application engine. 
+
+Owns the render window, UDP socket, and active game state. Runs the main loop that polls input, receives network packets, updates the current state, and draws the frame. 
+
+\label{doc-constructors}
+\Hypertarget{class_client_engine_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_client_engine_a00a864bc935cad2402ad6739156c3c60}\index{ClientEngine@{ClientEngine}!ClientEngine@{ClientEngine}}
+\index{ClientEngine@{ClientEngine}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{ClientEngine()}{ClientEngine()}}
+{\footnotesize\ttfamily \label{class_client_engine_a00a864bc935cad2402ad6739156c3c60} 
+Client\+Engine::\+\+Client\+Engine (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Constructs the client engine and enters the lobby state. 
+
+Creates the window, initializes Im\+Gui-\/\+SFML, configures the camera and non-\/blocking UDP socket, resolves the default server address, and transitions to \doxylink{class_lobby_state}{Lobby\+State}. 
+
+\label{doc-func-members}
+\Hypertarget{class_client_engine_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_client_engine_aa2adb508fb7ebeff2396497da29bc867}\index{ClientEngine@{ClientEngine}!changeState@{changeState}}
+\index{changeState@{changeState}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{changeState()}{changeState()}}
+{\footnotesize\ttfamily \label{class_client_engine_aa2adb508fb7ebeff2396497da29bc867} 
+void Client\+Engine::\+change\+State (\begin{DoxyParamCaption}\item[{std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_state}{State}} $>$}]{new\+State}{}\end{DoxyParamCaption})}
+
+
+
+Replaces the active state with a new one. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+State} & Ownership of the next state; may be null to clear the current state. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_client_engine_a7aaf42e87d178b1f95541f264e8b0403}\index{ClientEngine@{ClientEngine}!processEvent@{processEvent}}
+\index{processEvent@{processEvent}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{processEvent()}{processEvent()}}
+{\footnotesize\ttfamily \label{class_client_engine_a7aaf42e87d178b1f95541f264e8b0403} 
+void Client\+Engine::\+process\+Event (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Polls and dispatches window and Im\+Gui events. 
+
+Forwards each event to Im\+Gui-\/\+SFML and the current state. Closes the application when the window close event is received and restores the configured window size on resize events. \Hypertarget{class_client_engine_a53894b7d9c47239a587f094cdc1aace7}\index{ClientEngine@{ClientEngine}!processNetwork@{processNetwork}}
+\index{processNetwork@{processNetwork}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{processNetwork()}{processNetwork()}}
+{\footnotesize\ttfamily \label{class_client_engine_a53894b7d9c47239a587f094cdc1aace7} 
+void Client\+Engine::\+process\+Network (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Receives and dispatches all pending UDP packets from the server. 
+
+Drains the non-\/blocking socket and forwards each decoded \doxylink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{Packet\+Type} to the current state\textquotesingle{}s handle\+Packet handler. \Hypertarget{class_client_engine_a05ba859da8646e5b91f48282bbd8e9fc}\index{ClientEngine@{ClientEngine}!render@{render}}
+\index{render@{render}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_client_engine_a05ba859da8646e5b91f48282bbd8e9fc} 
+void Client\+Engine::\+render (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Clears the window, renders the active state, and presents the frame. 
+
+Invokes the state\textquotesingle{}s world render and UI render paths, then draws Im\+Gui overlays and swaps the framebuffer. \Hypertarget{class_client_engine_a42e4bec747fca125cbdaec3f3940f6cb}\index{ClientEngine@{ClientEngine}!run@{run}}
+\index{run@{run}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily \label{class_client_engine_a42e4bec747fca125cbdaec3f3940f6cb} 
+void Client\+Engine::\+run (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Runs the main application loop until quit or window close. 
+
+Each frame polls events, processes incoming UDP packets, updates the active state, and renders the scene. Shuts down Im\+Gui-\/\+SFML on exit. \Hypertarget{class_client_engine_a66f955d49284c1ce3802e9bc9b02a49e}\index{ClientEngine@{ClientEngine}!update@{update}}
+\index{update@{update}!ClientEngine@{ClientEngine}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_client_engine_a66f955d49284c1ce3802e9bc9b02a49e} 
+void Client\+Engine::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Advances Im\+Gui and the active state by one frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the previous frame. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+core/\+Client\+Engine.\+hpp\item 
+src/\+client/\+core/\+Client\+Engine.\+cpp\end{DoxyCompactItemize}

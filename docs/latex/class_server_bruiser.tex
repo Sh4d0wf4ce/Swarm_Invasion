@@ -1,0 +1,165 @@
+\doxysection{Server\+Bruiser Class Reference}
+\hypertarget{class_server_bruiser}{}\label{class_server_bruiser}\index{ServerBruiser@{ServerBruiser}}
+
+
+Heavy enemy that alternates between melee chase and a directional charge attack.  
+
+
+
+
+{\ttfamily \+\#include $<$Server\+Bruiser.\+hpp$>$}
+
+Inheritance diagram for Server\+Bruiser:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_server_bruiser}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_server_bruiser_a62a9245371a32b2811b40758e5c3cfd9}{update}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&flow\+Field, std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&out\+Shoot\+Events, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid) override
+\begin{DoxyCompactList}\small\item\em Runs the bruiser charge state machine:\+ chase, wind-\/up, rush, and recovery. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{class_server_bruiser_aa15c3c12124323f94bcfd205fda044df}{Server\+Enemy}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Initializes HP and speed from enemy registry stats for the given type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{Server\+Enemy}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Initializes HP and speed from enemy registry stats for the given type. \end{DoxyCompactList}\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries get\+Type} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (sf::\+\+Vector2f new\+Pos)
+\item 
+void {\bfseries take\+Damage} (float damage)
+\item 
+void \doxymbox{\hyperlink{class_server_enemy_af25637f7502ec64047004584376c3eed}{apply\+Poison}} (float duration, float damage\+Per\+Second)
+\begin{DoxyCompactList}\small\item\em Stacks a new poison effect on this enemy. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_enemy_a2feed450487278249f4cee12ee1760d7}{tick\+Status\+Effects}} (float dt)
+\begin{DoxyCompactList}\small\item\em Ticks all poison effects, applies damage, and removes expired entries. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_enemy_afe6cf22dec4573ea143f7bc7a2a6dbb6}{apply\+Knockback}} (sf::\+\+Vector2f direction, float force)
+\begin{DoxyCompactList}\small\item\em Applies an instantaneous knockback velocity along a direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_bruiser_a0dd72354362f927d33ec6fb6ba7d144d}\label{class_server_bruiser_a0dd72354362f927d33ec6fb6ba7d144d} 
+Bruiser\+State {\bfseries m\+\_\+state} \{Bruiser\+State::\+\+Chasing\}
+\item 
+\Hypertarget{class_server_bruiser_aae52768407f1cdac21b51f9e661212c8}\label{class_server_bruiser_aae52768407f1cdac21b51f9e661212c8} 
+sf::\+\+Vector2f {\bfseries m\+\_\+charge\+Direction}
+\item 
+\Hypertarget{class_server_bruiser_acf1a43b776df7ce7431a85e1d12cf89c}\label{class_server_bruiser_acf1a43b776df7ce7431a85e1d12cf89c} 
+sf::\+\+Clock {\bfseries m\+\_\+state\+Timer}
+\item 
+\Hypertarget{class_server_bruiser_ae81ac549f1b92cd624d8dcc9fc51b50f}\label{class_server_bruiser_ae81ac549f1b92cd624d8dcc9fc51b50f} 
+sf::\+\+Clock {\bfseries m\+\_\+cooldown\+Timer}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}}}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_server_enemy_a015d94bcca62aae81fcc8fdd05813b59}{has\+Line\+Of\+Sight}} (sf::\+\+Vector2f start, sf::\+\+Vector2f end, float radius, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map)
+\begin{DoxyCompactList}\small\item\em Ray-\/marches between two points to detect wall obstruction. \end{DoxyCompactList}\item 
+sf::\+\+Vector2f \doxymbox{\hyperlink{class_server_enemy_a386ed04189c3e5b569b75ff2ecd02bbd}{calculate\+Separation}} (const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, float my\+Radius, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid)
+\begin{DoxyCompactList}\small\item\em Computes a normalized repulsion vector from nearby enemies using the spatial grid. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_server_enemy_a584be8ee638f06b9b97487d8f2756acb}{perform\+Melee\+Chase}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&flow\+Field, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid)
+\begin{DoxyCompactList}\small\item\em Default melee chase:\+ knockback, target selection, contact damage, and flow-\/field steering. \end{DoxyCompactList}\item 
+std::\+uint32\+\_\+t \doxymbox{\hyperlink{class_server_enemy_ac7a6c709b19ca53a7a8201d2028454fb}{get\+Closest\+Player\+Id}} (const std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, float \&out\+Min\+Dist\+Sq) const
+\begin{DoxyCompactList}\small\item\em Finds the closest player by squared distance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries m\+\_\+type}
+\item 
+sf::\+\+Clock {\bfseries m\+\_\+last\+Attack\+Time}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+knockback\+Velocity} \{0.\+0f, 0.\+0f\}
+\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_poison_effect}{Poison\+Effect}} $>$ {\bfseries m\+\_\+poison\+Effects}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Heavy enemy that alternates between melee chase and a directional charge attack. 
+
+\label{doc-func-members}
+\Hypertarget{class_server_bruiser_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_server_bruiser_aa15c3c12124323f94bcfd205fda044df}\index{ServerBruiser@{ServerBruiser}!ServerEnemy@{ServerEnemy}}
+\index{ServerEnemy@{ServerEnemy}!ServerBruiser@{ServerBruiser}}
+\doxysubsubsection{\texorpdfstring{ServerEnemy()}{ServerEnemy()}}
+{\footnotesize\ttfamily \label{class_server_bruiser_aa15c3c12124323f94bcfd205fda044df} 
+\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{Server\+Enemy::\+\+Server\+Enemy}} (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}}}]{type}{}\end{DoxyParamCaption})}
+
+
+
+Initializes HP and speed from enemy registry stats for the given type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique server entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world spawn position. \\
+\hline
+{\em type} & \doxylink{class_enemy}{Enemy} archetype determining base stats. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_bruiser_a62a9245371a32b2811b40758e5c3cfd9}\index{ServerBruiser@{ServerBruiser}!update@{update}}
+\index{update@{update}!ServerBruiser@{ServerBruiser}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_server_bruiser_a62a9245371a32b2811b40758e5c3cfd9} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Server\+Bruiser::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&}]{flow\+Field}{, }\item[{std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&}]{out\+Shoot\+Events}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{all\+Enemies}{, }\item[{const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&}]{grid}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Runs the bruiser charge state machine:\+ chase, wind-\/up, rush, and recovery. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+{\em clients} & Mutable player targets for charge damage. \\
+\hline
+{\em map} & Map used for wall collision during charges. \\
+\hline
+{\em flow\+Field} & Precomputed BFS cost field used during chase phase. \\
+\hline
+{\em out\+Shoot\+Events} & Unused; bruisers do not shoot. \\
+\hline
+{\em all\+Enemies} & All enemies used when delegating to melee chase. \\
+\hline
+{\em grid} & Spatial grid for neighbour queries during chase. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{class_player}{Player} IDs killed by charge contact damage this tick. 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em None} & Does not throw exceptions. \\
+\hline
+\end{DoxyExceptions}
+
+
+Implements \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+enemies/\+Server\+Bruiser.\+hpp\item 
+src/\+server/\+enemies/\+Server\+Bruiser.\+cpp\end{DoxyCompactItemize}

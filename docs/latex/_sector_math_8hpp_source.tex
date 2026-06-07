@@ -1,0 +1,48 @@
+\doxysection{Sector\+Math.\+hpp}
+\hypertarget{_sector_math_8hpp_source}{}\label{_sector_math_8hpp_source}\index{src/shared/SectorMath.hpp@{src/shared/SectorMath.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <SFML/System/Vector2.hpp>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_sector_math}{SectorMath}}\ \{}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{namespace_sector_math_a519943d6d8bf724360104788da66a474}{normalizeAngle}}(\textcolor{keywordtype}{float}\ radians)\ \{}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{float}\ twoPi\ =\ 6.2831853f;}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordflow}{while}\ (radians\ >\ 3.14159265f)\ radians\ -\/=\ twoPi;}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordflow}{while}\ (radians\ <\ -\/3.14159265f)\ radians\ +=\ twoPi;}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordflow}{return}\ radians;}
+\DoxyCodeLine{00022\ \}}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{comment}{//\ Arc\ Geometry}}
+\DoxyCodeLine{00034\ \textcolor{keyword}{inline}\ sf::Vector2f\ \doxymbox{\hyperlink{namespace_sector_math_a28f62f8579f3d28236f20dedeaf6b596}{arcCircleCenter}}(}
+\DoxyCodeLine{00035\ \ \ \ \ sf::Vector2f\ origin,}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{float}\ facingAngle,}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{float}\ arcRadius,}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ standoff)\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ offset\ =\ arcRadius\ -\/\ standoff;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordflow}{return}\ origin\ -\/\ sf::Vector2f(std::cos(facingAngle),\ std::sin(facingAngle))\ *\ offset;}
+\DoxyCodeLine{00041\ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00054\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{namespace_sector_math_a8761564265c0639095a70b29e2b4d775}{isInArcWall}}(}
+\DoxyCodeLine{00055\ \ \ \ \ sf::Vector2f\ center,}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}\ facingAngle,}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{float}\ arcRadius,}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{float}\ halfSpan,}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keywordtype}{float}\ wallThickness,}
+\DoxyCodeLine{00060\ \ \ \ \ sf::Vector2f\ point,}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{float}\ pointRadius)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ sf::Vector2f\ delta\ =\ point\ -\/\ center;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{float}\ dist\ =\ std::sqrt(delta.x\ *\ delta.x\ +\ delta.y\ *\ delta.y);}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{float}\ innerBound\ =\ arcRadius\ -\/\ wallThickness\ -\/\ pointRadius;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{float}\ outerBound\ =\ arcRadius\ +\ wallThickness\ +\ pointRadius;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keywordflow}{if}\ (dist\ <\ innerBound\ ||\ dist\ >\ outerBound)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordtype}{float}\ pointAngle\ =\ std::atan2(delta.y,\ delta.x);}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{float}\ diff\ =\ \doxymbox{\hyperlink{namespace_sector_math_a519943d6d8bf724360104788da66a474}{normalizeAngle}}(pointAngle\ -\/\ facingAngle);}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordflow}{return}\ std::abs(diff)\ <=\ halfSpan;}
+\DoxyCodeLine{00070\ \}}
+\DoxyCodeLine{00071\ \}}
+
+\end{DoxyCode}

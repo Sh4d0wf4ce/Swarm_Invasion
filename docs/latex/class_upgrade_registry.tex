@@ -1,0 +1,129 @@
+\doxysection{Upgrade\+Registry Class Reference}
+\hypertarget{class_upgrade_registry}{}\label{class_upgrade_registry}\index{UpgradeRegistry@{UpgradeRegistry}}
+
+
+Central registry that loads upgrade definitions and selects weighted level-\/up offers.  
+
+
+
+
+{\ttfamily \+\#include $<$Upgrade\+Registry.\+hpp$>$}
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \doxymbox{\hyperlink{class_upgrade_registry_ab23d9b15d3b1863b568ab3eca52f4fa0}{load\+Config}} (const std::\+string \&filepath)
+\begin{DoxyCompactList}\small\item\em Loads upgrade definitions from a JSON file and populates the registry. \end{DoxyCompactList}\item 
+static const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_upgrade_registry_a23f2505a81f6507bc498b26d4e299262}{get\+By\+Id}} (const std::\+string \&id)
+\begin{DoxyCompactList}\small\item\em Looks up an upgrade definition by its unique identifier. \end{DoxyCompactList}\item 
+static const std::\+unordered\+\_\+map$<$ std::\+string, \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} $>$ \& \doxymbox{\hyperlink{class_upgrade_registry_ad3ff859f461efcf9df58d99a35a49582}{get\+All}} ()
+\begin{DoxyCompactList}\small\item\em Returns the full map of loaded upgrade definitions. \end{DoxyCompactList}\item 
+static std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ \doxymbox{\hyperlink{class_upgrade_registry_aaf1c18ea51a5aa9afafa65667bcb191c}{build\+Pool}} (\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} player\+Class, bool want\+Augment)
+\begin{DoxyCompactList}\small\item\em Builds a candidate pool of upgrades eligible for a level-\/up offer. \end{DoxyCompactList}\item 
+static std::\+vector$<$ std::\+string $>$ \doxymbox{\hyperlink{class_upgrade_registry_a73c6fb7d0de31163d4733699da98741d}{pick\+Weighted\+Random}} (const std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ \&pool, int count)
+\begin{DoxyCompactList}\small\item\em Selects a weighted random subset of upgrades from a candidate pool without replacement. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_upgrade_registry_a08c777eb07f8a1169327918b7d62673d}\label{class_upgrade_registry_a08c777eb07f8a1169327918b7d62673d} 
+static std::\+unordered\+\_\+map$<$ std::\+string, \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} $>$ {\bfseries m\+\_\+upgrades}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Central registry that loads upgrade definitions and selects weighted level-\/up offers. 
+
+\label{doc-func-members}
+\Hypertarget{class_upgrade_registry_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_upgrade_registry_aaf1c18ea51a5aa9afafa65667bcb191c}\index{UpgradeRegistry@{UpgradeRegistry}!buildPool@{buildPool}}
+\index{buildPool@{buildPool}!UpgradeRegistry@{UpgradeRegistry}}
+\doxysubsubsection{\texorpdfstring{buildPool()}{buildPool()}}
+{\footnotesize\ttfamily \label{class_upgrade_registry_aaf1c18ea51a5aa9afafa65667bcb191c} 
+std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ Upgrade\+Registry::\+build\+Pool (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}}}]{player\+Class}{, }\item[{bool}]{want\+Augment}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Builds a candidate pool of upgrades eligible for a level-\/up offer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em player\+Class} & Hero class receiving the offer. \\
+\hline
+{\em want\+Augment} & True to include augments; false for standard stat upgrades. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector of pointers to eligible upgrade definitions. 
+\end{DoxyReturn}
+\Hypertarget{class_upgrade_registry_ad3ff859f461efcf9df58d99a35a49582}\index{UpgradeRegistry@{UpgradeRegistry}!getAll@{getAll}}
+\index{getAll@{getAll}!UpgradeRegistry@{UpgradeRegistry}}
+\doxysubsubsection{\texorpdfstring{getAll()}{getAll()}}
+{\footnotesize\ttfamily \label{class_upgrade_registry_ad3ff859f461efcf9df58d99a35a49582} 
+const std::\+unordered\+\_\+map$<$ std::\+string, \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} $>$ \& Upgrade\+Registry::\+get\+All (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Returns the full map of loaded upgrade definitions. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the internal upgrade definition map. 
+\end{DoxyReturn}
+\Hypertarget{class_upgrade_registry_a23f2505a81f6507bc498b26d4e299262}\index{UpgradeRegistry@{UpgradeRegistry}!getById@{getById}}
+\index{getById@{getById}!UpgradeRegistry@{UpgradeRegistry}}
+\doxysubsubsection{\texorpdfstring{getById()}{getById()}}
+{\footnotesize\ttfamily \label{class_upgrade_registry_a23f2505a81f6507bc498b26d4e299262} 
+const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} Upgrade\+Registry::\+get\+By\+Id (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{id}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Looks up an upgrade definition by its unique identifier. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Upgrade identifier string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to the definition, or nullptr if not found. 
+\end{DoxyReturn}
+\Hypertarget{class_upgrade_registry_ab23d9b15d3b1863b568ab3eca52f4fa0}\index{UpgradeRegistry@{UpgradeRegistry}!loadConfig@{loadConfig}}
+\index{loadConfig@{loadConfig}!UpgradeRegistry@{UpgradeRegistry}}
+\doxysubsubsection{\texorpdfstring{loadConfig()}{loadConfig()}}
+{\footnotesize\ttfamily \label{class_upgrade_registry_ab23d9b15d3b1863b568ab3eca52f4fa0} 
+void Upgrade\+Registry::\+load\+Config (\begin{DoxyParamCaption}\item[{const std::\+string \&}]{filepath}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Loads upgrade definitions from a JSON file and populates the registry. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filepath} & Path to the upgrades JSON configuration file. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_upgrade_registry_a73c6fb7d0de31163d4733699da98741d}\index{UpgradeRegistry@{UpgradeRegistry}!pickWeightedRandom@{pickWeightedRandom}}
+\index{pickWeightedRandom@{pickWeightedRandom}!UpgradeRegistry@{UpgradeRegistry}}
+\doxysubsubsection{\texorpdfstring{pickWeightedRandom()}{pickWeightedRandom()}}
+{\footnotesize\ttfamily \label{class_upgrade_registry_a73c6fb7d0de31163d4733699da98741d} 
+std::\+vector$<$ std::\+string $>$ Upgrade\+Registry::\+pick\+Weighted\+Random (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ const \doxymbox{\hyperlink{struct_upgrade_definition}{Upgrade\+Definition}} \texorpdfstring{$\ast$}{*} $>$ \&}]{pool}{, }\item[{int}]{count}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Selects a weighted random subset of upgrades from a candidate pool without replacement. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pool} & Candidate upgrade definitions to draw from. \\
+\hline
+{\em count} & Maximum number of upgrades to pick. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Vector of chosen upgrade identifier strings. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+shared/\+Upgrade\+Registry.\+hpp\end{DoxyCompactItemize}

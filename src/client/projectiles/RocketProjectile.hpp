@@ -4,6 +4,12 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 
+/**
+ * @brief Explosive rocket projectile with area-of-effect detonation and fade-out visuals.
+ *
+ * On impact with a wall or entity, triggers an explosion that damages all enemies
+ * within the configured radius before deactivating.
+ */
 class RocketProjectile : public Projectile {
 public:
     RocketProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction);

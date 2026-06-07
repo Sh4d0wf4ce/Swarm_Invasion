@@ -1,0 +1,233 @@
+\doxysection{Medic\+Barrier Class Reference}
+\hypertarget{class_medic_barrier}{}\label{class_medic_barrier}\index{MedicBarrier@{MedicBarrier}}
+
+
+\doxylink{class_medic}{Medic} directional arc barrier rendered as a pulsing wall mesh.  
+
+
+
+
+{\ttfamily \+\#include $<$Medic\+Barrier.\+hpp$>$}
+
+Inheritance diagram for Medic\+Barrier:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_medic_barrier}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_medic_barrier_a66c7c0495b941cf143265e4c053c84cc}{Medic\+Barrier}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&arc\+Center, float facing\+Angle, float duration)
+\begin{DoxyCompactList}\small\item\em Constructs a barrier arc centered on the medic facing a direction. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_barrier_a733e1dbf8d7ea301a98c90fceb35d1c6}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Reduces remaining lifetime and advances pulse animation time. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_barrier_a68dcbba2403e8ca7d8c36c9fc80b0e1f}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the pulsing fill and outline arc meshes. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_medic_barrier_ada4c8d81deb937af5639239fbb94c638}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Barriers are neutral and do not belong to a combat faction. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_medic_barrier_acc0bd912877843229e95fb9378ad8e98}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Barriers use mesh geometry rather than a circular radius. \end{DoxyCompactList}\item 
+sf::\+\+Vector2f \doxymbox{\hyperlink{class_medic_barrier_a3980c45995a7e65466c24972f8b1a644}{get\+Center}} () const
+\begin{DoxyCompactList}\small\item\em Returns the arc center in world space. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_medic_barrier_adefe94e97e9b7ce72ca2ee9fb213e120}{get\+Facing\+Angle}} () const
+\begin{DoxyCompactList}\small\item\em Returns the facing angle of the barrier arc. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_barrier_a874cf004b8dcc6ad2ae7687a7c224d78}\label{class_medic_barrier_a874cf004b8dcc6ad2ae7687a7c224d78} 
+void {\bfseries build\+Arc\+Mesh} ()
+\begin{DoxyCompactList}\small\item\em Builds fill and outline vertex arrays from registry parameters. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_barrier_adb0a4a7b0bb4206c92cf637e09141dfa}\label{class_medic_barrier_adb0a4a7b0bb4206c92cf637e09141dfa} 
+sf::\+\+Vector2f {\bfseries m\+\_\+center}
+\item 
+\Hypertarget{class_medic_barrier_a48339f1559a816b3ab73d8a50fc4b3a4}\label{class_medic_barrier_a48339f1559a816b3ab73d8a50fc4b3a4} 
+float {\bfseries m\+\_\+facing\+Angle}
+\item 
+\Hypertarget{class_medic_barrier_a79c9a3bca8d8fca5fb27c7ae00b6afe1}\label{class_medic_barrier_a79c9a3bca8d8fca5fb27c7ae00b6afe1} 
+float {\bfseries m\+\_\+anim\+Time} \{0.\+0f\}
+\item 
+\Hypertarget{class_medic_barrier_afc8f1936df3b9b93c556baf62b23ad37}\label{class_medic_barrier_afc8f1936df3b9b93c556baf62b23ad37} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+fill\+Vertices}
+\item 
+\Hypertarget{class_medic_barrier_a844332fe67bdeece9d57d9874a468f8f}\label{class_medic_barrier_a844332fe67bdeece9d57d9874a468f8f} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+outline\+Vertices}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_medic}{Medic} directional arc barrier rendered as a pulsing wall mesh. 
+
+Builds fill and outline vertex arrays from registry geometry parameters. Uses remaining lifetime as HP and has no faction or collision radius. 
+
+\label{doc-constructors}
+\Hypertarget{class_medic_barrier_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_medic_barrier_a66c7c0495b941cf143265e4c053c84cc}\index{MedicBarrier@{MedicBarrier}!MedicBarrier@{MedicBarrier}}
+\index{MedicBarrier@{MedicBarrier}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{MedicBarrier()}{MedicBarrier()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_a66c7c0495b941cf143265e4c053c84cc} 
+Medic\+Barrier::\+\+Medic\+Barrier (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{arc\+Center}{, }\item[{float}]{facing\+Angle}{, }\item[{float}]{duration}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a barrier arc centered on the medic facing a direction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em arc\+Center} & Center of the arc in world space. \\
+\hline
+{\em facing\+Angle} & Facing direction in radians. \\
+\hline
+{\em duration} & Total lifetime in seconds stored as HP. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_medic_barrier_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_medic_barrier_a3980c45995a7e65466c24972f8b1a644}\index{MedicBarrier@{MedicBarrier}!getCenter@{getCenter}}
+\index{getCenter@{getCenter}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{getCenter()}{getCenter()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_a3980c45995a7e65466c24972f8b1a644} 
+sf::\+\+Vector2f Medic\+Barrier::\+get\+Center (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the arc center in world space. 
+
+\begin{DoxyReturn}{Returns}
+Center position of the barrier arc. 
+\end{DoxyReturn}
+\Hypertarget{class_medic_barrier_adefe94e97e9b7ce72ca2ee9fb213e120}\index{MedicBarrier@{MedicBarrier}!getFacingAngle@{getFacingAngle}}
+\index{getFacingAngle@{getFacingAngle}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{getFacingAngle()}{getFacingAngle()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_adefe94e97e9b7ce72ca2ee9fb213e120} 
+float Medic\+Barrier::\+get\+Facing\+Angle (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the facing angle of the barrier arc. 
+
+\begin{DoxyReturn}{Returns}
+Facing direction in radians. 
+\end{DoxyReturn}
+\Hypertarget{class_medic_barrier_ada4c8d81deb937af5639239fbb94c638}\index{MedicBarrier@{MedicBarrier}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_ada4c8d81deb937af5639239fbb94c638} 
+Faction Medic\+Barrier::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Barriers are neutral and do not belong to a combat faction. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+None. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_barrier_acc0bd912877843229e95fb9378ad8e98}\index{MedicBarrier@{MedicBarrier}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_acc0bd912877843229e95fb9378ad8e98} 
+float Medic\+Barrier::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Barriers use mesh geometry rather than a circular radius. 
+
+\begin{DoxyReturn}{Returns}
+0.\+0f. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_barrier_a68dcbba2403e8ca7d8c36c9fc80b0e1f}\index{MedicBarrier@{MedicBarrier}!render@{render}}
+\index{render@{render}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_a68dcbba2403e8ca7d8c36c9fc80b0e1f} 
+void Medic\+Barrier::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the pulsing fill and outline arc meshes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_barrier_a733e1dbf8d7ea301a98c90fceb35d1c6}\index{MedicBarrier@{MedicBarrier}!update@{update}}
+\index{update@{update}!MedicBarrier@{MedicBarrier}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_medic_barrier_a733e1dbf8d7ea301a98c90fceb35d1c6} 
+void Medic\+Barrier::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Reduces remaining lifetime and advances pulse animation time. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Medic\+Barrier.\+hpp\end{DoxyCompactItemize}

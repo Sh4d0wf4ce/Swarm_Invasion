@@ -1,0 +1,50 @@
+\doxysection{Black\+Hole.\+hpp}
+\hypertarget{_black_hole_8hpp_source}{}\label{_black_hole_8hpp_source}\index{src/client/entities/BlackHole.hpp@{src/client/entities/BlackHole.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_black_hole_a33815cf1bd8881713098562629cfe28e}{BlackHole}}\ :\ \textcolor{keyword}{public}\ Entity\{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \doxymbox{\hyperlink{class_black_hole_a33815cf1bd8881713098562629cfe28e}{BlackHole}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keywordtype}{float}\ duration)\ :\ Entity(id,\ startPos)\{}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ m\_hp\ =\ duration;}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ duration;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ m\_coreShape.setRadius(30.0f);}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ m\_coreShape.setOrigin(\{30.0f,\ 30.0f\});}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ m\_coreShape.setPosition(m\_position);}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ m\_coreShape.setFillColor(sf::Color(20,\ 20,\ 20));}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ m\_pullShape.setRadius(300.0f);}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ m\_pullShape.setOrigin(\{300.0f,\ 300.0f\});}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ m\_pullShape.setPosition(m\_position);}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ m\_pullShape.setFillColor(sf::Color::Transparent);\ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ m\_pullShape.setOutlineThickness(3.0f);}
+\DoxyCodeLine{00034\ \ \ \ \ \}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_black_hole_adfb33fd3cb2653a9e88d840453a87f4a}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ m\_hp\ -\/=\ deltaTime.asSeconds();\ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ pulse\ =\ std::abs(std::sin(m\_hp\ *\ 5.0f));}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ m\_pullShape.setOutlineColor(sf::Color(138,\ 43,\ 226,\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(100\ +\ 50\ *\ pulse)));}
+\DoxyCodeLine{00046\ \ \ \ \ \}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_black_hole_ab8e87dba93d8d680614118aabebb5e77}{render}}(sf::RenderTarget\&\ target)\{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ target.draw(m\_pullShape);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ target.draw(m\_coreShape);}
+\DoxyCodeLine{00055\ \ \ \ \ \};}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00062\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_black_hole_a1615545b1a172698516e5a2cd3c2a078}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Players;\ \}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_black_hole_a3a6629c83e1121502e3ca6bfe395dae1}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ 300.0f;\ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00071\ \ \ \ \ sf::CircleShape\ m\_coreShape;}
+\DoxyCodeLine{00072\ \ \ \ \ sf::CircleShape\ m\_pullShape;}
+\DoxyCodeLine{00073\ \};}
+
+\end{DoxyCode}

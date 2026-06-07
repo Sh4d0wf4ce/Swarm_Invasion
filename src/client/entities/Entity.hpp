@@ -6,12 +6,22 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
+/**
+ * @brief Identifies which side an entity belongs to in combat.
+ */
 enum class Faction{
     Players,
     Enemies,
     None,
 };
 
+/**
+ * @brief Abstract base class for all game-world entities.
+ *
+ * Stores identity, position, and health state shared by players, enemies,
+ * and ability-spawned objects. Subclasses implement per-frame simulation,
+ * rendering, faction membership, and collision radius.
+ */
 class Entity{
 public:
     Entity(std::uint32_t id, const sf::Vector2f& startPos): m_id(id), m_position(startPos) {}

@@ -1,0 +1,185 @@
+\doxysection{Wave\+Projectile Class Reference}
+\hypertarget{class_wave_projectile}{}\label{class_wave_projectile}\index{WaveProjectile@{WaveProjectile}}
+
+
+\doxylink{class_vanguard}{Vanguard} wave projectile that pierces multiple targets without deactivating.  
+
+
+
+
+{\ttfamily \+\#include $<$Wave\+Projectile.\+hpp$>$}
+
+Inheritance diagram for Wave\+Projectile:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_wave_projectile}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_wave_projectile_a8b402d8b33c5ae037fec22d744058aa8}{Wave\+Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction)
+\begin{DoxyCompactList}\small\item\em Initializes wave direction and mesh primitive type for arc rendering. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_wave_projectile_a7eb09a0651f8917f65da5c2fd11be50c}{update}} (sf::\+\+Time delta\+Time) override
+\begin{DoxyCompactList}\small\item\em Moves the wave and rebuilds its tapered arc mesh each frame. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_wave_projectile_ad7f01e53e06d8f919060190ee5e73132}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the wave arc vertex mesh. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_wave_projectile_a069fff796eb303b4b82081b34a12d44c}{check\+Collisions}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Records first contact with each hostile entity without deactivating the wave. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}} (std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos, const sf::\+\+Vector2f \&velocity, Faction faction, \doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} weapon)
+\begin{DoxyCompactList}\small\item\em Constructs a projectile from weapon stats and initializes its visual shape. \end{DoxyCompactList}\item 
+bool {\bfseries is\+Active} () const
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Owner\+Id} () const
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries get\+Weapon\+Type} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Radius} () const
+\item 
+Faction {\bfseries get\+Faction} () const
+\item 
+void {\bfseries deactivate} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_wave_projectile_a278d364ec482a34d8e07a3d2f1a6b7aa}\label{class_wave_projectile_a278d364ec482a34d8e07a3d2f1a6b7aa} 
+std::\+unordered\+\_\+set$<$ std::\+uint32\+\_\+t $>$ {\bfseries m\+\_\+hit\+Entities}
+\item 
+\Hypertarget{class_wave_projectile_adbc6fa658f2900a9ae1a3170525eaca9}\label{class_wave_projectile_adbc6fa658f2900a9ae1a3170525eaca9} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+mesh}
+\item 
+\Hypertarget{class_wave_projectile_a70a4804ab59cbbcec9371566e150617e}\label{class_wave_projectile_a70a4804ab59cbbcec9371566e150617e} 
+float {\bfseries m\+\_\+facing\+Angle}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_projectile}{Projectile}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+owner\+Id}
+\item 
+Faction {\bfseries m\+\_\+faction}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a1c48b1e096561449a5fa7276a8634768}{Weapon\+Type}} {\bfseries m\+\_\+weapon\+Type}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+velocity}
+\item 
+float {\bfseries m\+\_\+lifetime}
+\item 
+float {\bfseries m\+\_\+radius}
+\item 
+bool {\bfseries m\+\_\+active} \{true\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_vanguard}{Vanguard} wave projectile that pierces multiple targets without deactivating. 
+
+Renders a tapered arc mesh and tracks already-\/hit entities to avoid duplicate hits. 
+
+\label{doc-constructors}
+\Hypertarget{class_wave_projectile_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_wave_projectile_a8b402d8b33c5ae037fec22d744058aa8}\index{WaveProjectile@{WaveProjectile}!WaveProjectile@{WaveProjectile}}
+\index{WaveProjectile@{WaveProjectile}!WaveProjectile@{WaveProjectile}}
+\doxysubsubsection{\texorpdfstring{WaveProjectile()}{WaveProjectile()}}
+{\footnotesize\ttfamily \label{class_wave_projectile_a8b402d8b33c5ae037fec22d744058aa8} 
+Wave\+Projectile::\+\+Wave\+Projectile (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{const sf::\+\+Vector2f \&}]{velocity}{, }\item[{Faction}]{faction}{}\end{DoxyParamCaption})}
+
+
+
+Initializes wave direction and mesh primitive type for arc rendering. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em owner\+Id} & \doxylink{class_entity}{Entity} ID of the shooter. \\
+\hline
+{\em start\+Pos} & World position where the wave spawns. \\
+\hline
+{\em velocity} & Initial movement vector used to derive facing angle. \\
+\hline
+{\em faction} & Faction of the owner. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_wave_projectile_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_wave_projectile_a069fff796eb303b4b82081b34a12d44c}\index{WaveProjectile@{WaveProjectile}!checkCollisions@{checkCollisions}}
+\index{checkCollisions@{checkCollisions}!WaveProjectile@{WaveProjectile}}
+\doxysubsubsection{\texorpdfstring{checkCollisions()}{checkCollisions()}}
+{\footnotesize\ttfamily \label{class_wave_projectile_a069fff796eb303b4b82081b34a12d44c} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Wave\+Projectile::\+check\+Collisions (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Records first contact with each hostile entity without deactivating the wave. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & Candidate entities to test against. \\
+\hline
+{\em map} & Unused for wave collision; wall checks are skipped. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+IDs of newly hit entities this frame. 
+\end{DoxyReturn}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_af7ea80495061bcff8628631dbfedcf5a}{Projectile}}.
+
+\Hypertarget{class_wave_projectile_ad7f01e53e06d8f919060190ee5e73132}\index{WaveProjectile@{WaveProjectile}!render@{render}}
+\index{render@{render}!WaveProjectile@{WaveProjectile}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_wave_projectile_ad7f01e53e06d8f919060190ee5e73132} 
+void Wave\+Projectile::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the wave arc vertex mesh. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_ac314a0afcb6937b668171376275715ff}{Projectile}}.
+
+\Hypertarget{class_wave_projectile_a7eb09a0651f8917f65da5c2fd11be50c}\index{WaveProjectile@{WaveProjectile}!update@{update}}
+\index{update@{update}!WaveProjectile@{WaveProjectile}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_wave_projectile_a7eb09a0651f8917f65da5c2fd11be50c} 
+void Wave\+Projectile::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Moves the wave and rebuilds its tapered arc mesh each frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_projectile_acf4823bc5a00bf10d39c423f8077b58c}{Projectile}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+projectiles/\+Wave\+Projectile.\+hpp\item 
+src/\+client/\+projectiles/\+Wave\+Projectile.\+cpp\end{DoxyCompactItemize}

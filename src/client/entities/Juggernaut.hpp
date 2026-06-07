@@ -2,6 +2,13 @@
 #include "Player.hpp"
 #include <SFML/Graphics/VertexArray.hpp>
 
+/**
+ * @brief Heavy shotgun hero with charge dash, repulsor cone, and black hole.
+ *
+ * Uses limited shotgun ammo with reload, a directional charge on Shift, a
+ * frontal repulsor blast on right click, black hole placement on E, and
+ * rapid-fire recoil shooting during the ultimate.
+ */
 class Juggernaut : public Player{
 public:
     Juggernaut(std::uint32_t id, const sf::Vector2f& startPos);
@@ -44,7 +51,7 @@ private:
     float m_repulsorVfxTimer{0.0f};
     sf::VertexArray m_repulsorVfx{sf::PrimitiveType::TriangleFan};
 
-    
+
     // Ultimate & Recoil
     float m_blackHoleMaxRange{200.0f};
     float m_ultDuration{5.0f};

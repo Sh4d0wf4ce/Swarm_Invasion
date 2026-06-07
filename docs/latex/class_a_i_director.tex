@@ -1,0 +1,157 @@
+\doxysection{AIDirector Class Reference}
+\hypertarget{class_a_i_director}{}\label{class_a_i_director}\index{AIDirector@{AIDirector}}
+
+
+Orchestrates enemy wave spawning, flow-\/field pathfinding, and behaviour updates.  
+
+
+
+
+{\ttfamily \+\#include $<$AIDirector.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_a_i_director_a3cfb5e140104a3c3f10bc32dbc02c4ea}\label{class_a_i_director_a3cfb5e140104a3c3f10bc32dbc02c4ea} 
+{\bfseries AIDirector} ()
+\begin{DoxyCompactList}\small\item\em Seeds the random generator and initializes wave one spawn timing. \end{DoxyCompactList}\item 
+\Hypertarget{class_a_i_director_afac2fd770cf1e09d75299717a42fa731}\label{class_a_i_director_afac2fd770cf1e09d75299717a42fa731} 
+void {\bfseries reset} ()
+\begin{DoxyCompactList}\small\item\em Resets wave counters, timers, flow field, and spatial grid to initial values. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_a_i_director_af0a4f8cf1c6ee575c09f680e35b7ec0f}{update\+Waves}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&enemies, const std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, std::\+uint32\+\_\+t \&entity\+Counter)
+\begin{DoxyCompactList}\small\item\em Advances wave tiers and spawns enemies at weighted random positions. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_a_i_director_accd9dd5f17434e86eb0f878c9343d121}{update\+Behaviours}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&enemies, std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&out\+Shoot\+Events)
+\begin{DoxyCompactList}\small\item\em Rebuilds the spatial grid, refreshes the flow field, and ticks all enemy AI. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_a_i_director_a92f55afd88eb35211083755fb282cf62}{build\+Flow\+Field}} (std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, const std::\+map$<$ uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients)
+\begin{DoxyCompactList}\small\item\em Builds an 8-\/directional BFS cost field seeded from all player tile positions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_a_i_director_aa234355cff46f2606acaf43b415d7a62}\label{class_a_i_director_aa234355cff46f2606acaf43b415d7a62} 
+sf::\+\+Clock {\bfseries m\+\_\+path\+Finding\+Timer}
+\item 
+\Hypertarget{class_a_i_director_a3e821199ed74f67abadb4c6e5ea5cf20}\label{class_a_i_director_a3e821199ed74f67abadb4c6e5ea5cf20} 
+std::\+vector$<$ std::\+vector$<$ int $>$ $>$ {\bfseries m\+\_\+flow\+Field}
+\item 
+\Hypertarget{class_a_i_director_a6d04243b58e82f8f08d6f492d27c3254}\label{class_a_i_director_a6d04243b58e82f8f08d6f492d27c3254} 
+std::\+mt19937 {\bfseries m\+\_\+rng}
+\item 
+\Hypertarget{class_a_i_director_aa4cf047615cc2d4be60e73aaccb9e8ca}\label{class_a_i_director_aa4cf047615cc2d4be60e73aaccb9e8ca} 
+int {\bfseries m\+\_\+current\+Wave}
+\item 
+\Hypertarget{class_a_i_director_ac0eb62e959f0e8ccbc28f92fcceab428}\label{class_a_i_director_ac0eb62e959f0e8ccbc28f92fcceab428} 
+sf::\+\+Clock {\bfseries m\+\_\+wave\+Timer}
+\item 
+\Hypertarget{class_a_i_director_a3e62303cbc5b2dc50e65193a40c1370c}\label{class_a_i_director_a3e62303cbc5b2dc50e65193a40c1370c} 
+sf::\+\+Clock {\bfseries m\+\_\+spawn\+Timer}
+\item 
+\Hypertarget{class_a_i_director_a111ffb9aa7490ca8a5e3e95c87929f6a}\label{class_a_i_director_a111ffb9aa7490ca8a5e3e95c87929f6a} 
+float {\bfseries m\+\_\+current\+Spawn\+Rate}
+\item 
+\doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \doxymbox{\hyperlink{class_a_i_director_a5df0234cd300bb577ee5dd8297dbe099}{m\+\_\+grid}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Orchestrates enemy wave spawning, flow-\/field pathfinding, and behaviour updates. 
+
+Maintains wave timers, spawn rates, a spatial grid for neighbour queries, and a BFS flow field rebuilt periodically toward visible player positions. 
+
+\label{doc-func-members}
+\Hypertarget{class_a_i_director_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_a_i_director_a92f55afd88eb35211083755fb282cf62}\index{AIDirector@{AIDirector}!buildFlowField@{buildFlowField}}
+\index{buildFlowField@{buildFlowField}!AIDirector@{AIDirector}}
+\doxysubsubsection{\texorpdfstring{buildFlowField()}{buildFlowField()}}
+{\footnotesize\ttfamily \label{class_a_i_director_a92f55afd88eb35211083755fb282cf62} 
+void AIDirector::\+build\+Flow\+Field (\begin{DoxyParamCaption}\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{const std::\+map$<$ uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Builds an 8-\/directional BFS cost field seeded from all player tile positions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & Map used to treat wall tiles as impassable. \\
+\hline
+{\em clients} & \doxylink{class_player}{Player} positions used as BFS sources. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_a_i_director_accd9dd5f17434e86eb0f878c9343d121}\index{AIDirector@{AIDirector}!updateBehaviours@{updateBehaviours}}
+\index{updateBehaviours@{updateBehaviours}!AIDirector@{AIDirector}}
+\doxysubsubsection{\texorpdfstring{updateBehaviours()}{updateBehaviours()}}
+{\footnotesize\ttfamily \label{class_a_i_director_accd9dd5f17434e86eb0f878c9343d121} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ AIDirector::\+update\+Behaviours (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{enemies}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&}]{out\+Shoot\+Events}{}\end{DoxyParamCaption})}
+
+
+
+Rebuilds the spatial grid, refreshes the flow field, and ticks all enemy AI. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+{\em enemies} & Live enemy map updated in place by each enemy behaviour. \\
+\hline
+{\em clients} & Mutable player targets visible to enemy AI. \\
+\hline
+{\em map} & Map shared with enemy movement and pathfinding. \\
+\hline
+{\em out\+Shoot\+Events} & Output list populated with ranged enemy shot events. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{class_player}{Player} IDs killed by enemy contact or abilities this tick. 
+\end{DoxyReturn}
+\Hypertarget{class_a_i_director_af0a4f8cf1c6ee575c09f680e35b7ec0f}\index{AIDirector@{AIDirector}!updateWaves@{updateWaves}}
+\index{updateWaves@{updateWaves}!AIDirector@{AIDirector}}
+\doxysubsubsection{\texorpdfstring{updateWaves()}{updateWaves()}}
+{\footnotesize\ttfamily \label{class_a_i_director_af0a4f8cf1c6ee575c09f680e35b7ec0f} 
+void AIDirector::\+update\+Waves (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{enemies}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{std::\+uint32\+\_\+t \&}]{entity\+Counter}{}\end{DoxyParamCaption})}
+
+
+
+Advances wave tiers and spawns enemies at weighted random positions. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update (unused for wave timer logic). \\
+\hline
+{\em enemies} & Live enemy map to insert newly spawned enemies into. \\
+\hline
+{\em clients} & Connected players used to avoid spawning too close. \\
+\hline
+{\em map} & Map used for valid spawn tile checks. \\
+\hline
+{\em entity\+Counter} & Global entity ID counter incremented on each spawn. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-variable-members}
+\Hypertarget{class_a_i_director_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_a_i_director_a5df0234cd300bb577ee5dd8297dbe099}\index{AIDirector@{AIDirector}!m\_grid@{m\_grid}}
+\index{m\_grid@{m\_grid}!AIDirector@{AIDirector}}
+\doxysubsubsection{\texorpdfstring{m\_grid}{m\_grid}}
+{\footnotesize\ttfamily \label{class_a_i_director_a5df0234cd300bb577ee5dd8297dbe099} 
+\doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} AIDirector::\+m\+\_\+grid\hspace{0.3cm}{\ttfamily [private]}}
+
+{\bfseries Initial value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ Config::MAP\_WIDTH\_TILES\ *\ Config::TILE\_SIZE,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ Config::MAP\_WIDTH\_TILES\ *\ Config::TILE\_SIZE,}
+\DoxyCodeLine{\ \ \ \ \ \ \ \ 100.0f}
+\DoxyCodeLine{\ \ \ \ \}}
+
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+core/\+AIDirector.\+hpp\item 
+src/\+server/\+core/\+AIDirector.\+cpp\end{DoxyCompactItemize}

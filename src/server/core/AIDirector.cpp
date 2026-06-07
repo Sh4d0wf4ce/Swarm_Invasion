@@ -9,11 +9,17 @@
 #include <iostream>
 #include <cmath>
 
+/**
+ * @brief Seeds the random generator and initializes wave one spawn timing.
+ */
 AIDirector::AIDirector() : m_currentWave(1), m_currentSpawnRate(2.0f){
     std::random_device rd;
     m_rng.seed(rd());
 }
 
+/**
+ * @brief Resets wave counters, timers, flow field, and spatial grid to initial values.
+ */
 void AIDirector::reset(){
     m_currentWave = 1;
     m_currentSpawnRate = 2.0f;
@@ -24,6 +30,14 @@ void AIDirector::reset(){
     m_grid.clear();
 }
 
+/**
+ * @brief Advances wave tiers and spawns enemies at weighted random positions.
+ * @param deltaTime Elapsed time since the last update (unused for wave timer logic).
+ * @param enemies Live enemy map to insert newly spawned enemies into.
+ * @param clients Connected players used to avoid spawning too close.
+ * @param map Map used for valid spawn tile checks.
+ * @param entityCounter Global entity ID counter incremented on each spawn.
+ */
 void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies, const std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, std::uint32_t& entityCounter){
     // --- Advance wave tier on timer ---
     if(m_waveTimer.getElapsedTime().asSeconds() >= 30.0f){
@@ -92,6 +106,15 @@ void AIDirector::updateWaves(sf::Time deltaTime, std::map<std::uint32_t, std::un
     }
 }
 
+/**
+ * @brief Rebuilds the spatial grid, refreshes the flow field, and ticks all enemy AI.
+ * @param deltaTime Elapsed time since the last update.
+ * @param enemies Live enemy map updated in place by each enemy behaviour.
+ * @param clients Mutable player targets visible to enemy AI.
+ * @param map Map shared with enemy movement and pathfinding.
+ * @param outShootEvents Output list populated with ranged enemy shot events.
+ * @return Player IDs killed by enemy contact or abilities this tick.
+ */
 std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& enemies, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, std::vector<EnemyShootEvent>& outShootEvents){
     std::vector<std::uint32_t> deadPlayers;
     if(clients.empty()) return deadPlayers;
@@ -116,6 +139,11 @@ std::vector<std::uint32_t> AIDirector::updateBehaviours(sf::Time deltaTime, std:
     return deadPlayers;
 }
 
+/**
+ * @brief Builds an 8-directional BFS cost field seeded from all player tile positions.
+ * @param map Map used to treat wall tiles as impassable.
+ * @param clients Player positions used as BFS sources.
+ */
 void AIDirector::buildFlowField(std::shared_ptr<MapGenerator> map, const std::map<uint32_t, ClientInfo>& clients){
     if(!map || clients.empty()) return;
     int width = map->getWidth();

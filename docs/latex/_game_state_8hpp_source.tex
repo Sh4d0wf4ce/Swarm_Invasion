@@ -1,0 +1,108 @@
+\doxysection{Game\+State.\+hpp}
+\hypertarget{_game_state_8hpp_source}{}\label{_game_state_8hpp_source}\index{src/client/states/GameState.hpp@{src/client/states/GameState.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}../entities/Player.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}../entities/Enemy.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}../entities/HealField.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}../entities/BlackHole.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}../entities/Decoy.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}../entities/MedicOrb.hpp"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}../entities/MedicBarrier.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}../entities/MedicDrone.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}../core/MapRenderer.hpp"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ "{}../core/ClientEngine.hpp"{}}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}../projectiles/ProjectileManager.hpp"{}}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ "{}HeroRegistry.hpp"{}}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ "{}UpgradeRegistry.hpp"{}}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ "{}State.hpp"{}}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <imgui.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <imgui-\/SFML.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <array>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_game_state_ad7d2c7a6e419136ad59056b454710572}{GameState}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_state_af36d908fae0ce1e483773f15a1675466}{State}}\ \{}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00036\ \ \ \ \ \doxymbox{\hyperlink{class_game_state_ad7d2c7a6e419136ad59056b454710572}{GameState}}(\doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ std::uint32\_t\ myPlayerId,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ myClass);}
+\DoxyCodeLine{00037\ \ \ \ \ \doxymbox{\hyperlink{class_game_state_a5eddf97b5c453466e5f9729d7507dab0}{\string~GameState}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ State\ Interface}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_a36a1a733d0cd9cbb1cc65013b88a4f2f}{handlePacket}}(\doxymbox{\hyperlink{_network_protocol_8hpp_afd291b49233910ea12e6138c5b8dc338}{PacketType}}\ type,\ sf::Packet\&\ packet)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_aafe14518dbd547227d20bb7e076bf4ef}{handleInput}}(\textcolor{keyword}{const}\ sf::Event\&\ event)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_a886a5a8d88e20b14c8b08fc309fd8113}{update}}(sf::Time\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_a2c36ada0cae89f91d956e2c91b070893}{render}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_ac6ad0f0f10145a53e481d8669d7eb58a}{renderUI}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ Types}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{enum\ class}\ SessionEndReason\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ None,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ Death,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ Disconnected}
+\DoxyCodeLine{00053\ \ \ \ \ \};}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_game_state_1_1_client_heal_field}{ClientHealField}}\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ sf::Vector2f\ position;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ radius;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ duration;}
+\DoxyCodeLine{00058\ \ \ \ \ \};}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_game_state_aa7ebed73422e0c26508a6acc7ad0db95}{handleWorldState}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ Local\ Player\ \&\ Camera}}
+\DoxyCodeLine{00065\ \ \ \ \ sf::View\ m\_camera;}
+\DoxyCodeLine{00066\ \ \ \ \ std::unique\_ptr<Player>\ m\_player;}
+\DoxyCodeLine{00067\ \ \ \ \ sf::Vector2f\ m\_lastSentPosition;}
+\DoxyCodeLine{00068\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ m\_selectedClass\ =\ PlayerClass::Soldier;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{comment}{//\ Remote\ Entities}}
+\DoxyCodeLine{00072\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<Player>>\ m\_otherPlayers;}
+\DoxyCodeLine{00073\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\ m\_enemies;}
+\DoxyCodeLine{00074\ \ \ \ \ std::map<std::uint32\_t,\ sf::Vector2f>\ m\_energyCells;}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{comment}{//\ Ability\ World\ Objects}}
+\DoxyCodeLine{00078\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<HealField>>\ m\_healFields;}
+\DoxyCodeLine{00079\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<BlackHole>>\ m\_blackHoles;}
+\DoxyCodeLine{00080\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<Decoy>>\ m\_decoys;}
+\DoxyCodeLine{00081\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<MedicOrb>>\ m\_medicOrbs;}
+\DoxyCodeLine{00082\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<MedicBarrier>>\ m\_medicBarriers;}
+\DoxyCodeLine{00083\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<MedicDrone>>\ m\_medicDrones;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ Network\ Timers}}
+\DoxyCodeLine{00087\ \ \ \ \ sf::Clock\ m\_lastServerMessageTimer;}
+\DoxyCodeLine{00088\ \ \ \ \ sf::Clock\ m\_heartbeatTimer;}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ Map\ \&\ Projectiles}}
+\DoxyCodeLine{00092\ \ \ \ \ std::shared\_ptr<MapGenerator>\ m\_map;}
+\DoxyCodeLine{00093\ \ \ \ \ std::unique\_ptr<MapRenderer>\ m\_mapRenderer;}
+\DoxyCodeLine{00094\ \ \ \ \ std::unique\_ptr<ProjectileManager>\ m\_projectileManager;}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{//\ Team\ Progression\ \&\ Upgrades}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamLevel\ =\ 1;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamExp\ =\ 0;}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamExpMax\ =\ 10;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isChoosingUpgrade\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_upgradeRevealPhase\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00103\ \ \ \ \ std::array<std::string,\ 3>\ m\_upgradeOffers\{\};}
+\DoxyCodeLine{00104\ \ \ \ \ std::string\ m\_chosenUpgradeId;}
+\DoxyCodeLine{00105\ \ \ \ \ sf::Clock\ m\_clientUpgradeTimer;}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ Session\ State}}
+\DoxyCodeLine{00108\ \ \ \ \ SessionEndReason\ m\_sessionEndReason\ =\ SessionEndReason::None;}
+\DoxyCodeLine{00109\ \};}
+
+\end{DoxyCode}

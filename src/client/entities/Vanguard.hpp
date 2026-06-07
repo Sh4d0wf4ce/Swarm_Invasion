@@ -4,6 +4,13 @@
 #include <unordered_set>
 #include <vector>
 
+/**
+ * @brief Melee-focused hero with katana slashes, dash charges, and shuriken burst.
+ *
+ * Uses katana sweeps on left click, shuriken bursts on right click, a
+ * charge-based dash on Shift, a decoy stealth ability on E, and a speed
+ * boost ultimate on Q. Supports local hit detection and remote VFX replay.
+ */
 class Vanguard : public Player {
 public:
     Vanguard(std::uint32_t id, const sf::Vector2f& startPos);

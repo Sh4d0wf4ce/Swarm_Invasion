@@ -7,7 +7,9 @@
 #include <iostream>
 
 
-// Weapon Stat Definition
+/**
+ * @brief Projectile and weapon tuning data loaded from JSON configuration.
+ */
 struct WeaponStats{
     float speed;
     float radius;
@@ -19,8 +21,15 @@ struct WeaponStats{
     float explosionRadius;
 };
 
+/**
+ * @brief Central registry that loads and exposes weapon tuning data from JSON files.
+ */
 class WeaponRegistry{
 public:
+    /**
+     * @brief Loads weapon configuration from a JSON file and populates the registry.
+     * @param filepath Path to the weapons JSON configuration file.
+     */
     static void loadConfig(const std::string& filepath){
         std::ifstream file(filepath);
         if(!file.is_open()){
@@ -62,6 +71,13 @@ public:
         }
         std::cout << "[REGISTRY] Successfully loaded " << filepath << " (" << m_stats.size() << " weapons)\n";
     }
+
+    /**
+     * @brief Returns stats for a given weapon type.
+     * @param wType Weapon type identifier.
+     * @return Reference to the weapon stats for @p wType.
+     * @throws std::out_of_range if @p wType was not loaded.
+     */
     static const WeaponStats& getStats(WeaponType wType){
         return m_stats.at(wType);
     }

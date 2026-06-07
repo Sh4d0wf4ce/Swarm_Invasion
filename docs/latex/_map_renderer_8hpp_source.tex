@@ -1,0 +1,27 @@
+\doxysection{Map\+Renderer.\+hpp}
+\hypertarget{_map_renderer_8hpp_source}{}\label{_map_renderer_8hpp_source}\index{src/client/core/MapRenderer.hpp@{src/client/core/MapRenderer.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_map_renderer_ac4203fc722d6d13bffcb834844459973}{MapRenderer}}\{}
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00017\ \ \ \ \ \doxymbox{\hyperlink{class_map_renderer_ac4203fc722d6d13bffcb834844459973}{MapRenderer}}(std::shared\_ptr<MapGenerator>\ mapGen,\ \textcolor{keywordtype}{float}\ tileSize);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_map_renderer_a01f6d89b333f4f1bc0d5bb4cd523b90b}{render}}(sf::RenderTarget\&\ target);}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_map_renderer_a2a6997357b8b0feb3061356aa8b53caf}{rebuild}}();}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{comment}{//\ Map\ Data}}
+\DoxyCodeLine{00023\ \ \ \ \ std::shared\_ptr<MapGenerator>\ m\_mapGen;}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_tileSize;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{comment}{//\ GPU\ Cache}}
+\DoxyCodeLine{00027\ \ \ \ \ sf::VertexArray\ m\_vertices;}
+\DoxyCodeLine{00028\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,55 @@
+\doxysection{AIDirector.\+hpp}
+\hypertarget{_a_i_director_8hpp_source}{}\label{_a_i_director_8hpp_source}\index{src/server/core/AIDirector.hpp@{src/server/core/AIDirector.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}ServerTypes.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}../enemies/ServerEnemy.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}SpatialGrid.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ <queue>}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_a_i_director_a3cfb5e140104a3c3f10bc32dbc02c4ea}{AIDirector}}\{}
+\DoxyCodeLine{00019\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00020\ \ \ \ \ \doxymbox{\hyperlink{class_a_i_director_a3cfb5e140104a3c3f10bc32dbc02c4ea}{AIDirector}}();}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_a_i_director_afac2fd770cf1e09d75299717a42fa731}{reset}}();}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_a_i_director_af0a4f8cf1c6ee575c09f680e35b7ec0f}{updateWaves}}(sf::Time\ deltaTime,}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ enemies,}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ ClientInfo>\&\ clients,}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<MapGenerator>\ map,}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::uint32\_t\&\ entityCounter);}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ std::vector<std::uint32\_t>\ \doxymbox{\hyperlink{class_a_i_director_accd9dd5f17434e86eb0f878c9343d121}{updateBehaviours}}(sf::Time\ deltaTime,}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\&\ enemies,}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::map<std::uint32\_t,\ ClientInfo>\&\ clients,}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<MapGenerator>\ map,}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::vector<EnemyShootEvent>\&\ outShootEvents);}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{//\ Pathfinding}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_a_i_director_a92f55afd88eb35211083755fb282cf62}{buildFlowField}}(std::shared\_ptr<MapGenerator>\ map,\ \textcolor{keyword}{const}\ std::map<uint32\_t,\ ClientInfo>\&\ clients);}
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ Wave\ \&\ Pathfinding\ State}}
+\DoxyCodeLine{00041\ \ \ \ \ sf::Clock\ m\_pathFindingTimer;}
+\DoxyCodeLine{00042\ \ \ \ \ std::vector\ <std::vector<int>>\ m\_flowField;}
+\DoxyCodeLine{00043\ \ \ \ \ std::mt19937\ m\_rng;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_currentWave;}
+\DoxyCodeLine{00045\ \ \ \ \ sf::Clock\ m\_waveTimer;}
+\DoxyCodeLine{00046\ \ \ \ \ sf::Clock\ m\_spawnTimer;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_currentSpawnRate;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Spatial\ Index}}
+\DoxyCodeLine{00050\ \ \ \ \ \doxymbox{\hyperlink{class_spatial_grid}{SpatialGrid}}\ m\_grid\{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ Config::MAP\_WIDTH\_TILES\ *\ Config::TILE\_SIZE,}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ Config::MAP\_WIDTH\_TILES\ *\ Config::TILE\_SIZE,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ 100.0f}
+\DoxyCodeLine{00054\ \ \ \ \ \};}
+\DoxyCodeLine{00055\ \};}
+
+\end{DoxyCode}

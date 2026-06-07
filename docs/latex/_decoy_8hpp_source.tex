@@ -1,0 +1,89 @@
+\doxysection{Decoy.\+hpp}
+\hypertarget{_decoy_8hpp_source}{}\label{_decoy_8hpp_source}\index{src/client/entities/Decoy.hpp@{src/client/entities/Decoy.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}HeroRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}AbilityRegistry.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <SFML/Graphics.hpp>}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}{Decoy}}\ :\ \textcolor{keyword}{public}\ Entity\ \{}
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00023\ \ \ \ \ \doxymbox{\hyperlink{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}{Decoy}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keywordtype}{float}\ maxHp\ =\ -\/1.f)}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ :\ Entity(id,\ startPos)\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxHp\ <\ 0.f)\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \ \ \ \ maxHp\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(\doxymbox{\hyperlink{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5}{AbilityRegistry::vanguard}}().\doxymbox{\hyperlink{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}{Decoy}},\ \textcolor{stringliteral}{"{}decoyHp"{}},\ 150.f);}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ m\_maxHp\ =\ maxHp;}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ m\_hp\ =\ maxHp;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\&\ stats\ =\ \doxymbox{\hyperlink{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}{HeroRegistry::getStats}}(PlayerClass::Vanguard);}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ m\_shape.setRadius(stats.radius);}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ m\_shape.setOrigin(\{stats.radius,\ stats.radius\});}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ m\_shape.setPosition(startPos);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ m\_shape.setFillColor(stats.color);}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ m\_shape.setOutlineColor(sf::Color(255,\ 255,\ 255,\ 200));}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ m\_shape.setOutlineThickness(1.5f);}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ m\_explosionShape.setPosition(startPos);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ m\_explosionShape.setFillColor(sf::Color(0,\ 255,\ 255,\ 0));}
+\DoxyCodeLine{00039\ \ \ \ \ \}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_decoy_a4044a739b43bac719cf2ccc4de717380}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ m\_shape.setPosition(m\_position);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ m\_timeAlive\ +=\ deltaTime.asSeconds();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ pulse\ =\ std::abs(std::sin(m\_timeAlive\ *\ 15.0f));}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ m\_shape.setOutlineThickness(1.0f\ +\ 2.0f\ *\ pulse);}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\_isExploding)\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ m\_explosionTimer\ +=\ deltaTime.asSeconds();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ progress\ =\ m\_explosionTimer\ /\ m\_maxExplosionTime;}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (progress\ <=\ 1.0f)\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ easeOut\ =\ 1.0f\ -\/\ std::pow(1.0f\ -\/\ progress,\ 3.0f);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ currentRadius\ =\ \doxymbox{\hyperlink{class_ability_registry_ac792e022429728e205ba6d37da575d7f}{AbilityRegistry::param}}(\doxymbox{\hyperlink{class_ability_registry_a25c4577b7403d7a885227493fb0c38e5}{AbilityRegistry::vanguard}}().\doxymbox{\hyperlink{class_decoy_a1d1f1f00a78f92b829d70d023bb32e3e}{Decoy}},\ \textcolor{stringliteral}{"{}explosionRadius"{}},\ 120.f)\ *\ easeOut;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_explosionShape.setPosition(m\_position);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_explosionShape.setRadius(currentRadius);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_explosionShape.setOrigin(\{currentRadius,\ currentRadius\});}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::uint8\_t\ alpha\ =\ \textcolor{keyword}{static\_cast<}std::uint8\_t\textcolor{keyword}{>}(180.0f\ *\ (1.0f\ -\/\ progress));}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_explosionShape.setFillColor(sf::Color(0,\ 255,\ 255,\ alpha));}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_decoy_aa8da74b057eb0f06cf923545f415b0be}{render}}(sf::RenderTarget\&\ target)\textcolor{keyword}{\ override\ }\{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!m\_isExploding)\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ target.draw(m\_shape);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{drawHealthBar}}(target,\ 30.0f);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ target.draw(m\_explosionShape);}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{comment}{//\ Explosion\ Control}}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_decoy_a416e997cdd1b98daa55b6a80ceb990ec}{triggerExplosion}}()\ \{\ m\_isExploding\ =\ \textcolor{keyword}{true};\ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_decoy_a662d30ec9d695de88d4378d9922724e2}{isExploding}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_isExploding;\ \}}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_decoy_a971c9cedaf4205a27e5b9191c0161e87}{isFinished}}()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_isExploding\ \&\&\ (m\_explosionTimer\ >=\ m\_maxExplosionTime);\ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00104\ \ \ \ \ Faction\ \doxymbox{\hyperlink{class_decoy_ab049910b3dfa7b2f93cbd1f7ba143509}{getFaction}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Players;\ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_decoy_a783e17fc3790a1a479cebcb50db674ff}{getRadius}}()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}{HeroRegistry::getStats}}(PlayerClass::Vanguard).radius;\ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00113\ \ \ \ \ sf::CircleShape\ m\_shape;}
+\DoxyCodeLine{00114\ \ \ \ \ sf::CircleShape\ m\_explosionShape;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Explosion\ State}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isExploding\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_explosionTimer\{0.0f\};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{float}\ m\_maxExplosionTime\{0.4f\};}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{//\ Animation\ State}}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_timeAlive\{0.0f\};}
+\DoxyCodeLine{00123\ \};}
+
+\end{DoxyCode}

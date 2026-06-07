@@ -1,0 +1,142 @@
+\doxysection{Entity Class Reference}
+\hypertarget{class_entity}{}\label{class_entity}\index{Entity@{Entity}}
+
+
+Abstract base class for all game-\/world entities.  
+
+
+
+
+{\ttfamily \+\#include $<$Entity.\+hpp$>$}
+
+Inheritance diagram for Entity:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=9.000000cm]{class_entity}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_entity_a311e6edf3cb3fab6dcc78aa757f711cf}\label{class_entity_a311e6edf3cb3fab6dcc78aa757f711cf} 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+virtual void \doxymbox{\hyperlink{class_entity_aaf9c52c7d41379af2a5f7aa6b55a8571}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)=0
+\item 
+virtual void \doxymbox{\hyperlink{class_entity_ae3fcbfcb6a2d46b3d36ac508b883fb1b}{render}} (sf::\+\+Render\+Target \&target)=0
+\item 
+\Hypertarget{class_entity_ae9033fca4e7a336dda76b163f6368480}\label{class_entity_ae9033fca4e7a336dda76b163f6368480} 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+\Hypertarget{class_entity_a11d7f8fde1e714c76a20b69793fa157c}\label{class_entity_a11d7f8fde1e714c76a20b69793fa157c} 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+\Hypertarget{class_entity_a1c24b9302794c48cd1da74f120360832}\label{class_entity_a1c24b9302794c48cd1da74f120360832} 
+float {\bfseries get\+Hp} () const
+\item 
+\Hypertarget{class_entity_a5000a9a577ead655c7ff89afe6eb9f04}\label{class_entity_a5000a9a577ead655c7ff89afe6eb9f04} 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+\Hypertarget{class_entity_a4ddf038f8f5b35ff96c7223b58513474}\label{class_entity_a4ddf038f8f5b35ff96c7223b58513474} 
+void {\bfseries set\+Hp} (float hp)
+\item 
+\Hypertarget{class_entity_ad791e842cae539ae0d8181bb728b448e}\label{class_entity_ad791e842cae539ae0d8181bb728b448e} 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\item 
+virtual Faction \doxymbox{\hyperlink{class_entity_acf0be2996521317cb012233a4edcba21}{get\+Faction}} () const =0
+\item 
+virtual float \doxymbox{\hyperlink{class_entity_a8232d6133ad686306240162ad20fe096}{get\+Radius}} () const =0
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_entity_aa1aa383694ac2b1e546b95301c80e989}\label{class_entity_aa1aa383694ac2b1e546b95301c80e989} 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+\Hypertarget{class_entity_ac180ec8d9daec006145e014e2cccd3ab}\label{class_entity_ac180ec8d9daec006145e014e2cccd3ab} 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+\Hypertarget{class_entity_a7963da8acfd3204b16c58f168227a8c0}\label{class_entity_a7963da8acfd3204b16c58f168227a8c0} 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+\Hypertarget{class_entity_aa6ee8f3ce7796cc8f85c0c639190fa0e}\label{class_entity_aa6ee8f3ce7796cc8f85c0c639190fa0e} 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract base class for all game-\/world entities. 
+
+Stores identity, position, and health state shared by players, enemies, and ability-\/spawned objects. Subclasses implement per-\/frame simulation, rendering, faction membership, and collision radius. 
+
+\label{doc-func-members}
+\Hypertarget{class_entity_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_entity_acb0281b32706e9d2e631de6ab7afffb9}\index{Entity@{Entity}!drawHealthBar@{drawHealthBar}}
+\index{drawHealthBar@{drawHealthBar}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{drawHealthBar()}{drawHealthBar()}}
+{\footnotesize\ttfamily \label{class_entity_acb0281b32706e9d2e631de6ab7afffb9} 
+void Entity::\+draw\+Health\+Bar (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{, }\item[{float}]{y\+Offset}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Draws a health bar above the entity when below maximum HP. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+{\em y\+Offset} & Vertical offset above the entity position in pixels. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_entity_acf0be2996521317cb012233a4edcba21}\index{Entity@{Entity}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_entity_acf0be2996521317cb012233a4edcba21} 
+virtual Faction Entity::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_black_hole_a1615545b1a172698516e5a2cd3c2a078}{Black\+Hole}}, \doxymbox{\hyperlink{class_decoy_ab049910b3dfa7b2f93cbd1f7ba143509}{Decoy}}, \doxymbox{\hyperlink{class_heal_field_af3a8afb3e9fe53cbfa0a155140e14051}{Heal\+Field}}, \doxymbox{\hyperlink{class_medic_barrier_ada4c8d81deb937af5639239fbb94c638}{Medic\+Barrier}}, \doxymbox{\hyperlink{class_medic_drone_ac74ba6d5ba4c6cbd2068bccbcd432c0a}{Medic\+Drone}}, and \doxymbox{\hyperlink{class_medic_orb_a8bbaf2377a0f90f4f408e0a9de9d41e2}{Medic\+Orb}}.
+
+\Hypertarget{class_entity_a8232d6133ad686306240162ad20fe096}\index{Entity@{Entity}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_entity_a8232d6133ad686306240162ad20fe096} 
+virtual float Entity::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_black_hole_a3a6629c83e1121502e3ca6bfe395dae1}{Black\+Hole}}, \doxymbox{\hyperlink{class_decoy_a783e17fc3790a1a479cebcb50db674ff}{Decoy}}, \doxymbox{\hyperlink{class_heal_field_a1c73e8ebb4c6f5c5f81b3d194148167e}{Heal\+Field}}, \doxymbox{\hyperlink{class_medic_barrier_acc0bd912877843229e95fb9378ad8e98}{Medic\+Barrier}}, \doxymbox{\hyperlink{class_medic_drone_ae9b445ba187ffc70fb47ab486dfd3fbd}{Medic\+Drone}}, and \doxymbox{\hyperlink{class_medic_orb_acdbccd895dff797aca513ef2f297554c}{Medic\+Orb}}.
+
+\Hypertarget{class_entity_ae3fcbfcb6a2d46b3d36ac508b883fb1b}\index{Entity@{Entity}!render@{render}}
+\index{render@{render}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_entity_ae3fcbfcb6a2d46b3d36ac508b883fb1b} 
+virtual void Entity::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_black_hole_ab8e87dba93d8d680614118aabebb5e77}{Black\+Hole}}, \doxymbox{\hyperlink{class_decoy_aa8da74b057eb0f06cf923545f415b0be}{Decoy}}, \doxymbox{\hyperlink{class_enemy_a5f02011e333d7e5639f13ce43c26f9e8}{Enemy}}, \doxymbox{\hyperlink{class_heal_field_ac20d32aede869a5b18dd200fcb27dff6}{Heal\+Field}}, \doxymbox{\hyperlink{class_juggernaut_a0f55e25ae23c38a2b929154051695e91}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_ad3cf1e5436ef6a07526e6d25716d19f1}{Medic}}, \doxymbox{\hyperlink{class_medic_barrier_a68dcbba2403e8ca7d8c36c9fc80b0e1f}{Medic\+Barrier}}, \doxymbox{\hyperlink{class_medic_drone_a28deed2aba8ab23ef4b6675546b81862}{Medic\+Drone}}, \doxymbox{\hyperlink{class_medic_orb_a8a75dff6d1b74255a75467b0a2806afb}{Medic\+Orb}}, \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{Player}}, and \doxymbox{\hyperlink{class_vanguard_a4c917e62bbd1a21880075e78d608f763}{Vanguard}}.
+
+\Hypertarget{class_entity_aaf9c52c7d41379af2a5f7aa6b55a8571}\index{Entity@{Entity}!update@{update}}
+\index{update@{update}!Entity@{Entity}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_entity_aaf9c52c7d41379af2a5f7aa6b55a8571} 
+virtual void Entity::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_black_hole_adfb33fd3cb2653a9e88d840453a87f4a}{Black\+Hole}}, \doxymbox{\hyperlink{class_decoy_a4044a739b43bac719cf2ccc4de717380}{Decoy}}, \doxymbox{\hyperlink{class_enemy_a1c5464a51870dacc74f541f948504c90}{Enemy}}, \doxymbox{\hyperlink{class_heal_field_a24aa54d6d5a6efddaa9e9f6b08600842}{Heal\+Field}}, \doxymbox{\hyperlink{class_juggernaut_ae320c01c6a7f65c75091d1124c8afa5b}{Juggernaut}}, \doxymbox{\hyperlink{class_medic_adc9d64e9ed40f90c4fa643ed42fe880a}{Medic}}, \doxymbox{\hyperlink{class_medic_barrier_a733e1dbf8d7ea301a98c90fceb35d1c6}{Medic\+Barrier}}, \doxymbox{\hyperlink{class_medic_drone_abac7871758c305e21c19e3d9a8a29772}{Medic\+Drone}}, \doxymbox{\hyperlink{class_medic_orb_aba7a6f6707cdcbce18b856db4ad79eb0}{Medic\+Orb}}, \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{Player}}, \doxymbox{\hyperlink{class_soldier_a202cc021f853f61c7089a9d0d32630d5}{Soldier}}, and \doxymbox{\hyperlink{class_vanguard_a4606aa4dbfd9f4746618601454040c41}{Vanguard}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Entity.\+hpp\item 
+src/\+client/\+entities/\+Entity.\+cpp\end{DoxyCompactItemize}

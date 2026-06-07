@@ -1,0 +1,268 @@
+\doxysection{Medic\+Drone Class Reference}
+\hypertarget{class_medic_drone}{}\label{class_medic_drone}\index{MedicDrone@{MedicDrone}}
+
+
+\doxylink{class_medic}{Medic} ultimate drone with orbiting nodes and a spinning energy ring.  
+
+
+
+
+{\ttfamily \+\#include $<$Medic\+Drone.\+hpp$>$}
+
+Inheritance diagram for Medic\+Drone:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_medic_drone}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_medic_drone_aab4e5e1cab04cf0273f53376d4f15c91}{Medic\+Drone}} (std::\+uint32\+\_\+t id, std::\+uint32\+\_\+t owner\+Id, const sf::\+\+Vector2f \&start\+Pos)
+\begin{DoxyCompactList}\small\item\em Constructs a drone owned by a \doxylink{class_medic}{Medic} player. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_drone_abac7871758c305e21c19e3d9a8a29772}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Interpolates position, pulses the core, and rebuilds the ring mesh. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_drone_a28deed2aba8ab23ef4b6675546b81862}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the core, spinning ring, and three orbiting nodes. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_drone_a19c6e96da27502e70d34f73543cf13f1}{set\+Server\+Position}} (const sf::\+\+Vector2f \&pos)
+\begin{DoxyCompactList}\small\item\em Sets server position for interpolation. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_drone_a6a11a2738f6d1b71280b15c8c336163c}{set\+Drone\+State}} (\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} state)
+\begin{DoxyCompactList}\small\item\em Updates the drone behavioral state from network sync. \end{DoxyCompactList}\item 
+std::\+uint32\+\_\+t \doxymbox{\hyperlink{class_medic_drone_a402fb09433d00a3ab62d69d672709e96}{get\+Owner\+Id}} () const
+\begin{DoxyCompactList}\small\item\em Returns the owning \doxylink{class_medic}{Medic} player\textquotesingle{}s network ID. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} \doxymbox{\hyperlink{class_medic_drone_a4b8299c0c35a6a7be06f5cf981c59622}{get\+Drone\+State}} () const
+\begin{DoxyCompactList}\small\item\em Returns the current drone behavioral state. \end{DoxyCompactList}\item 
+Faction \doxymbox{\hyperlink{class_medic_drone_ac74ba6d5ba4c6cbd2068bccbcd432c0a}{get\+Faction}} () const override
+\begin{DoxyCompactList}\small\item\em Drones are neutral and do not belong to a combat faction. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_medic_drone_ae9b445ba187ffc70fb47ab486dfd3fbd}{get\+Radius}} () const override
+\begin{DoxyCompactList}\small\item\em Drones use visual shapes rather than a circular collision radius. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_drone_a6d0e05d046669d31641cea2849cd92b8}\label{class_medic_drone_a6d0e05d046669d31641cea2849cd92b8} 
+void {\bfseries build\+Ring\+Vertices} ()
+\begin{DoxyCompactList}\small\item\em Rebuilds the spinning ring vertex array around the drone core. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_drone_a9544b3e9cec551e38fa307eab42718fe}\label{class_medic_drone_a9544b3e9cec551e38fa307eab42718fe} 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+owner\+Id}
+\item 
+\Hypertarget{class_medic_drone_ad1d8c6c8dcae71707ef8a1ac39f18715}\label{class_medic_drone_ad1d8c6c8dcae71707ef8a1ac39f18715} 
+sf::\+\+Vector2f {\bfseries m\+\_\+server\+Position}
+\item 
+\Hypertarget{class_medic_drone_a9817999c3b466dd980510de69f144e03}\label{class_medic_drone_a9817999c3b466dd980510de69f144e03} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} {\bfseries m\+\_\+state} \{Medic\+Drone\+State::\+\+Orbit\}
+\item 
+\Hypertarget{class_medic_drone_a4df8934b78209fb4e75a443ab374a63d}\label{class_medic_drone_a4df8934b78209fb4e75a443ab374a63d} 
+float {\bfseries m\+\_\+anim\+Time} \{0.\+0f\}
+\item 
+\Hypertarget{class_medic_drone_ad3b21afcb17f894db409d7a50aae5665}\label{class_medic_drone_ad3b21afcb17f894db409d7a50aae5665} 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+core\+Shape}
+\item 
+\Hypertarget{class_medic_drone_a01cfb16f763672088e5581141e00e660}\label{class_medic_drone_a01cfb16f763672088e5581141e00e660} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+ring\+Vertices} \{sf::\+\+Primitive\+Type::\+\+Line\+Strip\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_medic}{Medic} ultimate drone with orbiting nodes and a spinning energy ring. 
+
+Interpolates toward server position, pulses its core shape, and renders three orbiting nodes. Belongs to no combat faction and has zero radius. 
+
+\label{doc-constructors}
+\Hypertarget{class_medic_drone_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_medic_drone_aab4e5e1cab04cf0273f53376d4f15c91}\index{MedicDrone@{MedicDrone}!MedicDrone@{MedicDrone}}
+\index{MedicDrone@{MedicDrone}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{MedicDrone()}{MedicDrone()}}
+{\footnotesize\ttfamily \label{class_medic_drone_aab4e5e1cab04cf0273f53376d4f15c91} 
+Medic\+Drone::\+\+Medic\+Drone (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{std::\+uint32\+\_\+t}]{owner\+Id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructs a drone owned by a \doxylink{class_medic}{Medic} player. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em owner\+Id} & Network ID of the \doxylink{class_medic}{Medic} that deployed the drone. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_medic_drone_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_medic_drone_a4b8299c0c35a6a7be06f5cf981c59622}\index{MedicDrone@{MedicDrone}!getDroneState@{getDroneState}}
+\index{getDroneState@{getDroneState}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{getDroneState()}{getDroneState()}}
+{\footnotesize\ttfamily \label{class_medic_drone_a4b8299c0c35a6a7be06f5cf981c59622} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} Medic\+Drone::\+get\+Drone\+State (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the current drone behavioral state. 
+
+\begin{DoxyReturn}{Returns}
+Active \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} value. 
+\end{DoxyReturn}
+\Hypertarget{class_medic_drone_ac74ba6d5ba4c6cbd2068bccbcd432c0a}\index{MedicDrone@{MedicDrone}!getFaction@{getFaction}}
+\index{getFaction@{getFaction}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{getFaction()}{getFaction()}}
+{\footnotesize\ttfamily \label{class_medic_drone_ac74ba6d5ba4c6cbd2068bccbcd432c0a} 
+Faction Medic\+Drone::\+get\+Faction (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Drones are neutral and do not belong to a combat faction. 
+
+\begin{DoxyReturn}{Returns}
+Faction::\+\+None. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_drone_a402fb09433d00a3ab62d69d672709e96}\index{MedicDrone@{MedicDrone}!getOwnerId@{getOwnerId}}
+\index{getOwnerId@{getOwnerId}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{getOwnerId()}{getOwnerId()}}
+{\footnotesize\ttfamily \label{class_medic_drone_a402fb09433d00a3ab62d69d672709e96} 
+std::\+uint32\+\_\+t Medic\+Drone::\+get\+Owner\+Id (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Returns the owning \doxylink{class_medic}{Medic} player\textquotesingle{}s network ID. 
+
+\begin{DoxyReturn}{Returns}
+Owner entity ID. 
+\end{DoxyReturn}
+\Hypertarget{class_medic_drone_ae9b445ba187ffc70fb47ab486dfd3fbd}\index{MedicDrone@{MedicDrone}!getRadius@{getRadius}}
+\index{getRadius@{getRadius}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{getRadius()}{getRadius()}}
+{\footnotesize\ttfamily \label{class_medic_drone_ae9b445ba187ffc70fb47ab486dfd3fbd} 
+float Medic\+Drone::\+get\+Radius (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Drones use visual shapes rather than a circular collision radius. 
+
+\begin{DoxyReturn}{Returns}
+0.\+0f. 
+\end{DoxyReturn}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_drone_a28deed2aba8ab23ef4b6675546b81862}\index{MedicDrone@{MedicDrone}!render@{render}}
+\index{render@{render}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_medic_drone_a28deed2aba8ab23ef4b6675546b81862} 
+void Medic\+Drone::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the core, spinning ring, and three orbiting nodes. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_drone_a6a11a2738f6d1b71280b15c8c336163c}\index{MedicDrone@{MedicDrone}!setDroneState@{setDroneState}}
+\index{setDroneState@{setDroneState}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{setDroneState()}{setDroneState()}}
+{\footnotesize\ttfamily \label{class_medic_drone_a6a11a2738f6d1b71280b15c8c336163c} 
+void Medic\+Drone::\+set\+Drone\+State (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}}}]{state}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Updates the drone behavioral state from network sync. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em state} & Current \doxylink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State} (orbit, heal, etc.). \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_drone_a19c6e96da27502e70d34f73543cf13f1}\index{MedicDrone@{MedicDrone}!setServerPosition@{setServerPosition}}
+\index{setServerPosition@{setServerPosition}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{setServerPosition()}{setServerPosition()}}
+{\footnotesize\ttfamily \label{class_medic_drone_a19c6e96da27502e70d34f73543cf13f1} 
+void Medic\+Drone::\+set\+Server\+Position (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{pos}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Sets server position for interpolation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pos} & Latest world position from the server. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_drone_abac7871758c305e21c19e3d9a8a29772}\index{MedicDrone@{MedicDrone}!update@{update}}
+\index{update@{update}!MedicDrone@{MedicDrone}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_medic_drone_abac7871758c305e21c19e3d9a8a29772} 
+void Medic\+Drone::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Interpolates position, pulses the core, and rebuilds the ring mesh. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Medic\+Drone.\+hpp\end{DoxyCompactItemize}

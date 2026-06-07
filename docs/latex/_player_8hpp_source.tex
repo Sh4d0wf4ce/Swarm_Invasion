@@ -1,0 +1,130 @@
+\doxysection{Player.\+hpp}
+\hypertarget{_player_8hpp_source}{}\label{_player_8hpp_source}\index{src/client/entities/Player.hpp@{src/client/entities/Player.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}HeroRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}WeaponRegistry.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ <algorithm>}}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_ability_hit_record}{AbilityHitRecord}}\{}
+\DoxyCodeLine{00012\ \ \ \ \ std::uint32\_t\ targetId;}
+\DoxyCodeLine{00013\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ ability;}
+\DoxyCodeLine{00014\ \};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_client_engine}{ClientEngine}};}
+\DoxyCodeLine{00017\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}};}
+\DoxyCodeLine{00018\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_enemy}{Enemy}};}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}\ :\ \textcolor{keyword}{public}\ Entity\{}
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{comment}{//\ Factory\ \&\ Lifecycle}}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Player>\ \doxymbox{\hyperlink{class_player_aab8a11adbac17c5c8ea94ec0203aa592}{create}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass)\ \ \ \ ;}
+\DoxyCodeLine{00032\ \ \ \ \ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass);}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{\string~Player}}()\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a77b026739f392b3d9d980ffce7489212}{renderUI}}();}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ Remote\ Features}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ updateRemoteVisuals(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \{\}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ playRemoteAbility(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ ability,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ data)\ \{\}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ Identity\ \&\ Focus}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_af2793f057492e5fce5331fa036263cad}{setFocused}}(\textcolor{keywordtype}{bool}\ focused);}
+\DoxyCodeLine{00045\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ getClass()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_class;\ \}}
+\DoxyCodeLine{00046\ \ \ \ \ Faction\ getFaction()\textcolor{keyword}{\ \ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Players;\ \}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ getRadius()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_hero_registry_a9922ad52e3e25012cb4fc401917c001d}{HeroRegistry::getStats}}(m\_class).radius;\ \}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{//\ Ability\ Input\ Hooks}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ onShift(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \{\}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ onQ(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \{\}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ onE(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \{\}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ onRMB(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \{\}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ onLMB(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\&\ enemies)\ \{\}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ Combat,\ Ammo\ \&\ Ultimate}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a3b6f25b2227918ba499d48725bedc37d}{reload}}();}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_adf77ec30ad0615e3693a4d1f3a296937}{addUltCharge}}(\textcolor{keywordtype}{float}\ amount);}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{bool}\ isAutoFiring()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{bool}\ isUltActive()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_isUltActive;\ \}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{int}\ getAmmo()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_ammo;\ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{bool}\ isReloading()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_isReloading;\ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{virtual}\ std::vector<AbilityHitRecord>\ checkAbilityHits(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities)\ \{\ \textcolor{keywordflow}{return}\ \{\};\ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Stealth\ \&\ Upgrades}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keywordtype}{void}\ setStealthTimer(\textcolor{keywordtype}{float}\ timer)\{\ m\_stealthTimer\ =\ timer;\ \}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{float}\ getStealthTimer()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_stealthTimer;\ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_af22ac0793705ba6fff981082a16af0d6}{setUpgradeMultipliers}}(\textcolor{keywordtype}{float}\ hpMult,\ \textcolor{keywordtype}{float}\ speedMult,\ \textcolor{keywordtype}{float}\ damageMult,\ \textcolor{keywordtype}{float}\ cooldownMult);}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_player_a2bea558d18cc033039b0fbbbff869c65}{getUpgradeCooldownScale}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_player_a221a133c2c7e97b100f35c902e8fba62}{getEffectiveMaxCooldown}}(\textcolor{keywordtype}{float}\ baseCooldown)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{comment}{//\ Collision}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}{checkCollision}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ pos,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{//\ HUD\ Rendering}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a6349334201b615234714c46eaafb5d21}{renderLeftPanel}}();}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_aaf187efa0d73c6200da953e09d6470b9}{renderRightPanel}}();}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a11a9f06b90f268689c3e5b931a17ea3c}{renderShiftSkill}}();}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}{renderESkill}}();}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_a884b262895cd0e45d1a61514bc1ea763}{renderQSkill}}();}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{virtual}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_player_ab7429b9930f53d032ce0af95f6f20f1b}{renderRMBSkill}}();}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{//\ Movement\ \&\ Visual\ State}}
+\DoxyCodeLine{00090\ \ \ \ \ sf::CircleShape\ m\_shape;}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_speed;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isFocused;}
+\DoxyCodeLine{00093\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ m\_class;}
+\DoxyCodeLine{00094\ \ \ \ \ sf::Vector2f\ m\_lastMoveDirection\{1.0f,\ 0.0f\};}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{comment}{//\ Cooldown\ Timers}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_cooldownShift\{0.0f\};}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_cooldownE\{0.0f\};}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_cooldownRMB\{0.0f\};}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_cooldownLMB\{0.0f\};}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxCooldownShift\{1.0f\};}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxCooldownE\{1.0f\};}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxCooldownRMB\{1.0f\};}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fireRate\{0.15f\};}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ Ammo\ \&\ Reload}}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_ammo\{30\};}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_maxAmmo\{30\};}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isReloading\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_reloadTimer\{0.0f\};}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_reloadTime\{1.5f\};}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ Ultimate\ Charge}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_ultCharge\{0.0f\};}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxUltCharge\{500.0f\};}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_ultTimer\{0.0f\};}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isUltActive\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ Combat\ Multipliers\ \&\ Stealth}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_fireRateMultiplier\{1.0f\};}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_speedMultiplier\{1.0f\};}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_stealthTimer\{0.0f\};}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{comment}{//\ Upgrade\ Multipliers}}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_baseMaxHp\{100.0f\};}
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_upgradeHpMultiplier\{1.0f\};}
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_upgradeSpeedMultiplier\{1.0f\};}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_upgradeCooldownMultiplier\{1.0f\};}
+\DoxyCodeLine{00134\ \};}
+
+\end{DoxyCode}

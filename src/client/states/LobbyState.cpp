@@ -5,7 +5,14 @@
 #include <imgui.h>
 #include <iostream>
 
-
+/**
+ * @brief Handles server responses while waiting in the lobby.
+ * @param type Identifies the incoming packet kind.
+ * @param packet Deserialized UDP payload from the server.
+ *
+ * On JoinAccept, transitions to GameState with the assigned player id and
+ * the class selected in the lobby UI.
+ */
 void LobbyState::handlePacket(PacketType type, sf::Packet& packet){
     if(type == PacketType::JoinAccept){
         std::uint32_t myId;
@@ -22,6 +29,13 @@ void LobbyState::handlePacket(PacketType type, sf::Packet& packet){
 // Connection Helpers
 // ==========================================
 
+/**
+ * @brief Resolves the server address and sends a join request packet.
+ *
+ * Updates connection failure state when DNS resolution fails; otherwise
+ * stores the resolved address on the engine and sends JoinRequest with the
+ * selected player class.
+ */
 void LobbyState::trySendJoinRequest(){
     auto resolvedIps = sf::Dns::resolve(m_ipBuffer);
     if(!resolvedIps.has_value() || resolvedIps->empty()){
@@ -36,14 +50,22 @@ void LobbyState::trySendJoinRequest(){
     (void)m_engine.getSocket().send(joinPacket, m_engine.getServerAddress().value(), Config::SERVER_PORT);
 }
 
+/**
+ * @brief Aborts an in-progress connection attempt and clears error display state.
+ */
 void LobbyState::cancelConnecting(){
     m_isConnecting = false;
     m_connectFailed = false;
     m_connectErrorMessage.clear();
 }
 
-
-
+/**
+ * @brief Retries join requests and enforces the lobby connection timeout.
+ * @param deltaTime Elapsed time since the previous frame; unused.
+ *
+ * While connecting, periodically resends join requests and marks the
+ * attempt as failed when the configured timeout is exceeded.
+ */
 void LobbyState::update(sf::Time deltaTime){
     (void)deltaTime;
     if(!m_isConnecting) return;
@@ -63,6 +85,12 @@ void LobbyState::update(sf::Time deltaTime){
 // UI
 // ==========================================
 
+/**
+ * @brief Renders the lobby menu for server connection and class selection.
+ *
+ * Displays server IP input, hero class radio buttons, connect/cancel controls,
+ * connection status messages, and a quit button.
+ */
 void LobbyState::renderUI() {
     ImGui::SetNextWindowPos(ImVec2(Config::WINDOW_WIDTH / 2.0f - 200.0f, Config::WINDOW_HEIGHT / 2.0f - 150.0f), ImGuiCond_Once);
     ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_Once);

@@ -1,0 +1,95 @@
+\doxysection{Map\+Renderer Class Reference}
+\hypertarget{class_map_renderer}{}\label{class_map_renderer}\index{MapRenderer@{MapRenderer}}
+
+
+GPU-\/cached tile map renderer.  
+
+
+
+
+{\ttfamily \+\#include $<$Map\+Renderer.\+hpp$>$}
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_map_renderer_ac4203fc722d6d13bffcb834844459973}{Map\+Renderer}} (std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map\+Gen, float tile\+Size)
+\begin{DoxyCompactList}\small\item\em Constructs a map renderer bound to a map generator and tile size. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_map_renderer_a01f6d89b333f4f1bc0d5bb4cd523b90b}{render}} (sf::\+\+Render\+Target \&target)
+\begin{DoxyCompactList}\small\item\em Draws the cached map vertices to the given render target. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_map_renderer_a2a6997357b8b0feb3061356aa8b53caf}{rebuild}} ()
+\begin{DoxyCompactList}\small\item\em Rebuilds the vertex cache from the current map generator data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_map_renderer_a96a0e70131394af11296dd7656957d2a}\label{class_map_renderer_a96a0e70131394af11296dd7656957d2a} 
+std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ {\bfseries m\+\_\+map\+Gen}
+\item 
+\Hypertarget{class_map_renderer_a67df3c177a9285b5f09dfaee6df07a91}\label{class_map_renderer_a67df3c177a9285b5f09dfaee6df07a91} 
+float {\bfseries m\+\_\+tile\+Size}
+\item 
+\Hypertarget{class_map_renderer_ad1bd7f1c0ae3daf748b702c94a7992eb}\label{class_map_renderer_ad1bd7f1c0ae3daf748b702c94a7992eb} 
+sf::\+\+Vertex\+Array {\bfseries m\+\_\+vertices}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+GPU-\/cached tile map renderer. 
+
+Builds a vertex array from a \doxylink{class_map_generator}{Map\+Generator} and draws the visible map tiles as colored triangles. Call \doxylink{class_map_renderer_a2a6997357b8b0feb3061356aa8b53caf}{rebuild()} when the underlying map data changes. 
+
+\label{doc-constructors}
+\Hypertarget{class_map_renderer_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_map_renderer_ac4203fc722d6d13bffcb834844459973}\index{MapRenderer@{MapRenderer}!MapRenderer@{MapRenderer}}
+\index{MapRenderer@{MapRenderer}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{MapRenderer()}{MapRenderer()}}
+{\footnotesize\ttfamily \label{class_map_renderer_ac4203fc722d6d13bffcb834844459973} 
+Map\+Renderer::\+\+Map\+Renderer (\begin{DoxyParamCaption}\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map\+Gen}{, }\item[{float}]{tile\+Size}{}\end{DoxyParamCaption})}
+
+
+
+Constructs a map renderer bound to a map generator and tile size. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map\+Gen} & Shared map data source used to build vertex geometry. \\
+\hline
+{\em tile\+Size} & World-\/space size of one map tile in pixels. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_map_renderer_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_map_renderer_a2a6997357b8b0feb3061356aa8b53caf}\index{MapRenderer@{MapRenderer}!rebuild@{rebuild}}
+\index{rebuild@{rebuild}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{rebuild()}{rebuild()}}
+{\footnotesize\ttfamily \label{class_map_renderer_a2a6997357b8b0feb3061356aa8b53caf} 
+void Map\+Renderer::\+rebuild (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Rebuilds the vertex cache from the current map generator data. 
+
+Each tile becomes two triangles colored by tile type (wall vs floor). Does nothing if no map generator is bound. \Hypertarget{class_map_renderer_a01f6d89b333f4f1bc0d5bb4cd523b90b}\index{MapRenderer@{MapRenderer}!render@{render}}
+\index{render@{render}!MapRenderer@{MapRenderer}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_map_renderer_a01f6d89b333f4f1bc0d5bb4cd523b90b} 
+void Map\+Renderer::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})}
+
+
+
+Draws the cached map vertices to the given render target. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & SFML surface that receives the vertex array draw call. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+core/\+Map\+Renderer.\+hpp\item 
+src/\+client/\+core/\+Map\+Renderer.\+cpp\end{DoxyCompactItemize}

@@ -6,8 +6,20 @@
 #include <cstdlib>
 #include <vector>
 
+/**
+ * @brief Medic healing orb that moves through the map and tethers nearby units.
+ *
+ * Bounces off walls, interpolates toward server position, and draws energy
+ * tethers to allies and enemies within effect range. Lifetime is tracked via HP.
+ */
 class MedicOrb : public Entity {
 public:
+    /**
+     * @brief Constructs an orb with registry speed and directional velocity.
+     * @param id Unique network entity identifier.
+     * @param startPos Initial world position.
+     * @param direction Launch direction; defaults to +X when near zero length.
+     */
     MedicOrb(std::uint32_t id, const sf::Vector2f& startPos, const sf::Vector2f& direction) : Entity(id, startPos) {
         const auto& orbStats = AbilityRegistry::medic().Orb;
         m_hp = orbStats.lifetime;
@@ -33,6 +45,11 @@ public:
     }
 
 
+    /**
+     * @brief Moves the orb, bounces off walls, and syncs toward server position.
+     * @param deltaTime Elapsed time since the last frame.
+     * @param map Tile map used for wall collision checks.
+     */
     void update(sf::Time deltaTime, const std::shared_ptr<MapGenerator>& map) override {
         float dt = deltaTime.asSeconds();
         m_hp -= dt;
@@ -58,6 +75,10 @@ public:
         m_outerShape.setPosition(m_position);
     }
 
+    /**
+     * @brief Draws tethers to nearby entities and the pulsing orb shapes.
+     * @param target Render target to draw into.
+     */
     void render(sf::RenderTarget& target) override {
         const float effectRadius = AbilityRegistry::param(AbilityRegistry::medic().Orb, "effectRadius", 120.f);
         const float effectRadiusSq = effectRadius * effectRadius;
@@ -81,20 +102,45 @@ public:
         target.draw(m_innerShape);
     }
 
+    /**
+     * @brief Sets the authoritative server position for interpolation.
+     * @param pos Latest world position from the server.
+     */
     void setServerPosition(const sf::Vector2f& pos) {
         m_serverPosition = pos;
     }
 
+    /**
+     * @brief Supplies nearby allies and enemies for tether rendering.
+     * @param allies Player-faction entities within tether range.
+     * @param enemies Enemy-faction entities within tether range.
+     */
     void setNearbyEntities(const std::vector<Entity*>& allies, const std::vector<Entity*>& enemies) {
         m_allies = allies;
         m_enemies = enemies;
     }
 
+    /**
+     * @brief Returns the player faction for combat filtering.
+     * @return Faction::Players.
+     */
     Faction getFaction() const override { return Faction::Players; }
+
+    /**
+     * @brief Returns the orb collision radius from the ability registry.
+     * @return Orb radius in world units.
+     */
     float getRadius() const override { return AbilityRegistry::medic().Orb.radius; }
 private:
 
     // Rendering Helpers
+    /**
+     * @brief Draws a jagged energy tether line between two world points.
+     * @param target Render target to draw into.
+     * @param from Start position in world space.
+     * @param to End position in world space.
+     * @param color Line color including alpha.
+     */
     static void drawTether(sf::RenderTarget& target, sf::Vector2f from, sf::Vector2f to, sf::Color color) {
         constexpr int segments = 6;
         sf::Vector2f delta = to - from;
@@ -109,7 +155,7 @@ private:
 
         sf::VertexArray line(sf::PrimitiveType::LineStrip, segments + 1);
         line[0] = sf::Vertex(from, color);
-        
+
         for (int i = 1; i < segments; ++i) {
             float jitter = ((std::rand() % 100) / 100.0f - 0.5f) * 24.0f;
             sf::Vector2f point = from + step * static_cast<float>(i) + perp * jitter;

@@ -1,0 +1,601 @@
+\doxysection{Medic Class Reference}
+\hypertarget{class_medic}{}\label{class_medic}\index{Medic@{Medic}}
+
+
+Support hero with teleport, healing orb, barrier wall, and drone ultimate.  
+
+
+
+
+{\ttfamily \+\#include $<$Medic.\+hpp$>$}
+
+Inheritance diagram for Medic:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_medic}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_medic_a03225a444f361b792f0b67b6f8200bc7}{Medic}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\begin{DoxyCompactList}\small\item\em Initializes \doxylink{class_medic}{Medic} ability cooldowns and ultimate charge requirement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_adc9d64e9ed40f90c4fa643ed42fe880a}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Processes deferred teleport input and animation, otherwise updates movement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_ad3cf1e5436ef6a07526e6d25716d19f1}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the \doxylink{class_medic}{Medic} using the base player renderer. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a6002addbbaac2d57609632b9c78205fe}{on\+LMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&enemies) override
+\begin{DoxyCompactList}\small\item\em Fires a healing needle projectile toward the cursor. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a61f123c9c4468d32569eea1cccbfe285}{on\+RMB}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Launches a healing orb in the cursor direction. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_ad967370498efb89a6300685aabddc682}{on\+Shift}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Queues a teleport request to be processed on the next update. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a585b6e8fd973d882bb88398b73118413}{onE}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Places a directional barrier wall facing the cursor. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_ac271dedc199f960c3e81244aafdcbf22}{onQ}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, \doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&engine, \doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&proj\+Mgr) override
+\begin{DoxyCompactList}\small\item\em Deploys or commands the healing drone ultimate. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_addcc68336844a4e8d18b213efcd28792}{set\+Drone\+State}} (bool active, float lifetime)
+\begin{DoxyCompactList}\small\item\em Synchronizes local drone active state and remaining lifetime. \end{DoxyCompactList}\item 
+\Hypertarget{class_medic_a383f04c75059417715e9ec22b8d03cac}\label{class_medic_a383f04c75059417715e9ec22b8d03cac} 
+bool {\bfseries has\+Active\+Drone} () const
+\item 
+\Hypertarget{class_medic_a0698fd907a48ad28a655768b265202a2}\label{class_medic_a0698fd907a48ad28a655768b265202a2} 
+bool {\bfseries is\+Teleport\+Animating} () const
+\item 
+void \doxymbox{\hyperlink{class_medic_ad9af4567482ec131b99810acb271e122}{update\+Remote\+Visuals}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Advances teleport animation for a remotely controlled \doxylink{class_medic}{Medic}. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a68c3ef5e6c32156590849f7a33cea16f}{play\+Remote\+Ability}} (\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}} ability, const sf::\+\+Vector2f \&data) override
+\begin{DoxyCompactList}\small\item\em Starts the teleport fade animation for a remote \doxylink{class_medic}{Medic}. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_aaa55240f226b147da7f82aa5d4f9e373}{render\+QSkill}} () override
+\begin{DoxyCompactList}\small\item\em Renders the drone lifetime or ultimate charge bar in the HUD. \end{DoxyCompactList}\item 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ \doxymbox{\hyperlink{class_medic_a8912d566cb0b9af5017dbace35f25ee7}{check\+Ability\+Hits}} (const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&entities) override
+\begin{DoxyCompactList}\small\item\em \doxylink{class_medic}{Medic} abilities do not register local hit detection on the client. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Initializes a player with hero stats, shape, and default state. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a8fe14563c7fce6c7b1e1e521a52cd871}{update}} (sf::\+\+Time delta\+Time, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map) override
+\begin{DoxyCompactList}\small\item\em Advances reload and cooldown timers, then applies keyboard movement. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_a7ca27cb19d606eb3f138065f68eb1d41}{render}} (sf::\+\+Render\+Target \&target) override
+\begin{DoxyCompactList}\small\item\em Draws the player circle and health bar. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+UI} ()
+\begin{DoxyCompactList}\small\item\em Renders both HUD panels for the local hero. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_player_af2793f057492e5fce5331fa036263cad}{set\+Focused}} (bool focused)
+\begin{DoxyCompactList}\small\item\em Sets whether this player accepts local keyboard input. \end{DoxyCompactList}\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries get\+Class} () const
+\item 
+Faction \doxymbox{\hyperlink{class_player_a8ac884bfdd0202512ecef922a56990f0}{get\+Faction}} () const override
+\item 
+float \doxymbox{\hyperlink{class_player_a4337238654d5f36dd2a89f00f72d3960}{get\+Radius}} () const override
+\item 
+virtual void \doxymbox{\hyperlink{class_player_a3b6f25b2227918ba499d48725bedc37d}{reload}} ()
+\begin{DoxyCompactList}\small\item\em Starts a reload if one is not already in progress. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_adf77ec30ad0615e3693a4d1f3a296937}{add\+Ult\+Charge}} (float amount)
+\begin{DoxyCompactList}\small\item\em Adds ultimate charge, clamped to the maximum while ult is inactive. \end{DoxyCompactList}\item 
+virtual bool {\bfseries is\+Auto\+Firing} () const
+\item 
+bool {\bfseries is\+Ult\+Active} () const
+\item 
+int {\bfseries get\+Ammo} () const
+\item 
+bool {\bfseries is\+Reloading} () const
+\item 
+void {\bfseries set\+Stealth\+Timer} (float timer)
+\item 
+float {\bfseries get\+Stealth\+Timer} () const
+\item 
+void \doxymbox{\hyperlink{class_player_af22ac0793705ba6fff981082a16af0d6}{set\+Upgrade\+Multipliers}} (float hp\+Mult, float speed\+Mult, float damage\+Mult, float cooldown\+Mult)
+\begin{DoxyCompactList}\small\item\em Applies run upgrade multipliers to HP, speed, damage, and cooldowns. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a2bea558d18cc033039b0fbbbff869c65}{get\+Upgrade\+Cooldown\+Scale}} () const
+\begin{DoxyCompactList}\small\item\em Returns the cooldown duration scale from upgrade multipliers. \end{DoxyCompactList}\item 
+float \doxymbox{\hyperlink{class_player_a221a133c2c7e97b100f35c902e8fba62}{get\+Effective\+Max\+Cooldown}} (float base\+Cooldown) const
+\begin{DoxyCompactList}\small\item\em Scales a base cooldown by the current upgrade multiplier. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries Entity} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos)
+\item 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+float {\bfseries get\+Hp} () const
+\item 
+void {\bfseries set\+Position} (const sf::\+\+Vector2f \&pos)
+\item 
+void {\bfseries set\+Hp} (float hp)
+\item 
+void {\bfseries set\+Max\+Hp} (float max\+Hp)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_a6453126c7750bf63f21c6e3e206e6335}\label{class_medic_a6453126c7750bf63f21c6e3e206e6335} 
+enum class {\bfseries Teleport\+Phase} \{ {\bfseries None}
+, {\bfseries Fade\+Out}
+, {\bfseries Fade\+In}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_medic_a4d3b9f9ee697d99dbcdccc6860304f20}{compute\+Teleport\+Target}} (const sf::\+\+Vector2f \&mouse\+World\+Pos, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map, sf::\+\+Vector2f \&out\+Target)
+\begin{DoxyCompactList}\small\item\em Computes a valid teleport destination clamped to ability range. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a7831d95830764dc47853ece4c14c1df1}{try\+Start\+Teleport}} (const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Begins the teleport fade-\/out animation when Shift input is valid. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_medic_a0dedca166b64360294df6eb1ab69a5a7}{advance\+Teleport\+Animation}} (float dt)
+\begin{DoxyCompactList}\small\item\em Advances the fade-\/out and fade-\/in teleport animation phases. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_medic_a0e2b311fec23b62ac7a2fd7e93fa047a}\label{class_medic_a0e2b311fec23b62ac7a2fd7e93fa047a} 
+Teleport\+Phase {\bfseries m\+\_\+teleport\+Phase} \{Teleport\+Phase::\+\+None\}
+\item 
+\Hypertarget{class_medic_a853fc73764f34d86317a08903d441210}\label{class_medic_a853fc73764f34d86317a08903d441210} 
+float {\bfseries m\+\_\+teleport\+Anim\+Time} \{0.\+0f\}
+\item 
+\Hypertarget{class_medic_aae7b8305ed2d7c4ad99aed3c3a95f93a}\label{class_medic_aae7b8305ed2d7c4ad99aed3c3a95f93a} 
+sf::\+\+Vector2f {\bfseries m\+\_\+teleport\+Target}
+\item 
+\Hypertarget{class_medic_aa70d0202a8b577f3f1a851bce8f93abc}\label{class_medic_aa70d0202a8b577f3f1a851bce8f93abc} 
+sf::\+\+Color {\bfseries m\+\_\+base\+Fill\+Color}
+\item 
+\Hypertarget{class_medic_a379dfece9907dc4dcc669c4cd4cdc594}\label{class_medic_a379dfece9907dc4dcc669c4cd4cdc594} 
+sf::\+\+Color {\bfseries m\+\_\+base\+Outline\+Color}
+\item 
+\Hypertarget{class_medic_a9d2e78d16162a08fed38943e697a04cc}\label{class_medic_a9d2e78d16162a08fed38943e697a04cc} 
+bool {\bfseries m\+\_\+shift\+Requested} \{false\}
+\item 
+\Hypertarget{class_medic_ae7b195b54b4495a834b768d7539ad5a0}\label{class_medic_ae7b195b54b4495a834b768d7539ad5a0} 
+sf::\+\+Vector2f {\bfseries m\+\_\+shift\+Mouse\+Pos}
+\item 
+\Hypertarget{class_medic_aaffaa890528a8c247874f93401f8aa5a}\label{class_medic_aaffaa890528a8c247874f93401f8aa5a} 
+\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \texorpdfstring{$\ast$}{*} {\bfseries m\+\_\+shift\+Engine} \{nullptr\}
+\item 
+\Hypertarget{class_medic_a2559fa0316dc3b2b72c65fdd37c88118}\label{class_medic_a2559fa0316dc3b2b72c65fdd37c88118} 
+bool {\bfseries m\+\_\+drone\+Active} \{false\}
+\item 
+\Hypertarget{class_medic_a7f15314b4009c172ddf038dc20ccfb25}\label{class_medic_a7f15314b4009c172ddf038dc20ccfb25} 
+float {\bfseries m\+\_\+drone\+Lifetime} \{0.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Static Public Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+static std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_player}{Player}} $>$ \doxymbox{\hyperlink{class_player_aab8a11adbac17c5c8ea94ec0203aa592}{create}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} p\+Class)
+\begin{DoxyCompactList}\small\item\em Factory that constructs the correct hero subclass for a player class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_player_a8f31f991ccb195f24f9dd9acd13b34a7}{check\+Collision}} (const sf::\+\+Vector2f \&pos, const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&map)
+\begin{DoxyCompactList}\small\item\em Tests whether a position overlaps a wall tile. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+Left\+Panel} ()
+\begin{DoxyCompactList}\small\item\em Renders the left HUD panel with ability cooldown indicators. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_aaf187efa0d73c6200da953e09d6470b9}{render\+Right\+Panel}} ()
+\begin{DoxyCompactList}\small\item\em Renders the right HUD panel with HP and ammo status. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_a11a9f06b90f268689c3e5b931a17ea3c}{render\+Shift\+Skill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the Shift ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void \doxymbox{\hyperlink{class_player_ad137f64f69d3daf143c384c8a4a4c3f8}{render\+ESkill}} ()
+\begin{DoxyCompactList}\small\item\em Renders the E ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\item 
+virtual void {\bfseries render\+RMBSkill} ()
+\begin{DoxyCompactList}\small\item\em Renders the right-\/mouse ability cooldown bar in the left HUD panel. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_entity_acb0281b32706e9d2e631de6ab7afffb9}{draw\+Health\+Bar}} (sf::\+\+Render\+Target \&target, float y\+Offset)
+\begin{DoxyCompactList}\small\item\em Draws a health bar above the entity when below maximum HP. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_player}{Player}}}
+\begin{DoxyCompactItemize}
+\item 
+sf::\+\+Circle\+Shape {\bfseries m\+\_\+shape}
+\item 
+float {\bfseries m\+\_\+speed}
+\item 
+bool {\bfseries m\+\_\+is\+Focused}
+\item 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{Player\+Class}} {\bfseries m\+\_\+class}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+last\+Move\+Direction} \{1.\+0f, 0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+Shift} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldownE} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+RMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+cooldown\+LMB} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+Shift} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+CooldownE} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Cooldown\+RMB} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate} \{0.\+15f\}
+\item 
+int {\bfseries m\+\_\+ammo} \{30\}
+\item 
+int {\bfseries m\+\_\+max\+Ammo} \{30\}
+\item 
+bool {\bfseries m\+\_\+is\+Reloading} \{false\}
+\item 
+float {\bfseries m\+\_\+reload\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+reload\+Time} \{1.\+5f\}
+\item 
+float {\bfseries m\+\_\+ult\+Charge} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Ult\+Charge} \{500.\+0f\}
+\item 
+float {\bfseries m\+\_\+ult\+Timer} \{0.\+0f\}
+\item 
+bool {\bfseries m\+\_\+is\+Ult\+Active} \{false\}
+\item 
+float {\bfseries m\+\_\+fire\+Rate\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+stealth\+Timer} \{0.\+0f\}
+\item 
+float {\bfseries m\+\_\+base\+Max\+Hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Hp\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Speed\+Multiplier} \{1.\+0f\}
+\item 
+float {\bfseries m\+\_\+upgrade\+Cooldown\+Multiplier} \{1.\+0f\}
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes inherited from \doxymbox{\hyperlink{class_entity}{Entity}}}
+\begin{DoxyCompactItemize}
+\item 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+float {\bfseries m\+\_\+hp} \{100.\+0f\}
+\item 
+float {\bfseries m\+\_\+max\+Hp} \{100.\+0f\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Support hero with teleport, healing orb, barrier wall, and drone ultimate. 
+
+Fires healing needles on left click, launches directional orbs on right click, teleports on Shift with a fade animation, places arc barriers on E, and commands a healing drone ultimate on Q. 
+
+\label{doc-constructors}
+\Hypertarget{class_medic_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_medic_a03225a444f361b792f0b67b6f8200bc7}\index{Medic@{Medic}!Medic@{Medic}}
+\index{Medic@{Medic}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{Medic()}{Medic()}}
+{\footnotesize\ttfamily \label{class_medic_a03225a444f361b792f0b67b6f8200bc7} 
+Medic::\+\+Medic (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{}\end{DoxyParamCaption})}
+
+
+
+Initializes \doxylink{class_medic}{Medic} ability cooldowns and ultimate charge requirement. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique network entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world position. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_medic_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_medic_a0dedca166b64360294df6eb1ab69a5a7}\index{Medic@{Medic}!advanceTeleportAnimation@{advanceTeleportAnimation}}
+\index{advanceTeleportAnimation@{advanceTeleportAnimation}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{advanceTeleportAnimation()}{advanceTeleportAnimation()}}
+{\footnotesize\ttfamily \label{class_medic_a0dedca166b64360294df6eb1ab69a5a7} 
+void Medic::\+advance\+Teleport\+Animation (\begin{DoxyParamCaption}\item[{float}]{dt}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Advances the fade-\/out and fade-\/in teleport animation phases. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Elapsed time in seconds since the last update. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_a8912d566cb0b9af5017dbace35f25ee7}\index{Medic@{Medic}!checkAbilityHits@{checkAbilityHits}}
+\index{checkAbilityHits@{checkAbilityHits}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{checkAbilityHits()}{checkAbilityHits()}}
+{\footnotesize\ttfamily \label{class_medic_a8912d566cb0b9af5017dbace35f25ee7} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_ability_hit_record}{Ability\+Hit\+Record}} $>$ Medic::\+check\+Ability\+Hits (\begin{DoxyParamCaption}\item[{const std::\+vector$<$ \doxymbox{\hyperlink{class_entity}{Entity}} \texorpdfstring{$\ast$}{*} $>$ \&}]{entities}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+\doxylink{class_medic}{Medic} abilities do not register local hit detection on the client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em entities} & All entities to test. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Empty hit list. 
+\end{DoxyReturn}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_a4d3b9f9ee697d99dbcdccc6860304f20}\index{Medic@{Medic}!computeTeleportTarget@{computeTeleportTarget}}
+\index{computeTeleportTarget@{computeTeleportTarget}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{computeTeleportTarget()}{computeTeleportTarget()}}
+{\footnotesize\ttfamily \label{class_medic_a4d3b9f9ee697d99dbcdccc6860304f20} 
+bool Medic::\+compute\+Teleport\+Target (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{, }\item[{sf::\+\+Vector2f \&}]{out\+Target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Computes a valid teleport destination clamped to ability range. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Desired cursor position in world space. \\
+\hline
+{\em map} & Tile map used to reject wall collisions. \\
+\hline
+{\em out\+Target} & Receives the resolved teleport position on success. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True when the target position is collision-\/free. 
+\end{DoxyReturn}
+\Hypertarget{class_medic_a585b6e8fd973d882bb88398b73118413}\index{Medic@{Medic}!onE@{onE}}
+\index{onE@{onE}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{onE()}{onE()}}
+{\footnotesize\ttfamily \label{class_medic_a585b6e8fd973d882bb88398b73118413} 
+void Medic::\+onE (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Places a directional barrier wall facing the cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Aim direction in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_a6002addbbaac2d57609632b9c78205fe}\index{Medic@{Medic}!onLMB@{onLMB}}
+\index{onLMB@{onLMB}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{onLMB()}{onLMB()}}
+{\footnotesize\ttfamily \label{class_medic_a6002addbbaac2d57609632b9c78205fe} 
+void Medic::\+on\+LMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_enemy}{Enemy}} $>$ $>$ \&}]{enemies}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Fires a healing needle projectile toward the cursor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Target position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager that spawns the needle. \\
+\hline
+{\em enemies} & \doxylink{class_enemy}{Enemy} map. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_ac271dedc199f960c3e81244aafdcbf22}\index{Medic@{Medic}!onQ@{onQ}}
+\index{onQ@{onQ}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{onQ()}{onQ()}}
+{\footnotesize\ttfamily \label{class_medic_ac271dedc199f960c3e81244aafdcbf22} 
+void Medic::\+onQ (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Deploys or commands the healing drone ultimate. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Command target position in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_a61f123c9c4468d32569eea1cccbfe285}\index{Medic@{Medic}!onRMB@{onRMB}}
+\index{onRMB@{onRMB}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{onRMB()}{onRMB()}}
+{\footnotesize\ttfamily \label{class_medic_a61f123c9c4468d32569eea1cccbfe285} 
+void Medic::\+on\+RMB (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Launches a healing orb in the cursor direction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Aim direction in world space. \\
+\hline
+{\em engine} & Client engine used to notify the server. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_ad967370498efb89a6300685aabddc682}\index{Medic@{Medic}!onShift@{onShift}}
+\index{onShift@{onShift}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{onShift()}{onShift()}}
+{\footnotesize\ttfamily \label{class_medic_ad967370498efb89a6300685aabddc682} 
+void Medic::\+on\+Shift (\begin{DoxyParamCaption}\item[{const sf::\+\+Vector2f \&}]{mouse\+World\+Pos}{, }\item[{\doxymbox{\hyperlink{class_client_engine}{Client\+Engine}} \&}]{engine}{, }\item[{\doxymbox{\hyperlink{class_projectile_manager}{Projectile\+Manager}} \&}]{proj\+Mgr}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Queues a teleport request to be processed on the next update. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mouse\+World\+Pos} & Desired destination in world space. \\
+\hline
+{\em engine} & Client engine stored for deferred network dispatch. \\
+\hline
+{\em proj\+Mgr} & \doxylink{class_projectile}{Projectile} manager. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_a68c3ef5e6c32156590849f7a33cea16f}\index{Medic@{Medic}!playRemoteAbility@{playRemoteAbility}}
+\index{playRemoteAbility@{playRemoteAbility}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{playRemoteAbility()}{playRemoteAbility()}}
+{\footnotesize\ttfamily \label{class_medic_a68c3ef5e6c32156590849f7a33cea16f} 
+void Medic::\+play\+Remote\+Ability (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{Ability\+Type}}}]{ability}{, }\item[{const sf::\+\+Vector2f \&}]{data}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Starts the teleport fade animation for a remote \doxylink{class_medic}{Medic}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ability} & Ability type that was used remotely. \\
+\hline
+{\em data} & Teleport destination supplied by the server. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+\Hypertarget{class_medic_ad3cf1e5436ef6a07526e6d25716d19f1}\index{Medic@{Medic}!render@{render}}
+\index{render@{render}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{render()}{render()}}
+{\footnotesize\ttfamily \label{class_medic_ad3cf1e5436ef6a07526e6d25716d19f1} 
+void Medic::\+render (\begin{DoxyParamCaption}\item[{sf::\+\+Render\+Target \&}]{target}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Draws the \doxylink{class_medic}{Medic} using the base player renderer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target} & Render target to draw into. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_aaa55240f226b147da7f82aa5d4f9e373}\index{Medic@{Medic}!renderQSkill@{renderQSkill}}
+\index{renderQSkill@{renderQSkill}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{renderQSkill()}{renderQSkill()}}
+{\footnotesize\ttfamily \label{class_medic_aaa55240f226b147da7f82aa5d4f9e373} 
+void Medic::\+render\+QSkill (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Renders the drone lifetime or ultimate charge bar in the HUD. 
+
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player_a884b262895cd0e45d1a61514bc1ea763}{Player}}.
+
+\Hypertarget{class_medic_addcc68336844a4e8d18b213efcd28792}\index{Medic@{Medic}!setDroneState@{setDroneState}}
+\index{setDroneState@{setDroneState}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{setDroneState()}{setDroneState()}}
+{\footnotesize\ttfamily \label{class_medic_addcc68336844a4e8d18b213efcd28792} 
+void Medic::\+set\+Drone\+State (\begin{DoxyParamCaption}\item[{bool}]{active}{, }\item[{float}]{lifetime}{}\end{DoxyParamCaption})}
+
+
+
+Synchronizes local drone active state and remaining lifetime. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em active} & True when the drone is currently deployed. \\
+\hline
+{\em lifetime} & Remaining drone duration in seconds. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_a7831d95830764dc47853ece4c14c1df1}\index{Medic@{Medic}!tryStartTeleport@{tryStartTeleport}}
+\index{tryStartTeleport@{tryStartTeleport}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{tryStartTeleport()}{tryStartTeleport()}}
+{\footnotesize\ttfamily \label{class_medic_a7831d95830764dc47853ece4c14c1df1} 
+void Medic::\+try\+Start\+Teleport (\begin{DoxyParamCaption}\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Begins the teleport fade-\/out animation when Shift input is valid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em map} & Tile map used to validate the destination. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_medic_adc9d64e9ed40f90c4fa643ed42fe880a}\index{Medic@{Medic}!update@{update}}
+\index{update@{update}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_medic_adc9d64e9ed40f90c4fa643ed42fe880a} 
+void Medic::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Processes deferred teleport input and animation, otherwise updates movement. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map used for teleport validation and collision. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \doxymbox{\hyperlink{class_entity}{Entity}}.
+
+\Hypertarget{class_medic_ad9af4567482ec131b99810acb271e122}\index{Medic@{Medic}!updateRemoteVisuals@{updateRemoteVisuals}}
+\index{updateRemoteVisuals@{updateRemoteVisuals}!Medic@{Medic}}
+\doxysubsubsection{\texorpdfstring{updateRemoteVisuals()}{updateRemoteVisuals()}}
+{\footnotesize\ttfamily \label{class_medic_ad9af4567482ec131b99810acb271e122} 
+void Medic::\+update\+Remote\+Visuals (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{const std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ \&}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Advances teleport animation for a remotely controlled \doxylink{class_medic}{Medic}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last frame. \\
+\hline
+{\em map} & Tile map reference. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \doxymbox{\hyperlink{class_player}{Player}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+client/\+entities/\+Medic.\+hpp\item 
+src/\+client/\+entities/\+Medic.\+cpp\end{DoxyCompactItemize}

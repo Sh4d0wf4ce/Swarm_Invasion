@@ -1,0 +1,9 @@
+/**
+ * @mainpage Swarm Invasion - Multiplayer Top-Down Shooter
+ * * A network-based multiplayer game built with C++ and SFML. 
+ * The project features a Client-Server architecture, custom physics, 
+ * procedural map generation, and a data-driven ability system.
+ * * @author Filip Wasilewski (337753)
+ * @date 2026.06
+ * @version 1.0-rc1
+ */

@@ -1,0 +1,52 @@
+\doxysection{Medic\+Drone\+Data Struct Reference}
+\hypertarget{struct_medic_drone_data}{}\label{struct_medic_drone_data}\index{MedicDroneData@{MedicDroneData}}
+
+
+\doxylink{class_medic}{Medic} support drone that orbits allies or holds a sentry position.  
+
+
+
+
+{\ttfamily \+\#include $<$Server\+Types.\+hpp$>$}
+
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{struct_medic_drone_data_a8dd1a4cb08e3e06deabd0dd8a7a5be26}\label{struct_medic_drone_data_a8dd1a4cb08e3e06deabd0dd8a7a5be26} 
+sf::\+\+Vector2f {\bfseries position}
+\item 
+\Hypertarget{struct_medic_drone_data_a43b88b6e51dca39bffd0d5e41fae22c0}\label{struct_medic_drone_data_a43b88b6e51dca39bffd0d5e41fae22c0} 
+float {\bfseries lifetime}
+\item 
+\Hypertarget{struct_medic_drone_data_ac1ce7cecc9c5392f5e4c159f3ade4772}\label{struct_medic_drone_data_ac1ce7cecc9c5392f5e4c159f3ade4772} 
+std::\+uint32\+\_\+t {\bfseries owner\+Id}
+\item 
+\Hypertarget{struct_medic_drone_data_aff709e3062f1dcf7c50e7f3ac4ec3356}\label{struct_medic_drone_data_aff709e3062f1dcf7c50e7f3ac4ec3356} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_a38d95f0ab710e3acc5546eef79c50ead}{Medic\+Drone\+State}} {\bfseries state} \{Medic\+Drone\+State::\+\+Orbit\}
+\item 
+\Hypertarget{struct_medic_drone_data_a4bed7cfef667e86c19ab6fc82e33f435}\label{struct_medic_drone_data_a4bed7cfef667e86c19ab6fc82e33f435} 
+std::\+uint32\+\_\+t {\bfseries orbit\+Target\+Id} \{0\}
+\item 
+\Hypertarget{struct_medic_drone_data_ac62411101bace9468b8cd1c38fb553c3}\label{struct_medic_drone_data_ac62411101bace9468b8cd1c38fb553c3} 
+sf::\+\+Vector2f {\bfseries sentry\+Pos}
+\item 
+\Hypertarget{struct_medic_drone_data_a69cfcf4b191ee4fda15275205eefbdb9}\label{struct_medic_drone_data_a69cfcf4b191ee4fda15275205eefbdb9} 
+float {\bfseries orbit\+Angle} \{0.\+0f\}
+\item 
+\Hypertarget{struct_medic_drone_data_aace3a89fe38825d683741f9be703ffae}\label{struct_medic_drone_data_aace3a89fe38825d683741f9be703ffae} 
+float {\bfseries heal\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{struct_medic_drone_data_ad2953588fd8e828c18588108b60fd624}\label{struct_medic_drone_data_ad2953588fd8e828c18588108b60fd624} 
+float {\bfseries shoot\+Timer} \{0.\+0f\}
+\item 
+\Hypertarget{struct_medic_drone_data_a1366d8854263df0497268deb4bea2d81}\label{struct_medic_drone_data_a1366d8854263df0497268deb4bea2d81} 
+bool {\bfseries at\+Sentry} \{false\}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\doxylink{class_medic}{Medic} support drone that orbits allies or holds a sentry position. 
+
+The documentation for this struct was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+core/\+Server\+Types.\+hpp\end{DoxyCompactItemize}

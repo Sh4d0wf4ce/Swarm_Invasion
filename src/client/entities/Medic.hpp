@@ -1,6 +1,13 @@
 #pragma once
 #include "Player.hpp"
 
+/**
+ * @brief Support hero with teleport, healing orb, barrier wall, and drone ultimate.
+ *
+ * Fires healing needles on left click, launches directional orbs on right
+ * click, teleports on Shift with a fade animation, places arc barriers on E,
+ * and commands a healing drone ultimate on Q.
+ */
 class Medic : public Player {
 public:
     Medic(std::uint32_t id, const sf::Vector2f& startPos);

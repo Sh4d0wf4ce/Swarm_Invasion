@@ -2,6 +2,11 @@
 #include "Projectile.hpp"
 #include <vector>
 
+/**
+ * @brief Medic drone beam projectile that pierces multiple enemies over its lifetime.
+ *
+ * Tracks already-hit enemy IDs and only deactivates on wall impact or lifetime expiry.
+ */
 class DroneBlasterProjectile : public Projectile {
 public:
     DroneBlasterProjectile(std::uint32_t ownerId, const sf::Vector2f& startPos, const sf::Vector2f& velocity, Faction faction);

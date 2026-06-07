@@ -1,0 +1,25 @@
+\doxysection{Enemy.\+hpp}
+\hypertarget{_enemy_8hpp_source}{}\label{_enemy_8hpp_source}\index{src/client/entities/Enemy.hpp@{src/client/entities/Enemy.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Entity.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}EnemyRegistry.hpp"{}}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_enemy_a69d764e36b019c78bd7864f830f2720b}{Enemy}}\ :\ \textcolor{keyword}{public}\ Entity\{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \doxymbox{\hyperlink{class_enemy_a69d764e36b019c78bd7864f830f2720b}{Enemy}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ type);}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_enemy_a1c5464a51870dacc74f541f948504c90}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_enemy_a5f02011e333d7e5639f13ce43c26f9e8}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00018\ \ \ \ \ }
+\DoxyCodeLine{00019\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ getType()\textcolor{keyword}{\ const\ }\{\ \textcolor{keywordflow}{return}\ m\_type;\ \}}
+\DoxyCodeLine{00020\ \ \ \ \ Faction\ getFaction()\textcolor{keyword}{\ \ const\ override\ }\{\ \textcolor{keywordflow}{return}\ Faction::Enemies;\ \}}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{float}\ getRadius()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_enemy_registry_ad132f41b3819e42e55837f591967e11d}{EnemyRegistry::getStats}}(m\_type).radius;\ \}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00024\ \ \ \ \ sf::CircleShape\ m\_shape;}
+\DoxyCodeLine{00025\ \ \ \ \ \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{EnemyType}}\ m\_type;}
+\DoxyCodeLine{00026\ \};}
+
+\end{DoxyCode}

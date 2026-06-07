@@ -1,0 +1,141 @@
+\doxysection{Server\+Engine.\+hpp}
+\hypertarget{_server_engine_8hpp_source}{}\label{_server_engine_8hpp_source}\index{src/server/core/ServerEngine.hpp@{src/server/core/ServerEngine.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_network_protocol_8hpp}{NetworkProtocol.hpp}}"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ "{}MapGenerator.hpp"{}}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}HeroRegistry.hpp"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}EnemyRegistry.hpp"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}WeaponRegistry.hpp"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}ServerTypes.hpp"{}}}
+\DoxyCodeLine{00008\ \textcolor{preprocessor}{\#include\ "{}AIDirector.hpp"{}}}
+\DoxyCodeLine{00009\ \textcolor{preprocessor}{\#include\ "{}Config.hpp"{}}}
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#include\ "{}UpgradeRegistry.hpp"{}}}
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#include\ <SFML/System.hpp>}}
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <random>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <map>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{enum\ class}\ UpgradeMenuPhase\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ None,}
+\DoxyCodeLine{00023\ \ \ \ \ Selecting,}
+\DoxyCodeLine{00024\ \ \ \ \ Reveal}
+\DoxyCodeLine{00025\ \};}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_server_engine_a02bd1093c93180ca5e4bb8d14ed9addb}{ServerEngine}}\{}
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00035\ \ \ \ \ \doxymbox{\hyperlink{class_server_engine_a02bd1093c93180ca5e4bb8d14ed9addb}{ServerEngine}}();}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ac10d1cf750a879d31a85c0c5a6c7fc65}{run}}();}
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ Tick\ \&\ Network\ Loop}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ad1624292b1ed23be276b24f24be3ba07}{processNetwork}}();}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a2c564289a82f5f22e0e55541641ee8de}{update}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_aabff8e8988eccbba05ed8c23044c0b82}{sendWorldState}}();}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ Packet\ Handlers}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ad356983248ccfa62b995ff39fe29ca40}{handlePing}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ sf::IpAddress\&\ sender,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port);}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a8184fdf0a9e05b93566c0c9bec84da9e}{handlePlayerPosition}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a3cddf8f98f59a3bdeb30207cde9b6d54}{handleEntityHit}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a2598e12bcc804d83c9ffacf1edb682aa}{handleJoinRequest}}(sf::Packet\&\ packet,\ \textcolor{keyword}{const}\ sf::IpAddress\&\ sender,\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{short}\ port);}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a4f0103253d7358f5a4d354914f645702}{handlePlayerShoots}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_aa60b2ee166251c6fa405ed7722f94934}{handlePlayerDisconnect}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a13ca2c2a4961fca2dcdd312a4a8d6461}{handleUpgradeChosen}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ac1bd8bfafef8312323657bf8ba99aa9a}{handleAbilityHit}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a06d9fdd8dea7c5d36a328351a32bb906}{handleAbilityUsed}}(sf::Packet\&\ packet);}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ Session\ \&\ World\ Management}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a88cc8e4a0d680f345d8e6c01a5b8b6e1}{proccessUpgradeMenuTimeout}}();}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a8ab5a08ca2325096010b387a47f635a5}{removeAFKPlayers}}();}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_server_engine_a90dca41c34da612e555e2f3d4c1f5a2c}{needsWorldReset}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a14ed3c338f00ee022f13628b6a85fa8b}{resetWorld}}();}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Upgrade\ System}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{class_server_engine_a22f4069d51a06e6cdd68e350c6452ed8}{getEffectiveMaxHp}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_client_info}{ClientInfo}}\&\ client)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00071\ \ \ \ \ std::vector<const\ UpgradeDefinition*>\ \doxymbox{\hyperlink{class_server_engine_a220da71a17a15af9adaf528d51e255f2}{buildUpgradePool}}(\doxymbox{\hyperlink{_network_protocol_8hpp_a29cc8ef832bd94b914b3da8c1a305831}{PlayerClass}}\ pClass,\ \textcolor{keywordtype}{bool}\ wantAugment)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00072\ \ \ \ \ std::vector<std::string>\ \doxymbox{\hyperlink{class_server_engine_ad8225f95a7127ce4a58380dd22b82695}{rollUpgradeOffer}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_client_info}{ClientInfo}}\&\ client)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ab771dbe9254dd33c1b0159a6768e88f2}{applyUpgrade}}(\doxymbox{\hyperlink{struct_client_info}{ClientInfo}}\&\ client,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_upgrade_definition}{UpgradeDefinition}}\&\ upgrade);}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ae5580a1020c18ba9bcb7fe25b773dbd3}{sendLevelUpOffers}}();}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_ab8fc3192bfbf4eb1e4ef068df065f4ca}{sendUpgradeMultipliers}}(std::uint32\_t\ playerId);}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a7572e7a00838a8eba67f199de043e133}{finalizeUpgradeSelections}}();}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{comment}{//\ Ability\ \&\ Entity\ Simulation}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_abc15e8922b7b1f4ac3c279601bf30ea8}{updateEnergyCells}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a98b77f6c6d903450cf8d902f74c584d2}{updateHealingFields}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_acd4080cc00a132363b8325dacbb712ae}{updateMedicPassives}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_aa12a44ae9aef700571f6e2a49502be24}{updateBlackHoles}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a0b50443a96f66dcbc0ac5daf69ba0e6d}{updateMedicOrbs}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a93330d438e3f262c2c4293b88486e33a}{updateMedicBarriers}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_aff1de40262f9d6514eaea4ef5657a357}{updateMedicDrones}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a25f260977ff1dd32328e5652bbed0c60}{updateServerProjectiles}}(sf::Time\ deltaTime);}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ Medic\ Drone\ \&\ Projectile\ Helpers}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a0b58ec61cc55dfa4dfe531f5671b9187}{handleMedicDroneCommand}}(std::uint32\_t\ playerId,\ sf::Vector2f\ targetPos);}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a092d941fa9804f1cf990a7333742d104}{spawnDroneBlaster}}(std::uint32\_t\ ownerId,\ sf::Vector2f\ startPos,\ sf::Vector2f\ targetPos);}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a73ff1807b5dcc91f476c1070a1907de4}{spawnMedicNeedle}}(std::uint32\_t\ ownerId,\ sf::Vector2f\ startPos,\ sf::Vector2f\ targetPos);}
+\DoxyCodeLine{00096\ \ \ \ \ std::uint32\_t\ \doxymbox{\hyperlink{class_server_engine_a6753ccadf75e55225dc523b9776690ad}{findNearestEnemyId}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ from,\ \textcolor{keywordtype}{float}\ maxRange)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00097\ \ \ \ \ \doxymbox{\hyperlink{struct_medic_drone_data}{MedicDroneData}}*\ \doxymbox{\hyperlink{class_server_engine_accf47dd580be3e76be81947626403550}{findDroneByOwner}}(std::uint32\_t\ ownerId);}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//\ Decoy\ Helpers}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_server_engine_a80718fe3cb4684443b27dded70179fb4}{explodeDecoy}}(std::uint32\_t\ decoyId,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_decoy_data}{DecoyData}}\&\ decoy);}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_server_engine_a0f5eede7fb3ad074ac85b17003319b40}{playerHasActiveDecoy}}(std::uint32\_t\ playerId)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_server_engine_afb88a17a062c88860cf076a4e26aa81d}{playerHasActiveOrb}}(std::uint32\_t\ playerId)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{comment}{//\ Core\ Infrastructure}}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00109\ \ \ \ \ std::shared\_ptr<MapGenerator>\ m\_map;}
+\DoxyCodeLine{00110\ \ \ \ \ \doxymbox{\hyperlink{class_a_i_director}{AIDirector}}\ m\_aiDirector;}
+\DoxyCodeLine{00111\ \ \ \ \ sf::UdpSocket\ m\_socket;}
+\DoxyCodeLine{00112\ \ \ \ \ sf::Clock\ m\_clock;}
+\DoxyCodeLine{00113\ \ \ \ \ sf::Time\ m\_timePerTick;}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isRunning;}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordtype}{int}\ \ m\_tickCounter;}
+\DoxyCodeLine{00116\ \ \ \ \ std::uint32\_t\ m\_globalEntityCounter\ =\ 1;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{//\ Connected\ Clients\ \&\ World\ Entities}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00121\ \ \ \ \ std::map<std::uint32\_t,\ ClientInfo>\ m\_clients;}
+\DoxyCodeLine{00122\ \ \ \ \ std::map<std::uint32\_t,\ EnergyCellInfo>\ m\_energyCells;}
+\DoxyCodeLine{00123\ \ \ \ \ std::map<std::uint32\_t,\ HealFieldInfo>\ m\_healFields;}
+\DoxyCodeLine{00124\ \ \ \ \ std::map<std::uint32\_t,\ BlackHoleData>\ m\_blackHoles;}
+\DoxyCodeLine{00125\ \ \ \ \ std::map<std::uint32\_t,\ DecoyData>\ m\_decoys;}
+\DoxyCodeLine{00126\ \ \ \ \ std::map<std::uint32\_t,\ MedicOrbData>\ m\_medicOrbs;}
+\DoxyCodeLine{00127\ \ \ \ \ std::map<std::uint32\_t,\ MedicBarrierData>\ m\_medicBarriers;}
+\DoxyCodeLine{00128\ \ \ \ \ std::map<std::uint32\_t,\ MedicDroneData>\ m\_medicDrones;}
+\DoxyCodeLine{00129\ \ \ \ \ std::vector<ServerProjectileData>\ m\_serverProjectiles;}
+\DoxyCodeLine{00130\ \ \ \ \ std::map<std::uint32\_t,\ std::unique\_ptr<ServerEnemy>>\ m\_enemies;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{comment}{//\ Team\ Progression\ \&\ Upgrade\ Menu}}
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{comment}{//\ ==========================================}}
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamLevel\ =\ 1;}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamExp\ =\ 0;}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keywordtype}{int}\ m\_teamExpMax\ =\ 10;}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isPaused\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00139\ \ \ \ \ sf::Clock\ m\_upgradeTimer;}
+\DoxyCodeLine{00140\ \ \ \ \ sf::Clock\ m\_upgradeRevealTimer;}
+\DoxyCodeLine{00141\ \ \ \ \ UpgradeMenuPhase\ m\_upgradeMenuPhase\ =\ UpgradeMenuPhase::None;}
+\DoxyCodeLine{00142\ \ \ \ \ std::map<std::uint32\_t,\ std::string>\ m\_playerChosenUpgrades;}
+\DoxyCodeLine{00143\ \ \ \ \ std::map<std::uint32\_t,\ std::vector<std::string>>\ m\_pendingOffers;}
+\DoxyCodeLine{00144\ \};}
+
+\end{DoxyCode}

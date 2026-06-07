@@ -6,24 +6,47 @@
 #include <iostream>
 #include <algorithm>
 
+/**
+ * @brief Initializes HP and speed from enemy registry stats for the given type.
+ * @param id Unique server entity identifier.
+ * @param startPos Initial world spawn position.
+ * @param type Enemy archetype determining base stats.
+ */
 ServerEnemy::ServerEnemy(std::uint32_t id, const sf::Vector2f& startPos, EnemyType type): m_id(id), m_position(startPos), m_type(type) {
     const auto& stats = EnemyRegistry::getStats(type);
     m_hp = stats.maxHp;
     m_speed = stats.speed;
 }
 
+/**
+ * @brief Ray-marches between two points to detect wall obstruction.
+ * @param start Origin of the visibility test.
+ * @param end Target point to test toward.
+ * @param radius Collision radius used for wall sampling.
+ * @param map Map used for wall tile checks.
+ * @return True if no wall blocks the line segment.
+ */
 bool ServerEnemy::hasLineOfSight(sf::Vector2f start, sf::Vector2f end, float radius, std::shared_ptr<MapGenerator> map){
     sf::Vector2f dir = end - start;
     float dist = std::sqrt(dir.x*dir.x + dir.y*dir.y);
     if(dist == 0) return true;
     dir /= dist;
     float step = Config::TILE_SIZE / 2.0f;
+
     for(float d = 0; d < dist; d += step){
         if(map->checkCollision(start + dir * d, radius)) return false;
     }
+
     return true;
 }
 
+/**
+ * @brief Computes a normalized repulsion vector from nearby enemies using the spatial grid.
+ * @param allEnemies Full enemy map for resolving nearby IDs.
+ * @param myRadius Collision radius of this enemy.
+ * @param grid Spatial grid providing neighbour entity IDs.
+ * @return Combined separation direction; zero vector if no overlap.
+ */
 sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, float myRadius, const SpatialGrid& grid){
     sf::Vector2f separationVector(0.0f, 0.0f);
     std::vector<std::uint32_t> nearby = grid.getNearby(m_position);
@@ -43,6 +66,16 @@ sf::Vector2f ServerEnemy::calculateSeparation(const std::map<std::uint32_t, std:
     return separationVector;
 }
 
+/**
+ * @brief Default melee chase: knockback, target selection, contact damage, and flow-field steering.
+ * @param deltaTime Elapsed time since the last update.
+ * @param clients Mutable player targets for damage and pursuit.
+ * @param map Map used for collision and pathfinding.
+ * @param flowField Precomputed BFS cost field toward players.
+ * @param allEnemies All enemies used for separation calculations.
+ * @param grid Spatial grid for neighbour queries.
+ * @return Player IDs killed by melee contact this tick.
+ */
 std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, std::map<std::uint32_t, ClientInfo>& clients, std::shared_ptr<MapGenerator> map, const std::vector<std::vector<int>>& flowField, const std::map<std::uint32_t, std::unique_ptr<ServerEnemy>>& allEnemies, const SpatialGrid& grid) {
     // --- Apply knockback displacement when active ---
     if(m_knockbackVelocity.lengthSquared() > 10.0f){
@@ -120,6 +153,12 @@ std::vector<std::uint32_t> ServerEnemy::performMeleeChase(sf::Time deltaTime, st
     return deadPlayers;
 }
 
+/**
+ * @brief Finds the closest player by squared distance.
+ * @param clients Player map to search; must be non-empty.
+ * @param outMinDistSq Output squared distance to the closest player.
+ * @return ID of the closest player.
+ */
 std::uint32_t ServerEnemy::getClosestPlayerId(const std::map<std::uint32_t, ClientInfo>& clients, float& outMinDistSq) const {
     std::uint32_t targetId = clients.begin()->first;
     outMinDistSq = (clients.begin()->second.position - m_position).lengthSquared();
@@ -133,6 +172,11 @@ std::uint32_t ServerEnemy::getClosestPlayerId(const std::map<std::uint32_t, Clie
     return targetId;
 }
 
+/**
+ * @brief Applies an instantaneous knockback velocity along a direction.
+ * @param direction Push direction; normalized internally if non-zero.
+ * @param force Knockback speed magnitude.
+ */
 void ServerEnemy::applyKnockback(sf::Vector2f direction, float force){
     float lenSq = direction.lengthSquared();
     if(lenSq > 0.0f){
@@ -140,10 +184,19 @@ void ServerEnemy::applyKnockback(sf::Vector2f direction, float force){
     }
 }
 
+/**
+ * @brief Stacks a new poison effect on this enemy.
+ * @param duration Seconds the poison remains active.
+ * @param damagePerSecond HP removed per second while active.
+ */
 void ServerEnemy::applyPoison(float duration, float damagePerSecond){
     m_poisonEffects.push_back({duration, damagePerSecond});
 }
 
+/**
+ * @brief Ticks all poison effects, applies damage, and removes expired entries.
+ * @param dt Delta time in seconds.
+ */
 void ServerEnemy::tickStatusEffects(float dt){
     for (auto& poison : m_poisonEffects) {
         poison.remainingTime -= dt;

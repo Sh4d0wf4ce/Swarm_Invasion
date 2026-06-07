@@ -1,0 +1,279 @@
+\doxysection{Server\+Enemy Class Reference}
+\hypertarget{class_server_enemy}{}\label{class_server_enemy}\index{ServerEnemy@{ServerEnemy}}
+
+
+Abstract authoritative server enemy with shared movement, combat, and status helpers.  
+
+
+
+
+{\ttfamily \+\#include $<$Server\+Enemy.\+hpp$>$}
+
+Inheritance diagram for Server\+Enemy:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_server_enemy}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}{Server\+Enemy}} (std::\+uint32\+\_\+t id, const sf::\+\+Vector2f \&start\+Pos, \doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} type)
+\begin{DoxyCompactList}\small\item\em Initializes HP and speed from enemy registry stats for the given type. \end{DoxyCompactList}\item 
+virtual std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_server_enemy_ad55dcd9b673162b831376a1e240a2f43}{update}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&flow\+Field, std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&out\+Shoot\+Events, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid)=0
+\item 
+\Hypertarget{class_server_enemy_a55134abb1784ff1e3ee0ad49449e2a27}\label{class_server_enemy_a55134abb1784ff1e3ee0ad49449e2a27} 
+std::\+uint32\+\_\+t {\bfseries get\+Id} () const
+\item 
+\Hypertarget{class_server_enemy_ab3df6d6911362b3c0e6b4b179a38dc64}\label{class_server_enemy_ab3df6d6911362b3c0e6b4b179a38dc64} 
+sf::\+\+Vector2f {\bfseries get\+Position} () const
+\item 
+\Hypertarget{class_server_enemy_a5b08658bab72a08d3975be2cb4407f87}\label{class_server_enemy_a5b08658bab72a08d3975be2cb4407f87} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries get\+Type} () const
+\item 
+\Hypertarget{class_server_enemy_ab2d35932a2976c0b0f0cb72c4cf89f6e}\label{class_server_enemy_ab2d35932a2976c0b0f0cb72c4cf89f6e} 
+float {\bfseries get\+Hp} () const
+\item 
+\Hypertarget{class_server_enemy_a9cca25881c9541415fd6b32a4bcc5c22}\label{class_server_enemy_a9cca25881c9541415fd6b32a4bcc5c22} 
+void {\bfseries set\+Position} (sf::\+\+Vector2f new\+Pos)
+\item 
+\Hypertarget{class_server_enemy_ae089b29f0a578567c3b0255f095b9fbc}\label{class_server_enemy_ae089b29f0a578567c3b0255f095b9fbc} 
+void {\bfseries take\+Damage} (float damage)
+\item 
+void \doxymbox{\hyperlink{class_server_enemy_af25637f7502ec64047004584376c3eed}{apply\+Poison}} (float duration, float damage\+Per\+Second)
+\begin{DoxyCompactList}\small\item\em Stacks a new poison effect on this enemy. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_enemy_a2feed450487278249f4cee12ee1760d7}{tick\+Status\+Effects}} (float dt)
+\begin{DoxyCompactList}\small\item\em Ticks all poison effects, applies damage, and removes expired entries. \end{DoxyCompactList}\item 
+void \doxymbox{\hyperlink{class_server_enemy_afe6cf22dec4573ea143f7bc7a2a6dbb6}{apply\+Knockback}} (sf::\+\+Vector2f direction, float force)
+\begin{DoxyCompactList}\small\item\em Applies an instantaneous knockback velocity along a direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \doxymbox{\hyperlink{class_server_enemy_a015d94bcca62aae81fcc8fdd05813b59}{has\+Line\+Of\+Sight}} (sf::\+\+Vector2f start, sf::\+\+Vector2f end, float radius, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map)
+\begin{DoxyCompactList}\small\item\em Ray-\/marches between two points to detect wall obstruction. \end{DoxyCompactList}\item 
+sf::\+\+Vector2f \doxymbox{\hyperlink{class_server_enemy_a386ed04189c3e5b569b75ff2ecd02bbd}{calculate\+Separation}} (const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, float my\+Radius, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid)
+\begin{DoxyCompactList}\small\item\em Computes a normalized repulsion vector from nearby enemies using the spatial grid. \end{DoxyCompactList}\item 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ \doxymbox{\hyperlink{class_server_enemy_a584be8ee638f06b9b97487d8f2756acb}{perform\+Melee\+Chase}} (sf::\+\+Time delta\+Time, std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$ map, const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&flow\+Field, const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&all\+Enemies, const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&grid)
+\begin{DoxyCompactList}\small\item\em Default melee chase:\+ knockback, target selection, contact damage, and flow-\/field steering. \end{DoxyCompactList}\item 
+std::\+uint32\+\_\+t \doxymbox{\hyperlink{class_server_enemy_ac7a6c709b19ca53a7a8201d2028454fb}{get\+Closest\+Player\+Id}} (const std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&clients, float \&out\+Min\+Dist\+Sq) const
+\begin{DoxyCompactList}\small\item\em Finds the closest player by squared distance. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_server_enemy_a927ad2c3be73b993ac66cddc10c4c4d8}\label{class_server_enemy_a927ad2c3be73b993ac66cddc10c4c4d8} 
+std::\+uint32\+\_\+t {\bfseries m\+\_\+id}
+\item 
+\Hypertarget{class_server_enemy_acd5f06f57444588d19400666c67298d3}\label{class_server_enemy_acd5f06f57444588d19400666c67298d3} 
+sf::\+\+Vector2f {\bfseries m\+\_\+position}
+\item 
+\Hypertarget{class_server_enemy_a8acd89f02ba55236dc9b88fa85681493}\label{class_server_enemy_a8acd89f02ba55236dc9b88fa85681493} 
+float {\bfseries m\+\_\+hp}
+\item 
+\Hypertarget{class_server_enemy_a5511dad11b580ad1c307944af297a0d9}\label{class_server_enemy_a5511dad11b580ad1c307944af297a0d9} 
+float {\bfseries m\+\_\+speed}
+\item 
+\Hypertarget{class_server_enemy_aa01072579f9cf8efd7dc602a5d32b75a}\label{class_server_enemy_aa01072579f9cf8efd7dc602a5d32b75a} 
+\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}} {\bfseries m\+\_\+type}
+\item 
+\Hypertarget{class_server_enemy_a34e8943ec6b2663d2c92f14a574719e2}\label{class_server_enemy_a34e8943ec6b2663d2c92f14a574719e2} 
+sf::\+\+Clock {\bfseries m\+\_\+last\+Attack\+Time}
+\item 
+\Hypertarget{class_server_enemy_abee568549d2398eb8d925b1adf3a01a4}\label{class_server_enemy_abee568549d2398eb8d925b1adf3a01a4} 
+sf::\+\+Vector2f {\bfseries m\+\_\+knockback\+Velocity} \{0.\+0f, 0.\+0f\}
+\item 
+\Hypertarget{class_server_enemy_acb231d97eea0be1cc1e78bdda34e43ed}\label{class_server_enemy_acb231d97eea0be1cc1e78bdda34e43ed} 
+std::\+vector$<$ \doxymbox{\hyperlink{struct_poison_effect}{Poison\+Effect}} $>$ {\bfseries m\+\_\+poison\+Effects}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Abstract authoritative server enemy with shared movement, combat, and status helpers. 
+
+Derived classes implement update() with type-\/specific behaviour while reusing flow-\/field chase, separation, line-\/of-\/sight checks, knockback, and poison handling. 
+
+\label{doc-constructors}
+\Hypertarget{class_server_enemy_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_server_enemy_aa15c3c12124323f94bcfd205fda044df}\index{ServerEnemy@{ServerEnemy}!ServerEnemy@{ServerEnemy}}
+\index{ServerEnemy@{ServerEnemy}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{ServerEnemy()}{ServerEnemy()}}
+{\footnotesize\ttfamily \label{class_server_enemy_aa15c3c12124323f94bcfd205fda044df} 
+Server\+Enemy::\+\+Server\+Enemy (\begin{DoxyParamCaption}\item[{std::\+uint32\+\_\+t}]{id}{, }\item[{const sf::\+\+Vector2f \&}]{start\+Pos}{, }\item[{\doxymbox{\hyperlink{_network_protocol_8hpp_ab510fced7c70a1124b7ac8e79777da7a}{Enemy\+Type}}}]{type}{}\end{DoxyParamCaption})}
+
+
+
+Initializes HP and speed from enemy registry stats for the given type. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & Unique server entity identifier. \\
+\hline
+{\em start\+Pos} & Initial world spawn position. \\
+\hline
+{\em type} & \doxylink{class_enemy}{Enemy} archetype determining base stats. \\
+\hline
+\end{DoxyParams}
+
+
+\label{doc-func-members}
+\Hypertarget{class_server_enemy_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_server_enemy_afe6cf22dec4573ea143f7bc7a2a6dbb6}\index{ServerEnemy@{ServerEnemy}!applyKnockback@{applyKnockback}}
+\index{applyKnockback@{applyKnockback}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{applyKnockback()}{applyKnockback()}}
+{\footnotesize\ttfamily \label{class_server_enemy_afe6cf22dec4573ea143f7bc7a2a6dbb6} 
+void Server\+Enemy::\+apply\+Knockback (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{direction}{, }\item[{float}]{force}{}\end{DoxyParamCaption})}
+
+
+
+Applies an instantaneous knockback velocity along a direction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em direction} & Push direction; normalized internally if non-\/zero. \\
+\hline
+{\em force} & Knockback speed magnitude. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_enemy_af25637f7502ec64047004584376c3eed}\index{ServerEnemy@{ServerEnemy}!applyPoison@{applyPoison}}
+\index{applyPoison@{applyPoison}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{applyPoison()}{applyPoison()}}
+{\footnotesize\ttfamily \label{class_server_enemy_af25637f7502ec64047004584376c3eed} 
+void Server\+Enemy::\+apply\+Poison (\begin{DoxyParamCaption}\item[{float}]{duration}{, }\item[{float}]{damage\+Per\+Second}{}\end{DoxyParamCaption})}
+
+
+
+Stacks a new poison effect on this enemy. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em duration} & Seconds the poison remains active. \\
+\hline
+{\em damage\+Per\+Second} & HP removed per second while active. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_enemy_a386ed04189c3e5b569b75ff2ecd02bbd}\index{ServerEnemy@{ServerEnemy}!calculateSeparation@{calculateSeparation}}
+\index{calculateSeparation@{calculateSeparation}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{calculateSeparation()}{calculateSeparation()}}
+{\footnotesize\ttfamily \label{class_server_enemy_a386ed04189c3e5b569b75ff2ecd02bbd} 
+sf::\+\+Vector2f Server\+Enemy::\+calculate\+Separation (\begin{DoxyParamCaption}\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{all\+Enemies}{, }\item[{float}]{my\+Radius}{, }\item[{const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&}]{grid}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Computes a normalized repulsion vector from nearby enemies using the spatial grid. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em all\+Enemies} & Full enemy map for resolving nearby IDs. \\
+\hline
+{\em my\+Radius} & Collision radius of this enemy. \\
+\hline
+{\em grid} & Spatial grid providing neighbour entity IDs. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Combined separation direction; zero vector if no overlap. 
+\end{DoxyReturn}
+\Hypertarget{class_server_enemy_ac7a6c709b19ca53a7a8201d2028454fb}\index{ServerEnemy@{ServerEnemy}!getClosestPlayerId@{getClosestPlayerId}}
+\index{getClosestPlayerId@{getClosestPlayerId}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{getClosestPlayerId()}{getClosestPlayerId()}}
+{\footnotesize\ttfamily \label{class_server_enemy_ac7a6c709b19ca53a7a8201d2028454fb} 
+std::\+uint32\+\_\+t Server\+Enemy::\+get\+Closest\+Player\+Id (\begin{DoxyParamCaption}\item[{const std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{float \&}]{out\+Min\+Dist\+Sq}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Finds the closest player by squared distance. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em clients} & \doxylink{class_player}{Player} map to search; must be non-\/empty. \\
+\hline
+{\em out\+Min\+Dist\+Sq} & Output squared distance to the closest player. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+ID of the closest player. 
+\end{DoxyReturn}
+\Hypertarget{class_server_enemy_a015d94bcca62aae81fcc8fdd05813b59}\index{ServerEnemy@{ServerEnemy}!hasLineOfSight@{hasLineOfSight}}
+\index{hasLineOfSight@{hasLineOfSight}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{hasLineOfSight()}{hasLineOfSight()}}
+{\footnotesize\ttfamily \label{class_server_enemy_a015d94bcca62aae81fcc8fdd05813b59} 
+bool Server\+Enemy::\+has\+Line\+Of\+Sight (\begin{DoxyParamCaption}\item[{sf::\+\+Vector2f}]{start}{, }\item[{sf::\+\+Vector2f}]{end}{, }\item[{float}]{radius}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Ray-\/marches between two points to detect wall obstruction. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em start} & Origin of the visibility test. \\
+\hline
+{\em end} & Target point to test toward. \\
+\hline
+{\em radius} & Collision radius used for wall sampling. \\
+\hline
+{\em map} & Map used for wall tile checks. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if no wall blocks the line segment. 
+\end{DoxyReturn}
+\Hypertarget{class_server_enemy_a584be8ee638f06b9b97487d8f2756acb}\index{ServerEnemy@{ServerEnemy}!performMeleeChase@{performMeleeChase}}
+\index{performMeleeChase@{performMeleeChase}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{performMeleeChase()}{performMeleeChase()}}
+{\footnotesize\ttfamily \label{class_server_enemy_a584be8ee638f06b9b97487d8f2756acb} 
+std::\+vector$<$ std::\+uint32\+\_\+t $>$ Server\+Enemy::\+perform\+Melee\+Chase (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&}]{flow\+Field}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{all\+Enemies}{, }\item[{const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&}]{grid}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Default melee chase:\+ knockback, target selection, contact damage, and flow-\/field steering. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em delta\+Time} & Elapsed time since the last update. \\
+\hline
+{\em clients} & Mutable player targets for damage and pursuit. \\
+\hline
+{\em map} & Map used for collision and pathfinding. \\
+\hline
+{\em flow\+Field} & Precomputed BFS cost field toward players. \\
+\hline
+{\em all\+Enemies} & All enemies used for separation calculations. \\
+\hline
+{\em grid} & Spatial grid for neighbour queries. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxylink{class_player}{Player} IDs killed by melee contact this tick. 
+\end{DoxyReturn}
+\Hypertarget{class_server_enemy_a2feed450487278249f4cee12ee1760d7}\index{ServerEnemy@{ServerEnemy}!tickStatusEffects@{tickStatusEffects}}
+\index{tickStatusEffects@{tickStatusEffects}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{tickStatusEffects()}{tickStatusEffects()}}
+{\footnotesize\ttfamily \label{class_server_enemy_a2feed450487278249f4cee12ee1760d7} 
+void Server\+Enemy::\+tick\+Status\+Effects (\begin{DoxyParamCaption}\item[{float}]{dt}{}\end{DoxyParamCaption})}
+
+
+
+Ticks all poison effects, applies damage, and removes expired entries. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dt} & Delta time in seconds. \\
+\hline
+\end{DoxyParams}
+\Hypertarget{class_server_enemy_ad55dcd9b673162b831376a1e240a2f43}\index{ServerEnemy@{ServerEnemy}!update@{update}}
+\index{update@{update}!ServerEnemy@{ServerEnemy}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily \label{class_server_enemy_ad55dcd9b673162b831376a1e240a2f43} 
+virtual std::\+vector$<$ std::\+uint32\+\_\+t $>$ Server\+Enemy::\+update (\begin{DoxyParamCaption}\item[{sf::\+\+Time}]{delta\+Time}{, }\item[{std::\+map$<$ std::\+uint32\+\_\+t, \doxymbox{\hyperlink{struct_client_info}{Client\+Info}} $>$ \&}]{clients}{, }\item[{std::\+shared\+\_\+ptr$<$ \doxymbox{\hyperlink{class_map_generator}{Map\+Generator}} $>$}]{map}{, }\item[{const std::\+vector$<$ std::\+vector$<$ int $>$ $>$ \&}]{flow\+Field}{, }\item[{std::\+vector$<$ \doxymbox{\hyperlink{struct_enemy_shoot_event}{Enemy\+Shoot\+Event}} $>$ \&}]{out\+Shoot\+Events}{, }\item[{const std::\+map$<$ std::\+uint32\+\_\+t, std::\+unique\+\_\+ptr$<$ \doxymbox{\hyperlink{class_server_enemy}{Server\+Enemy}} $>$ $>$ \&}]{all\+Enemies}{, }\item[{const \doxymbox{\hyperlink{class_spatial_grid}{Spatial\+Grid}} \&}]{grid}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \doxymbox{\hyperlink{class_server_bruiser_a62a9245371a32b2811b40758e5c3cfd9}{Server\+Bruiser}}, \doxymbox{\hyperlink{class_server_crawler_a32b969d309e302752695e2ec63d73c9d}{Server\+Crawler}}, \doxymbox{\hyperlink{class_server_kamikaze_ae377ddbcb167e302cff8b2901139b83c}{Server\+Kamikaze}}, and \doxymbox{\hyperlink{class_server_spitter_aa4e1e4d7d82a626cdfcd298a9f116bd4}{Server\+Spitter}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+src/\+server/\+enemies/\+Server\+Enemy.\+hpp\item 
+src/\+server/\+enemies/\+Server\+Enemy.\+cpp\end{DoxyCompactItemize}

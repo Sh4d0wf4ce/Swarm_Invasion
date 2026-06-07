@@ -17,6 +17,13 @@
 #include <memory>
 #include <map>
 
+/**
+ * @brief Central client application engine.
+ *
+ * Owns the render window, UDP socket, and active game state. Runs the main
+ * loop that polls input, receives network packets, updates the current state,
+ * and draws the frame.
+ */
 class ClientEngine{
 public:
     ClientEngine();
@@ -25,9 +32,16 @@ public:
     void changeState(std::unique_ptr<State> newState);
 
     // Engine Accessors
+    /** @brief Returns the SFML render window used for drawing and input. */
     sf::RenderWindow& getWindow() { return m_window; }
+
+    /** @brief Returns the non-blocking UDP socket used for server communication. */
     sf::UdpSocket& getSocket() { return m_socket; }
+
+    /** @brief Returns the resolved server IP address, if available. */
     std::optional<sf::IpAddress>& getServerAddress() { return m_serverAddress; }
+
+    /** @brief Requests graceful shutdown of the main loop on the next iteration. */
     void quit() { m_isRunning = false; }
 private:
     // Main Loop

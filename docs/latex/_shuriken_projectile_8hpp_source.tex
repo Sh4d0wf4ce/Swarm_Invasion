@@ -1,0 +1,21 @@
+\doxysection{Shuriken\+Projectile.\+hpp}
+\hypertarget{_shuriken_projectile_8hpp_source}{}\label{_shuriken_projectile_8hpp_source}\index{src/client/projectiles/ShurikenProjectile.hpp@{src/client/projectiles/ShurikenProjectile.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Projectile.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <optional>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/Sprite.hpp>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_shuriken_projectile_a3939d205ea13d2c27f6e4a0a8d2fa373}{ShurikenProjectile}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_projectile_ae5059bdf2f91b8a47a90d1fc84240a88}{Projectile}}\ \{}
+\DoxyCodeLine{00010\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00011\ \ \ \ \ \doxymbox{\hyperlink{class_shuriken_projectile_a3939d205ea13d2c27f6e4a0a8d2fa373}{ShurikenProjectile}}(std::uint32\_t\ ownerId,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ velocity,\ Faction\ faction);}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_shuriken_projectile_a7a21f9a0e80ac51af3fa2d57879ccba4}{update}}(sf::Time\ deltaTime)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_shuriken_projectile_aba50516707dac651eed48d3c3176e874}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00017\ \ \ \ \ std::optional<sf::Sprite>\ m\_sprite;}
+\DoxyCodeLine{00018\ \};}
+
+\end{DoxyCode}

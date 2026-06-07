@@ -1,0 +1,59 @@
+\doxysection{Juggernaut.\+hpp}
+\hypertarget{_juggernaut_8hpp_source}{}\label{_juggernaut_8hpp_source}\index{src/client/entities/Juggernaut.hpp@{src/client/entities/Juggernaut.hpp}}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ "{}Player.hpp"{}}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <SFML/Graphics/VertexArray.hpp>}}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_juggernaut_a58cd6c1edd0a1908ef86c20b1694e2a2}{Juggernaut}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_player_a9d57553968700a7f1c370d3536f4a6bb}{Player}}\{}
+\DoxyCodeLine{00013\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \doxymbox{\hyperlink{class_juggernaut_a58cd6c1edd0a1908ef86c20b1694e2a2}{Juggernaut}}(std::uint32\_t\ \textcolor{keywordtype}{id},\ \textcolor{keyword}{const}\ sf::Vector2f\&\ startPos);}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_ae320c01c6a7f65c75091d1124c8afa5b}{update}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a0f55e25ae23c38a2b929154051695e91}{render}}(sf::RenderTarget\&\ target)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{comment}{//\ Ability\ Input\ Hooks}}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a834e855e39645be1e0d1386c79b90bd8}{onShift}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a9644a4df78b65057e6d1043a78fe2350}{onQ}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a4a1932b70aca04b98f74f74460795187}{onE}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a9752ec4550e502534c5f054be0f0a813}{onRMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a294c6b8d97f5a1f95339c75c0c7559c8}{onLMB}}(\textcolor{keyword}{const}\ sf::Vector2f\&\ mouseWorldPos,\ \doxymbox{\hyperlink{class_client_engine}{ClientEngine}}\&\ engine,\ \doxymbox{\hyperlink{class_projectile_manager}{ProjectileManager}}\&\ projMgr,\ \textcolor{keyword}{const}\ std::map<std::uint32\_t,\ std::unique\_ptr<Enemy>>\&\ enemies)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{bool}\ isAutoFiring()\textcolor{keyword}{\ const\ override\ }\{\ \textcolor{keywordflow}{return}\ m\_isUltActive;\ \}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ Combat\ \&\ Remote\ Sync}}
+\DoxyCodeLine{00029\ \ \ \ \ std::vector<AbilityHitRecord>\ \doxymbox{\hyperlink{class_juggernaut_abef1097265c4462d8d66d42518f7ac91}{checkAbilityHits}}(\textcolor{keyword}{const}\ std::vector<Entity*>\&\ entities)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a351a24a15b6addf7300ce1d5783a7844}{updateRemoteVisuals}}(sf::Time\ deltaTime,\ \textcolor{keyword}{const}\ std::shared\_ptr<MapGenerator>\&\ map)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_juggernaut_a00f6c3b9231e37c9d6c935b644c5ea0f}{playRemoteAbility}}(\doxymbox{\hyperlink{_network_protocol_8hpp_aa2def8279e9b3e5f03d25078b60e0533}{AbilityType}}\ ability,\ \textcolor{keyword}{const}\ sf::Vector2f\&\ data)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ Charge\ Dash\ Mechanics}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_isCharging\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_chargeDistanceRemaining\{0.0f\};}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_maxChargeDistance\{350.0f\};}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_chargeSpeedMultiplier\{3.5f\};}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_shiftCooldown\{5.0f\};}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_dashCollisionBonus\{15.0f\};}
+\DoxyCodeLine{00041\ \ \ \ \ sf::Vector2f\ m\_chargeDirection\{0.0f,\ 0.0f\};}
+\DoxyCodeLine{00042\ \ \ \ \ std::vector<std::uint32\_t>\ m\_dashedEnemies;}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{//\ Repulsor\ Mechanics}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_repulsorRange\{250.0f\};}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_repulsorAngleSpan\{70.0f\ *\ (M\_PI\ /\ 180.0f)\};}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_repulsorVfxDuration\{0.2f\};}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{bool}\ m\_fireRepulsor\{\textcolor{keyword}{false}\};}
+\DoxyCodeLine{00050\ \ \ \ \ sf::Vector2f\ m\_repulsorAimDir\{1.0f,\ 0.0f\};}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_repulsorVfxTimer\{0.0f\};}
+\DoxyCodeLine{00052\ \ \ \ \ sf::VertexArray\ m\_repulsorVfx\{sf::PrimitiveType::TriangleFan\};}
+\DoxyCodeLine{00053\ }
+\DoxyCodeLine{00054\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{//\ Ultimate\ \&\ Recoil}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_blackHoleMaxRange\{200.0f\};}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_ultDuration\{5.0f\};}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{float}\ m\_recoilForce\{300.0f\};}
+\DoxyCodeLine{00059\ \ \ \ \ sf::Vector2f\ m\_recoilVelocity\{0.0f,\ 0.0f\};}
+\DoxyCodeLine{00060\ \};}
+
+\end{DoxyCode}

@@ -1,0 +1,28 @@
+var class_vanguard =
+[
+    [ "SlashTrailFrame", "struct_vanguard_1_1_slash_trail_frame.html", null ],
+    [ "DashTrail", "struct_vanguard_1_1_dash_trail.html", null ],
+    [ "Vanguard", "class_vanguard.html#a7ec3882af8b9f89714120afd49607cd6", null ],
+    [ "checkAbilityHits", "class_vanguard.html#a25ed1c85775610932107e175c1bd168e", null ],
+    [ "drawDashTrails", "class_vanguard.html#a2a9aecb55a02ae6d8b22d965a6656821", null ],
+    [ "drawKatana", "class_vanguard.html#a176f54faa310b2bc11b05aa15d88bf61", null ],
+    [ "drawTrail", "class_vanguard.html#a596340fa122ced90aceb87dba5ca0cac", null ],
+    [ "getBladeAngleAt", "class_vanguard.html#a544d5efa5cb158b11d523f270c9e1fd5", null ],
+    [ "getBladePoint", "class_vanguard.html#a8d31ff5a86bfe49faf9bce560fa87ebe", null ],
+    [ "isAngleBetween", "class_vanguard.html#ab384c73f6cf2ca5314c46c23cdd1b6fc", null ],
+    [ "normalizeAngle", "class_vanguard.html#acd1392269258fdd095382ee5f57d925d", null ],
+    [ "onE", "class_vanguard.html#af738bb203fa0f2bd56a6e1757f721843", null ],
+    [ "onLMB", "class_vanguard.html#a1ed7baec181d11e3cfe311e2f1c5c713", null ],
+    [ "onQ", "class_vanguard.html#af6b87a6955ceed066cda4c4dd343b486", null ],
+    [ "onRMB", "class_vanguard.html#ae2da4baeac3a40f8e6470f8a3d2cf733", null ],
+    [ "onShift", "class_vanguard.html#a309294736f92ba52e926ee6b4076094b", null ],
+    [ "playRemoteAbility", "class_vanguard.html#a89ccb8d5f2609e3d9df9724e572efadb", null ],
+    [ "reload", "class_vanguard.html#a76aa4d080d46f3ae3ea7c7529ab98428", null ],
+    [ "render", "class_vanguard.html#a4c917e62bbd1a21880075e78d608f763", null ],
+    [ "renderESkill", "class_vanguard.html#a8651ac45a92c3f254592f4f4c4025808", null ],
+    [ "renderRightPanel", "class_vanguard.html#a456f6809ab9691a670335e6ec8927522", null ],
+    [ "renderShiftSkill", "class_vanguard.html#a3f80ace6b4fd349cd6f4b19cac64e65a", null ],
+    [ "update", "class_vanguard.html#a4606aa4dbfd9f4746618601454040c41", null ],
+    [ "updateRemoteVisuals", "class_vanguard.html#aca1aa3297801e56c7243fd32161d7bf8", null ],
+    [ "updateTrail", "class_vanguard.html#aad07b246c1171461280db23656ca99f8", null ]
+];
